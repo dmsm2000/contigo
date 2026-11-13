@@ -1,0 +1,91 @@
+<ion-content>
+  <div class="sheet">
+    <header class="head">
+      <h1 class="ct-display title">{{ 'wish.form.title' | transloco }}</h1>
+      <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    <form (ngSubmit)="save()" novalidate>
+      <section class="block ct-rise" style="--i: 0">
+        <app-place-picker
+          inputId="wish-search"
+          labelKey="wish.form.where"
+          [autofocus]="!suggestion"
+          [place]="place()"
+          (placeChange)="setPlace($event)"
+        />
+        @if (distance(); as far) {
+          <p class="hint">{{ 'wish.distance' | transloco: { km: far.km, origin: far.origin } }}</p>
+        }
+      </section>
+
+      <section class="block ct-rise" style="--i: 1">
+        <span class="label" id="stars-label">{{ 'wish.form.stars' | transloco }}</span>
+        <div class="stars-row" role="group" aria-labelledby="stars-label">
+          <app-stars [value]="stars()" [editable]="true" (picked)="stars.set($event)" />
+          <span class="stars-text">{{ 'wish.stars.' + stars() | transloco }}</span>
+        </div>
+      </section>
+
+      <section class="block ct-rise" style="--i: 2">
+        <span class="label" id="stay-label">
+          {{ 'wish.form.minStay' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
+        </span>
+        <div class="pills" role="group" aria-labelledby="stay-label">
+          @for (option of minStays; track option) {
+            <button
+              class="pill"
+              type="button"
+              [class.on]="minStay() === option"
+              [attr.aria-pressed]="minStay() === option"
+              (click)="toggleMinStay(option)"
+            >
+              {{ 'wish.minStay.' + option | transloco }}
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="block ct-rise" style="--i: 3">
+        <label class="label" for="wish-link">
+          {{ 'wish.form.link' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
+        </label>
+        <input
+          id="wish-link"
+          name="link"
+          type="url"
+          inputmode="url"
+          autocomplete="off"
+          autocapitalize="none"
+          [placeholder]="'wish.form.linkPlaceholder' | transloco"
+          [(ngModel)]="link"
+          (ngModelChange)="error.set(null)"
+        />
+      </section>
+
+      <section class="block ct-rise" style="--i: 4">
+        <label class="label" for="wish-note">
+          {{ 'trip.form.note' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
+        </label>
+        <textarea
+          id="wish-note"
+          name="note"
+          rows="3"
+          maxlength="500"
+          [placeholder]="'wish.form.notePlaceholder' | transloco"
+          [(ngModel)]="note"
+        ></textarea>
+      </section>
+
+      @if (error(); as key) {
+        <p class="error" role="alert">{{ key | transloco }}</p>
+      }
+
+      <button class="ct-btn save" type="submit" [disabled]="saving()">
+        {{ (saving() ? 'trip.form.saving' : 'wish.form.save') | transloco }}
+      </button>
+    </form>
+  </div>
+</ion-content>

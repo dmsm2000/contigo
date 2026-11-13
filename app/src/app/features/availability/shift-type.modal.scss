@@ -1,0 +1,62 @@
+@use '../shared/form';
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px dashed var(--ct-ring);
+  border-radius: 22px;
+  background: transparent;
+  color: var(--ct-ac);
+  font: 600 14px var(--ion-font-family);
+  cursor: pointer;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.hours {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.hour {
+  display: block;
+}
+
+.hour-label {
+  display: block;
+  margin: 0 4px 4px;
+  font-size: 12px;
+  color: var(--ct-mu);
+}
+
+// Cada cor de turno mostra-se na sua própria cor, para se ver o que se escolhe.
+.swatch {
+  background: var(--tone-bg);
+  border-color: transparent;
+  color: var(--tone-tx);
+
+  &.on {
+    background: var(--tone-bg);
+    border-color: var(--tone-tx);
+    color: var(--tone-tx);
+  }
+}
+
+.danger {
+  width: 100%;
+  margin-top: 10px;
+  color: #d64545;
+}
+
+:host-context(.ion-palette-dark) .danger {
+  color: #ff8a8a;
+}

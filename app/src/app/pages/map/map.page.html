@@ -1,0 +1,82 @@
+<ion-content [scrollY]="false">
+  <div class="stage">
+    <div #map class="map" role="application" [attr.aria-label]="'map.title' | transloco"></div>
+
+    @if (failed()) {
+      <div class="unavailable ct-card ct-empty">
+        <ion-icon name="location-sharp" aria-hidden="true"></ion-icon>
+        <h2>{{ 'map.unavailableTitle' | transloco }}</h2>
+        <p>{{ 'map.unavailableText' | transloco }}</p>
+      </div>
+    } @else {
+      <div class="chips ct-rise" style="--i: 1">
+        <button
+          class="chip chip--toggle"
+          type="button"
+          [class.off]="!showVisited()"
+          [attr.aria-pressed]="showVisited()"
+          (click)="showVisited.set(!showVisited())"
+        >
+          <ion-icon name="location-sharp" aria-hidden="true"></ion-icon>
+          {{ (visited() === 1 ? 'map.visited_one' : 'map.visited_other') | transloco: { count: visited() } }}
+        </button>
+        @if (wishlist.items().length) {
+          <button
+            class="chip chip--toggle chip--wish"
+            type="button"
+            [class.off]="!showWishes()"
+            [attr.aria-pressed]="showWishes()"
+            (click)="showWishes.set(!showWishes())"
+          >
+            <ion-icon name="heart-outline" aria-hidden="true"></ion-icon>
+            {{ 'map.filterWishes' | transloco }} · {{ wishlist.items().length }}
+          </button>
+        }
+        @if (summary().withoutLocation) {
+          <span class="chip chip--muted">{{ 'map.noLocation' | transloco: { count: summary().withoutLocation } }}</span>
+        }
+      </div>
+
+      <div class="fabs">
+        <button class="fab" type="button" (click)="recenter()" [attr.aria-label]="'map.recenter' | transloco">
+          <ion-icon name="scan-outline" aria-hidden="true"></ion-icon>
+        </button>
+        <button class="fab fab--primary" type="button" (click)="addTrip()" [attr.aria-label]="'map.addTrip' | transloco">
+          <ion-icon name="add" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+
+      @if (selectedWish(); as wish) {
+        <div class="wish-card ct-card ct-pop" role="dialog" [attr.aria-label]="wish.place.name">
+          <button class="ct-icon-btn wish-close" type="button" (click)="closeWish()" [attr.aria-label]="'common.close' | transloco">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+          <h2 class="ct-display">{{ wish.place.name }}</h2>
+          @if (wishWhere(wish)) {
+            <p class="wish-where">{{ wishWhere(wish) }}</p>
+          }
+          <div class="wish-meta">
+            <app-stars [value]="wishStars(wish)" />
+            @if (wish.minStay) {
+              <span class="wish-chip">{{ 'wish.minStay.' + wish.minStay | transloco }}</span>
+            }
+            @if (wishDistance(wish); as far) {
+              <span class="wish-chip wish-chip--muted">{{ 'wish.distance' | transloco: { km: far.km, origin: far.origin } }}</span>
+            }
+          </div>
+          @if (wish.note) {
+            <p class="wish-note">{{ wish.note }}</p>
+          }
+          <a class="ct-btn" routerLink="/wishlist">{{ 'map.openWishlist' | transloco }}</a>
+        </div>
+      } @else if (empty()) {
+        <div class="empty ct-rise" style="--i: 2">
+          <h2 class="ct-display">{{ 'map.emptyTitle' | transloco }}</h2>
+          <p>{{ 'map.emptyText' | transloco }}</p>
+          <button class="ct-btn" type="button" (click)="addTrip()">{{ 'map.addTrip' | transloco }}</button>
+          <button class="ct-btn ct-btn--ghost" type="button" (click)="addWish()">{{ 'map.addWish' | transloco }}</button>
+        </div>
+      }
+    }
+  </div>
+</ion-content>

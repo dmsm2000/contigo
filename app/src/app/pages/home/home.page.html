@@ -1,0 +1,162 @@
+<ion-content>
+  <div class="ct-page">
+    <header class="top ct-rise" style="--i: 0">
+      <div class="ct-wordmark">Conti<span>·GO</span></div>
+      <button class="ct-icon-btn" type="button" (click)="toggleTheme()" [attr.aria-label]="'theme.toggle' | transloco">
+        @if (theme.isDark()) {
+          <ion-icon class="spin-in" name="sunny-outline" aria-hidden="true"></ion-icon>
+        } @else {
+          <ion-icon class="spin-in" name="moon-outline" aria-hidden="true"></ion-icon>
+        }
+      </button>
+    </header>
+
+    <ul class="stories">
+      <li class="ct-rise" style="--i: 1">
+        <button class="story" type="button" (click)="openDraw()">
+          <span class="ring ring--grad"><span class="inner inner--draw"><ion-icon name="dice-outline" aria-hidden="true"></ion-icon></span></span>
+          <span class="story-label">{{ 'home.draw' | transloco }}</span>
+        </button>
+      </li>
+      <li class="ct-rise" style="--i: 2">
+        <button class="story" type="button" (click)="addPastTrip()">
+          <span class="ring ring--dashed"><span class="inner"><ion-icon name="add" aria-hidden="true"></ion-icon></span></span>
+          <span class="story-label">{{ 'home.pastTrip' | transloco }}</span>
+        </button>
+      </li>
+      @for (trip of recent(); track trip.id; let i = $index) {
+        <li class="ct-rise" [style.--i]="3 + i">
+          <button class="story" type="button" (click)="open(trip)">
+            <span class="ring" [class.ring--new]="i === 0">
+              <span class="inner inner--tile" [style.background]="labels.cover(trip)">{{ labels.hasCover(trip) ? '' : labels.initial(trip.place) }}</span>
+            </span>
+            <span class="story-label">{{ trip.place.name }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+
+    <section class="hero ct-rise" style="--i: 3">
+      <span class="dice" aria-hidden="true"><i></i><i></i><i></i></span>
+      @if (draws.active(); as active) {
+        <p class="eyebrow">{{ 'home.nextTrip' | transloco }}</p>
+        <h1 class="ct-display hero-title hero-title--window">{{ active.place.name }}</h1>
+        <p class="hero-text">{{ labels.date(active) }}</p>
+        <button class="ct-btn ct-btn--light" type="button" (click)="open(active)">{{ 'home.viewTrip' | transloco }}</button>
+      } @else if (nextWindow(); as window) {
+        <p class="eyebrow">{{ 'home.nextWindow' | transloco }}</p>
+        <h1 class="ct-display hero-title hero-title--window">{{ window.label }}</h1>
+        <p class="hero-text">
+          {{ (window.days === 1 ? 'dates.days_one' : 'dates.days_other') | transloco: { count: window.days } }}
+          · {{ 'dates.window.' + window.kind | transloco }}
+        </p>
+        <button class="ct-btn ct-btn--light" type="button" (click)="openDraw()">{{ 'home.drawNow' | transloco }}</button>
+      } @else {
+        <p class="eyebrow">{{ 'home.nextWindow' | transloco }}</p>
+        <h1 class="ct-display hero-title">{{ 'home.noWindowTitle' | transloco }}</h1>
+        <p class="hero-text">{{ 'home.noWindowText' | transloco }}</p>
+        <a class="ct-btn ct-btn--light" routerLink="/availability">{{ 'home.markAvailability' | transloco }}</a>
+      }
+    </section>
+
+    <div class="stats">
+      <div class="ct-card stat ct-rise" style="--i: 4">
+        <p class="stat-label">
+          <img src="icons/icon.svg" alt="" width="18" height="18" />
+          {{ 'home.onion' | transloco }}
+        </p>
+        <p class="ct-display stat-value">+0€</p>
+        <p class="stat-text">{{ 'home.onionText' | transloco }}</p>
+      </div>
+      <div class="ct-card stat ct-rise" style="--i: 5">
+        <p class="stat-label">{{ year }}</p>
+        <p class="ct-display stat-value">
+          {{ (stats().places === 1 ? 'home.places_one' : 'home.places_other') | transloco: { count: stats().places } }}
+        </p>
+        <div class="bars" aria-hidden="true">
+          @for (on of stats().months; track $index) {
+            <span [class.on]="on" [style.--bar]="$index"></span>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (wishlist.loaded()) {
+      <section class="wishes ct-rise" style="--i: 6">
+        <div class="section-head">
+          <h2 class="ct-display section-title">{{ 'home.wishlist' | transloco }}</h2>
+          @if (topWishes().length) {
+            <a class="see-all" routerLink="/wishlist">{{ 'home.wishlistAll' | transloco }}</a>
+          }
+        </div>
+
+        @if (topWishes().length) {
+          <ul class="memory-list">
+            @for (item of topWishes(); track item.place.id; let i = $index) {
+              <li class="ct-rise" [style.--i]="i">
+                <a class="memory" routerLink="/wishlist">
+                  <span class="tile" [style.background]="labels.tile(item.place)" aria-hidden="true">{{ labels.initial(item.place) }}</span>
+                  <span class="memory-body">
+                    <span class="memory-title">{{ item.place.name }}</span>
+                    @if (labels.where(item.place)) {
+                      <span class="memory-meta">{{ labels.where(item.place) }}</span>
+                    }
+                  </span>
+                  <app-stars [value]="stars(item)" />
+                </a>
+              </li>
+            }
+          </ul>
+          <button class="ct-btn ct-btn--ghost add-more" type="button" (click)="addWish()">
+            <ion-icon name="add" aria-hidden="true"></ion-icon>
+            {{ 'home.wishlistAdd' | transloco }}
+          </button>
+        } @else {
+          <div class="ct-card ct-empty">
+            <ion-icon name="heart-outline" aria-hidden="true"></ion-icon>
+            <p>{{ 'home.wishlistEmpty' | transloco }}</p>
+            <button class="ct-btn" type="button" (click)="addWish()">{{ 'home.wishlistAdd' | transloco }}</button>
+          </div>
+        }
+      </section>
+    }
+
+    <section class="memories ct-rise" style="--i: 7">
+      <h2 class="ct-display section-title">{{ 'home.memories' | transloco }}</h2>
+
+      @if (trips.done().length) {
+        <ul class="memory-list">
+          @for (trip of trips.done(); track trip.id; let i = $index) {
+            <li class="ct-rise" [style.--i]="i">
+              <button class="memory" type="button" (click)="open(trip)">
+                <span class="tile" [style.background]="labels.cover(trip)" aria-hidden="true">{{ labels.hasCover(trip) ? '' : labels.initial(trip.place) }}</span>
+                <span class="memory-body">
+                  <span class="memory-title">{{ trip.place.name }}</span>
+                  @let who = labels.who(trip);
+                  <span class="memory-meta">{{ labels.date(trip) }} · {{ who.key | transloco: who.params }}</span>
+                  @if (trip.note) {
+                    <span class="memory-note">{{ trip.note }}</span>
+                  }
+                </span>
+                <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+              </button>
+            </li>
+          }
+        </ul>
+        <button class="ct-btn ct-btn--ghost add-more" type="button" (click)="addPastTrip()">
+          <ion-icon name="add" aria-hidden="true"></ion-icon>
+          {{ 'home.registerPastTrip' | transloco }}
+        </button>
+      } @else if (trips.loaded()) {
+        <div class="ct-card ct-empty">
+          <ion-icon name="images-outline" aria-hidden="true"></ion-icon>
+          <p>{{ 'home.memoriesEmpty' | transloco }}</p>
+          <button class="ct-btn" type="button" (click)="addPastTrip()">{{ 'home.registerPastTrip' | transloco }}</button>
+        </div>
+      } @else {
+        <div class="memory skeleton" aria-hidden="true"></div>
+        <div class="memory skeleton" aria-hidden="true"></div>
+      }
+    </section>
+  </div>
+</ion-content>

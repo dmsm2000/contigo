@@ -1,0 +1,49 @@
+# Este ficheiro protege o repositório todo. O app/.gitignore continua a valer dentro de app/.
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Ferramentas locais
+.claude/
+
+# Editores (só ficam as definições partilhadas do .vscode)
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/
+
+# Dependências e compilação (em qualquer pasta)
+node_modules/
+dist/
+.angular/
+.sass-cache/
+out-tsc/
+coverage/
+*.tsbuildinfo
+__screenshots__/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Segredos e ambiente: nunca vão para o repositório
+.env
+.env.*
+*.pem
+*.key
+
+# Supabase local (estado da máquina e ligação ao projeto)
+**/supabase/.temp/
+**/supabase/.branches/

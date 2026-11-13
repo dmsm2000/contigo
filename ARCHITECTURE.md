@@ -28,7 +28,7 @@ Tudo aqui é `[proposta]` até dizermos que sim. O objetivo é a solução mais 
 | Login | Supabase Auth, só por convite | Sem registo público: duas contas, com um link de convite para ela. |
 | Fotos | Supabase Storage (bucket privado) | Já vem com o Supabase. |
 | Tempo real | Supabase Realtime | Cada um vê o que o outro marcou. |
-| Mapa | MapLibre GL com tiles gratuitos | Sem custo por visita. A pesquisa de sítios usa geocoding gratuito (a escolher). |
+| Mapa | MapLibre GL com os estilos gratuitos do CARTO (um claro e um escuro) | Sem chave nem custo por visita, e o estilo troca com o modo claro/escuro. Os pins são botões criados à mão. O worker do MapLibre é copiado para `maplibre/` pelo `angular.json`, e o endereço dele é calculado a partir da base da app (no GitHub Pages é uma subpasta). A pesquisa de sítios é o Photon (ver mais abaixo). `[feito]` |
 | Línguas | Transloco | Troca de língua em tempo real, por pessoa. O i18n embutido do Angular gera uma versão da app por língua, o que não serve para cada um escolher a sua. Português por defeito, espanhol e inglês em ficheiros à parte. |
 | Componentes | Ionic, com tema próprio | Traz o painel que sobe a vários níveis (o overview do ecrã inicial, com o mapa por trás), separadores, gestos e transições de app. O aspeto vem do tema (as cores da cebola e a Fredoka). O mapa, o calendário de disponibilidade e a cerimónia do sorteio são componentes nossos. |
 | Alojamento | GitHub Pages, para já | É o mais simples: o deploy faz-se com o GitHub Actions. Cada página precisa de um `404.html` igual ao `index.html`, para os links diretos (como o convite para ela) não darem erro. Pode passar para a Vercel mais tarde sem mexer na app. |
@@ -63,26 +63,32 @@ Tudo aqui é `[proposta]` até dizermos que sim. O objetivo é a solução mais 
 
 ## 4. Dados (entidades principais)
 
-- **Perfis (2):** nome, língua, fuso horário.
-- **Sítios:** nome, país, coordenadas, link, nota "porque quero ir", duração mínima e estado (wishlist ou visitado).
-- **Desejos:** o desejo de 1 a 3 estrelas de cada pessoa por sítio.
-- **Viagens:** sítio, estado (sorteada, preparada, em curso, fechada ou passada), datas, teto, capa, "voltávamos?" e se foi feita pelos dois.
+- **Perfis (2):** nome, língua e tema (já feito). O perfil cria-se sozinho quando se cria a conta; o nome vem dos metadados da conta (nas contas locais) ou fica vazio (nas contas criadas no painel do Supabase), e cada pessoa escreve o seu em **Nós**. Falta o fuso horário.
+- **Sítios** (`places`, já feito): nome, região, país, coordenadas e identificador do OpenStreetMap (evita sítios repetidos), mais, para a wishlist, o link, a nota "porque quero ir" e a duração mínima (um dia, fim-de-semana ou vários dias). Um sítio visitado é simplesmente um sítio com viagens; só se apaga quando já não tem nenhuma nem desejos (a base de dados recusa apagá-lo se tiver, e a app tenta apagar o que ficou órfão).
+- **Desejos** (`place_wishes`, já feito): o desejo de 1 a 3 estrelas de cada pessoa por sítio. Um sítio está na wishlist ("Por ir") quando tem pelo menos um desejo; tirar as suas estrelas só o tira da lista quando a outra pessoa também não lhe deu estrelas. O peso no sorteio é a soma das estrelas.
+- **Sugestões** (já feito, sem base de dados): uma lista curada à mão no código (`core/suggestions.ts`, cerca de 55 sítios à volta do Porto e de Madrid), sem custos nem pedidos a serviços de fora. Ficam de fora as que já foram visitadas ou já estão na wishlist (mesmo nome ou a menos de 6 km). Entram na rotação do sorteio com uma fatia própria (25% por defeito, independente do tamanho da wishlist) e um interruptor que se guarda no dispositivo (`contigo.surprises`). A lógica pura (`buildPool`, `pick`) está em `core/wishlist.logic.ts`, com testes; falta só ligá-la ao ecrã do sorteio.
+- **Sorteio** (já feito): o resultado guarda-se como uma viagem com estado `drawn` (as datas são as da janela escolhida, ou, sem janela, o mês seguinte só com o mês) e `draw_entry`, que diz de onde saiu (`wish:<id do sítio>` ou `suggestion:<id>`). Se saiu uma sugestão, o sítio cria-se nessa altura. Só pode haver uma viagem sorteada por acontecer: enquanto existir, o sorteio mostra-a em vez de sortear. Os vetos (`draw_vetoes`) têm a chave (pessoa, mês), por isso a base de dados garante um por pessoa e por mês, e não se desfazem nem se mudam. Usar o veto apaga a viagem sorteada e tira a opção do sorteio até ao mês seguinte (uma sugestão vetada que entretanto foi para a wishlist também fica de fora, e vice-versa). Só as viagens `past` e `closed` contam como memórias, sítios visitados e pins de "já fomos". A cerimónia (a roleta de nomes e os confetes) respeita "reduzir movimento". Ainda não entra o teto de gastos, porque ainda não há custos estimados por sítio.
+- **Viagens** (`trips`, já feito para as viagens passadas): sítio, estado (passada, sorteada, preparada, em curso ou fechada), datas (com a precisão: só o mês ou o dia), "fomos os dois?", "voltávamos?" (sim, talvez, não), custo total e nota. A capa vem das fotos (a primeira); falta juntar o teto com o ciclo mensal.
+- **Pesquisa de sítios:** Photon (OpenStreetMap), gratuita e sem chave, chamada diretamente do browser. Filtra paragens e ruas, deixa sempre guardar só o nome, e a app mostra a atribuição "© OpenStreetMap contributors". Tem de poder fazer-se pesquisa mesmo se o serviço estiver em baixo.
 - **Dias da viagem:** diário, com a nota e o melhor momento.
-- **Fotos:** viagem ou dia, ficheiro e legenda.
+- **Fotos** (`trip_photos`, já feito para as viagens): viagem, autor, os dois caminhos no bucket (a foto e a miniatura), as medidas e uma legenda (até 200 caracteres). Só a legenda se muda depois de enviada (um gatilho recusa o resto) e qualquer um dos dois pode mudá-la ou apagar a foto. Apagar a viagem apaga os registos; os ficheiros apaga-os a app antes, porque a base de dados não chega ao bucket. Falta ligar as fotos a um dia da viagem (o diário) e a fila para enviar sem rede.
 - **Despesas:** viagem, categoria, valor, data e nota.
 - **Checklist:** o que queremos ver, fazer e comer, e se já foi feito.
-- **Tipos de turno:** a biblioteca de cada pessoa (nome, início, fim, cor).
-- **Disponibilidade:** pessoa, dia e tipo de turno ou estado (folga, férias, indisponível).
+- **Tipos de turno** (`shift_types`, já feito): a biblioteca de cada pessoa (nome, hora de início e de fim opcionais, cor). Cada tipo é "não posso viajar" (`busy`, com cor manhã, tarde ou intermédio) ou "posso viajar" (`free`, sempre verde). Folga, férias e indisponível são só atalhos que preenchem o formulário.
+- **Disponibilidade** (`availability_days`, já feito): pessoa, dia (data local, sem fuso) e tipo de turno; um dia por pessoa. Apagar um tipo apaga as marcações que o usam (a app avisa quantas) e uma chave composta impede marcar um dia com o tipo de outra pessoa. Os dois veem tudo, cada um só mexe no seu.
+- **Janelas em comum** (já feito, em `core/availability.logic.ts`, com testes): blocos de dias seguidos em que os dois marcaram um tipo "posso viajar". Os dias por marcar não contam como livres. Um dia é "um dia", dois são "fim de semana" e três ou mais "vários dias"; `fitsWindow` diz se um sítio com duração mínima cabe numa janela, para o sorteio usar. A app carrega 62 dias para trás e 430 para a frente (em páginas de 1000 linhas) e só deixa marcar até 12 meses à frente.
 - **Definições:** dotação mensal por pessoa e moeda (euro).
 - **Sorteios:** mês, candidatos, resultado e vetos usados.
-- **Ideias:** texto, autor e estado.
+- **Ideias** (`ideas`, já feito): texto (1 a 500 caracteres), autor e estado (`open` por ver, `planned` a fazer, `done` feita). Os dois leem tudo e qualquer um muda o estado; o texto só o muda quem o escreveu (um gatilho na base de dados recusa o resto) e só o autor apaga. É para o que lhes ocorrer, seja para a app ou para as viagens: é o que ela usa na apresentação para deixar ideias.
 
 A **cebola** calcula-se a partir das dotações e dos gastos das viagens, em vez de se guardar um saldo. Assim nunca fica desalinhada.
 
 ## 5. Fotos
 
 - Guardam-se versões otimizadas. Os originais continuam no telemóvel.
-- Bucket privado, com links temporários para as mostrar.
+- Bucket privado (`trip-photos`, só JPEG ou WebP, até 5 MB por ficheiro), com links temporários para as mostrar. Ficheiros em `<viagem>/<foto>.jpg` e a miniatura em `<viagem>/<foto>_t.jpg`.
+- **Já feito:** a foto é aberta no telemóvel, rodada como foi tirada, reduzida a 1600 px no lado maior e comprimida em JPEG (qualidade de 0,82 a descer até ficar abaixo de 300 KB), com uma miniatura de 400 px (cerca de 40 KB). Um PNG com fundo transparente fica com fundo branco. Enviam-se duas de cada vez, e se algo falha a meio não fica lixo no bucket. Os links temporários duram 12 horas e renovam-se sozinhos. A capa de uma viagem é a primeira foto que lhe juntaram.
+- **Ainda por fazer:** a fila para enviar sem rede e a escolha manual da capa.
 - Com 300 KB por foto, 1 GB dá para cerca de 3000 fotos, o suficiente para vários anos a 12 viagens por ano.
 - Convém uma exportação periódica (backup), porque as fotos são as memórias.
 
@@ -132,9 +138,9 @@ Madrid está uma hora à frente de Portugal continental. Por isso:
 2. Mapa e sítios: pesquisa e pins.
 3. Viagens já feitas: formulário rápido.
 4. Wishlist, com o desejo de cada um.
-5. Disponibilidade: tipos de turno, marcar dias e janelas, janelas em comum.
-6. Sorteio com cerimónia.
-7. Convite para ela, lista de ideias, ícone e identidade.
+5. Disponibilidade: tipos de turno, marcar dias e janelas, janelas em comum. (feita; falta só o ecrã a duas colunas no computador e o deslize entre vários meses)
+6. Sorteio com cerimónia. (feito, sem o filtro por teto, que depende dos custos estimados)
+7. Convite para ela, lista de ideias, ícone e identidade. (a lista de ideias está feita; faltam o convite e a identidade final)
 
 **Fase 1 (a primeira viagem nova):** sorteio filtrado, viagem (offline, fotos, despesas, anel do orçamento), cebola e links de preços.
 

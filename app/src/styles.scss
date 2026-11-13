@@ -1,0 +1,543 @@
+/* Ionic: base e utilitários */
+@import '@ionic/angular/css/core.css';
+@import '@ionic/angular/css/normalize.css';
+@import '@ionic/angular/css/structure.css';
+@import '@ionic/angular/css/typography.css';
+@import '@ionic/angular/css/padding.css';
+@import '@ionic/angular/css/flex-utils.css';
+@import '@ionic/angular/css/display.css';
+@import '@ionic/angular/css/palettes/dark.class.css';
+
+/* Tokens da Contigo (ver DESIGN.md). O modo escuro liga-se com a classe .ion-palette-dark no <html>. */
+:root {
+  --ct-bg: #ffffff;
+  --ct-sf: #f5f2f6;
+  --ct-ln: #ece6ee;
+  --ct-tx: #17121b;
+  --ct-mu: #6c6472;
+  --ct-ac: #c2306f;
+  --ct-acs: #fce7f0;
+  --ct-act: #8e1f52;
+  --ct-btn: #c2306f;
+  --ct-ring: #dad3de;
+  --ct-nav: rgba(255, 255, 255, 0.88);
+  --ct-grad: linear-gradient(135deg, #c2306f 0%, #ee5a62 55%, #f7a55a 100%);
+  --ct-hero: linear-gradient(125deg, #5e1747 0%, #9e2462 50%, #d8455e 100%);
+  --ct-font-display: 'Fredoka', 'Inter', system-ui, sans-serif;
+
+  --ion-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 255, 255, 255;
+  --ion-text-color: #17121b;
+  --ion-text-color-rgb: 23, 18, 27;
+
+  --ion-color-primary: #c2306f;
+  --ion-color-primary-rgb: 194, 48, 111;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #ab2a62;
+  --ion-color-primary-tint: #c8457d;
+
+  --ion-toolbar-background: var(--ct-bg);
+  --ion-tab-bar-background: var(--ct-nav);
+  --ion-tab-bar-border-color: var(--ct-ln);
+  --ion-tab-bar-color: var(--ct-mu);
+  --ion-tab-bar-color-selected: var(--ct-tx);
+  --ion-item-background: transparent;
+}
+
+html.ion-palette-dark,
+html.ion-palette-dark.ios,
+html.ion-palette-dark.md {
+  --ct-bg: #0e0c11;
+  --ct-sf: #1a171e;
+  --ct-ln: #2b2631;
+  --ct-tx: #f6f2f8;
+  --ct-mu: #a89fae;
+  --ct-ac: #f2649f;
+  --ct-acs: #3a1428;
+  --ct-act: #ff9dc6;
+  --ct-ring: #3a3440;
+  --ct-nav: rgba(14, 12, 17, 0.86);
+
+  --ion-background-color: #0e0c11;
+  --ion-background-color-rgb: 14, 12, 17;
+  --ion-text-color: #f6f2f8;
+  --ion-text-color-rgb: 246, 242, 248;
+
+  --ion-color-primary: #c2306f;
+  --ion-color-primary-rgb: 194, 48, 111;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #ab2a62;
+  --ion-color-primary-tint: #c8457d;
+
+  --ion-toolbar-background: var(--ct-bg);
+  --ion-tab-bar-background: var(--ct-nav);
+  --ion-tab-bar-border-color: var(--ct-ln);
+  --ion-tab-bar-color: var(--ct-mu);
+  --ion-tab-bar-color-selected: var(--ct-tx);
+  --ion-item-background: transparent;
+}
+
+body {
+  background: var(--ct-bg);
+  color: var(--ct-tx);
+}
+
+/* Peças partilhadas */
+.ct-display {
+  font-family: var(--ct-font-display);
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.ct-wordmark {
+  font-family: var(--ct-font-display);
+  font-weight: 600;
+  font-size: 30px;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  color: var(--ct-tx);
+
+  span {
+    background: var(--ct-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.ct-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px 16px calc(32px + env(safe-area-inset-bottom));
+}
+
+.ct-icon-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 22px;
+  background: transparent;
+  color: var(--ct-tx);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 24px;
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+.ct-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 26px;
+  background: var(--ct-btn);
+  color: #ffffff;
+  font: 700 16px var(--ion-font-family);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 3px;
+  }
+
+  &.ct-btn--light {
+    background: #ffffff;
+    color: #9e2462;
+  }
+
+  &.ct-btn--ghost {
+    background: var(--ct-sf);
+    color: var(--ct-tx);
+  }
+}
+
+.ct-card {
+  border-radius: 22px;
+  background: var(--ct-sf);
+  padding: 16px;
+}
+
+.ct-muted {
+  color: var(--ct-mu);
+}
+
+.ct-page-title {
+  font-family: var(--ct-font-display);
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.3px;
+  margin: 8px 4px 16px;
+}
+
+.ct-empty {
+  text-align: center;
+  padding: 36px 20px;
+
+  ion-icon {
+    font-size: 40px;
+    color: var(--ct-ac);
+  }
+
+  h2 {
+    font-family: var(--ct-font-display);
+    font-weight: 600;
+    font-size: 20px;
+    margin: 10px 0 6px;
+  }
+
+  p {
+    color: var(--ct-mu);
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 auto 18px;
+    max-width: 340px;
+  }
+}
+
+/* Movimento. Tudo usa estes tokens e respeita "reduzir movimento" (ver o fim do ficheiro). */
+:root {
+  --ct-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ct-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ct-dur-fast: 150ms;
+  --ct-dur: 320ms;
+  --ct-dur-slow: 560ms;
+}
+
+@keyframes ct-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ct-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ct-spin-in {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ct-float {
+  0%,
+  100% {
+    transform: rotate(14deg) translateY(0);
+  }
+  50% {
+    transform: rotate(8deg) translateY(-6px);
+  }
+}
+
+@keyframes ct-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(194, 48, 111, 0.35);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 12px rgba(194, 48, 111, 0);
+  }
+}
+
+@keyframes ct-shake {
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes ct-bounce {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.25) translateY(-3px);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Entrada com atraso em escada: <div class="ct-rise" style="--i: 2">. Repete-se de cada vez que o ecrã volta a aparecer. */
+.ct-rise {
+  animation: ct-rise var(--ct-dur-slow) var(--ct-ease) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+.ct-pop {
+  animation: ct-pop var(--ct-dur-slow) var(--ct-ease-spring) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* Feedback de toque nos botões */
+.ct-btn,
+.ct-icon-btn {
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--ct-dur-fast) var(--ct-ease),
+    opacity var(--ct-dur-fast),
+    background-color var(--ct-dur-fast);
+
+  &:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+}
+
+@media (hover: hover) {
+  .ct-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+}
+
+/* Troca suave entre modo claro e escuro (a classe é posta e tirada pelo ThemeService). */
+html.ct-theme-fade,
+html.ct-theme-fade *,
+html.ct-theme-fade *::before,
+html.ct-theme-fade *::after {
+  transition:
+    background-color 350ms var(--ct-ease),
+    color 350ms var(--ct-ease),
+    border-color 350ms var(--ct-ease),
+    fill 350ms var(--ct-ease),
+    stroke 350ms var(--ct-ease) !important;
+}
+
+/* Quem pede menos movimento ao sistema não vê animações nem transições. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Pins do mapa. São criados à mão (fora do Angular), por isso os estilos são globais. */
+@keyframes ct-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-22px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(2px) scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ct-pin {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  color: #ffffff;
+  font-family: var(--ct-font-display);
+  font-weight: 600;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32);
+  animation: ct-drop 520ms var(--ct-ease-spring) both;
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--ct-ac);
+    outline-offset: 3px;
+  }
+}
+
+// Sítio por ir: só o contorno, mais pequeno, para se distinguir dos sítios onde já fomos.
+.ct-pin--wish {
+  width: 40px;
+  height: 40px;
+  font-size: 17px;
+  border: 3px dashed var(--pin-color, var(--ct-ac));
+  background: var(--ct-bg);
+  color: var(--pin-color, var(--ct-ac));
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+.ct-pin__count {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: 2px solid #ffffff;
+  background: #17121b;
+  color: #ffffff;
+  font: 700 11px/16px var(--ion-font-family);
+  text-align: center;
+}
+
+.ct-pin__label,
+.ct-home-pin__label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 5px;
+  padding: 2px 9px;
+  border-radius: 10px;
+  background: var(--ct-bg);
+  color: var(--ct-tx);
+  font: 700 12px/1.4 var(--ion-font-family);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+// Sem `position`: o MapLibre põe `absolute` nos marcadores. Um `relative` aqui anulava-o e os dois marcadores
+// empilhavam-se em fila, com o de Madrid 28 px abaixo do sítio certo.
+.ct-home-pin {
+  width: 28px;
+  height: 28px;
+}
+
+.ct-home-pin__dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-sizing: border-box;
+  background: #3fa864;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
+}
+
+.maplibregl-ctrl-attribution {
+  font-size: 11px;
+}
+
+/* Ecrãs que sobem por cima (formulários e detalhes). Em telemóvel ocupam o ecrã; no computador ficam centrados. */
+ion-modal.ct-modal {
+  --background: var(--ct-bg);
+  --border-radius: 0;
+}
+
+@media (min-width: 768px) {
+  ion-modal.ct-modal {
+    --width: 520px;
+    --height: min(780px, 92vh);
+    --border-radius: 28px;
+  }
+}
+
+.ct-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Turnos (DESIGN.md §2): o fundo e o texto de cada tom. Usam-se com .tone-morning, .tone-afternoon, .tone-middle e .tone-free. */
+:root {
+  --tone-morning-bg: #fff0da;
+  --tone-morning-tx: #8a4a00;
+  --tone-afternoon-bg: #eeeafe;
+  --tone-afternoon-tx: #4936a6;
+  --tone-middle-bg: #e3effc;
+  --tone-middle-tx: #1b5ba6;
+  --tone-free-bg: #e2f5e9;
+  --tone-free-tx: #17683c;
+}
+
+html.ion-palette-dark,
+html.ion-palette-dark.ios,
+html.ion-palette-dark.md {
+  --tone-morning-bg: #33230e;
+  --tone-morning-tx: #ffc47e;
+  --tone-afternoon-bg: #241e45;
+  --tone-afternoon-tx: #bcb1ff;
+  --tone-middle-bg: #0f2a45;
+  --tone-middle-tx: #93c5ff;
+  --tone-free-bg: #12301f;
+  --tone-free-tx: #86e3ac;
+}
+
+.tone-morning {
+  --tone-bg: var(--tone-morning-bg);
+  --tone-tx: var(--tone-morning-tx);
+}
+
+.tone-afternoon {
+  --tone-bg: var(--tone-afternoon-bg);
+  --tone-tx: var(--tone-afternoon-tx);
+}
+
+.tone-middle {
+  --tone-bg: var(--tone-middle-bg);
+  --tone-tx: var(--tone-middle-tx);
+}
+
+.tone-free {
+  --tone-bg: var(--tone-free-bg);
+  --tone-tx: var(--tone-free-tx);
+}

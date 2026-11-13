@@ -1,0 +1,58 @@
+<ion-split-pane contentId="main" when="md">
+  <ion-menu contentId="main" class="side-menu">
+    <ion-content>
+      <div class="side">
+        <div class="brand">
+          <div class="ct-wordmark">Conti<span>·GO</span></div>
+          <div class="tagline">{{ 'app.tagline' | transloco }}</div>
+        </div>
+
+        <nav class="links" [attr.aria-label]="'nav.label' | transloco">
+          @for (item of sideNav; track item.tab) {
+            <a class="link" [routerLink]="['/', item.tab]" routerLinkActive="active" ariaCurrentWhenActive="page">
+              <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+              <span>{{ item.label | transloco }}</span>
+            </a>
+          }
+        </nav>
+
+        <button class="ct-btn add" type="button" (click)="openAdd()">
+          <ion-icon name="add" aria-hidden="true"></ion-icon>
+          {{ 'nav.add' | transloco }}
+        </button>
+
+        <button class="theme" type="button" (click)="toggleTheme()" [attr.aria-pressed]="theme.isDark()">
+          <ion-icon name="moon-outline" aria-hidden="true"></ion-icon>
+          <span class="theme-label">{{ 'theme.darkMode' | transloco }}</span>
+          <span class="switch" [class.on]="theme.isDark()" aria-hidden="true"><span></span></span>
+        </button>
+      </div>
+    </ion-content>
+  </ion-menu>
+
+  <div class="ion-page" id="main">
+    <ion-tabs>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button tab="home">
+          <ion-icon name="home-outline" aria-hidden="true"></ion-icon>
+          <ion-label>{{ 'nav.home' | transloco }}</ion-label>
+        </ion-tab-button>
+        <ion-tab-button tab="map">
+          <ion-icon name="map-outline" aria-hidden="true"></ion-icon>
+          <ion-label>{{ 'nav.map' | transloco }}</ion-label>
+        </ion-tab-button>
+        <button class="add-button" type="button" (click)="openAdd()" [attr.aria-label]="'nav.add' | transloco">
+          <ion-icon name="add" aria-hidden="true"></ion-icon>
+        </button>
+        <ion-tab-button tab="availability">
+          <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+          <ion-label>{{ 'nav.dates' | transloco }}</ion-label>
+        </ion-tab-button>
+        <ion-tab-button tab="us">
+          <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
+          <ion-label>{{ 'nav.us' | transloco }}</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </div>
+</ion-split-pane>

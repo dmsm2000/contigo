@@ -1,0 +1,118 @@
+<ion-content>
+  <div class="sheet">
+    <header class="head">
+      <h1 class="ct-display title">{{ 'trip.form.title' | transloco }}</h1>
+      <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    <form (ngSubmit)="save()" novalidate>
+      <section class="block ct-rise" style="--i: 0">
+        <app-place-picker
+          inputId="trip-search"
+          labelKey="trip.form.where"
+          [autofocus]="true"
+          [place]="place()"
+          (placeChange)="setPlace($event)"
+        />
+      </section>
+
+      <section class="block ct-rise" style="--i: 1">
+        <span class="label" id="when-label">{{ 'trip.form.when' | transloco }}</span>
+        <div class="row" role="group" aria-labelledby="when-label">
+          <label class="field">
+            <span class="ct-visually-hidden">{{ 'trip.form.month' | transloco }}</span>
+            <select name="month" [value]="month()" (change)="month.set(toNumber($event))">
+              @for (option of months(); track option.value) {
+                <option [value]="option.value" [selected]="option.value === month()">{{ option.label }}</option>
+              }
+            </select>
+          </label>
+          <label class="field">
+            <span class="ct-visually-hidden">{{ 'trip.form.year' | transloco }}</span>
+            <select name="year" [value]="year()" (change)="year.set(toNumber($event))">
+              @for (option of years; track option) {
+                <option [value]="option" [selected]="option === year()">{{ option }}</option>
+              }
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="block ct-rise" style="--i: 2">
+        <button
+          class="switch-row"
+          type="button"
+          role="switch"
+          [attr.aria-checked]="withPartner()"
+          (click)="withPartner.set(!withPartner())"
+        >
+          <span class="switch-text">
+            <strong>{{ 'trip.form.together' | transloco }}</strong>
+            <small>{{ 'trip.form.togetherHint' | transloco }}</small>
+          </span>
+          <span class="switch" [class.on]="withPartner()" aria-hidden="true"><span></span></span>
+        </button>
+      </section>
+
+      <section class="block ct-rise" style="--i: 3">
+        <span class="label" id="return-label">
+          {{ 'trip.form.wouldReturn' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
+        </span>
+        <div class="pills" role="group" aria-labelledby="return-label">
+          @for (option of returnOptions; track option) {
+            <button
+              class="pill"
+              type="button"
+              [class.on]="wouldReturn() === option"
+              [attr.aria-pressed]="wouldReturn() === option"
+              (click)="toggleReturn(option)"
+            >
+              {{ 'trip.form.' + option | transloco }}
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="block ct-rise" style="--i: 4">
+        <label class="label" for="trip-cost">
+          {{ 'trip.form.cost' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
+        </label>
+        <input
+          id="trip-cost"
+          name="cost"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          placeholder="0"
+          [(ngModel)]="cost"
+          (ngModelChange)="error.set(null)"
+        />
+        <p class="hint">{{ 'trip.form.costHint' | transloco }}</p>
+      </section>
+
+      <section class="block ct-rise" style="--i: 5">
+        <label class="label" for="trip-note">
+          {{ 'trip.form.note' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
+        </label>
+        <textarea
+          id="trip-note"
+          name="note"
+          rows="3"
+          maxlength="500"
+          [placeholder]="'trip.form.notePlaceholder' | transloco"
+          [(ngModel)]="note"
+        ></textarea>
+      </section>
+
+      @if (error(); as key) {
+        <p class="error" role="alert">{{ key | transloco }}</p>
+      }
+
+      <button class="ct-btn save" type="submit" [disabled]="saving()">
+        {{ (saving() ? 'trip.form.saving' : 'trip.form.save') | transloco }}
+      </button>
+    </form>
+  </div>
+</ion-content>

@@ -1,0 +1,61 @@
+// Campos de formulário partilhados pelos ecrãs que sobem (viagem feita, sítio por ir) e pelo seletor de sítio.
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+
+  em {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--ct-mu);
+  }
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  height: 52px;
+  padding: 0 16px;
+  border-radius: 16px;
+  border: 1.5px solid var(--ct-ln);
+  background: var(--ct-sf);
+  color: var(--ct-tx);
+  font: 500 16px var(--ion-font-family);
+  outline: none;
+  transition: border-color var(--ct-dur-fast);
+
+  &::placeholder {
+    color: var(--ct-mu);
+  }
+
+  &:focus {
+    border-color: var(--ct-ac);
+  }
+}
+
+textarea {
+  height: auto;
+  min-height: 92px;
+  padding: 14px 16px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238d8592' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+
+.hint {
+  margin: 8px 4px 0;
+  font-size: 13px;
+  color: var(--ct-mu);
+}

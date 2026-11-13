@@ -49,14 +49,20 @@ Moderna, com as fotos em primeiro lugar, ao estilo do Instagram: histórias no t
 - **Telemóvel:** barra inferior com Início, Mapa, **+** (foto, despesa, sítio, ideia), Datas (a Disponibilidade) e Nós.
 - **Ecrãs imersivos sem barra:** o sorteio e o dia de viagem.
 - **Computador:** menu lateral, coluna principal e coluna lateral com o mapa e os sítios que cabem na janela.
+- **Rotas em inglês** `[confirmado]`: `/login`, `/home`, `/map`, `/wishlist`, `/availability`, `/ideas` e `/us`. A wishlist ("Por ir") não tem separador na barra inferior: abre-se a partir do Início ("Ver tudo"), do cartão do mapa e do menu **+**, e tem entrada própria no menu lateral do computador. Os textos que se veem continuam nas três línguas.
 
 ## 6. Padrões
 
 - **Histórias:** cada viagem é um círculo com aro; o aro em gradiente marca memórias novas.
 - **Cartão principal:** muda com a fase do mês (próxima janela e sortear, contagem decrescente, viagem em curso, viagem fechada).
-- **Folhas que sobem:** no mapa (sítios que cabem) e na nova despesa.
+- **Sítio por ir:** no mapa é o mesmo pin dos sítios visitados mas só com o contorno a tracejado e mais pequeno, para se distinguir à primeira vista; os filtros "Já fomos" e "Por ir" são botões no topo do mapa e tocar num pin por ir abre um cartão em baixo. Nas listas, as estrelas (1 a 3, em âmbar) ficam à direita; cada pessoa só mexe nas suas.
+- **Surpresas:** as sugestões da Conti·GO vivem no fim da página "Por ir", com um interruptor que explica a fatia do sorteio ("cerca de 1 em cada 4 vezes").
+- **Calendário da Disponibilidade:** um mês de cada vez, a começar na segunda-feira, com setas e deslize para mudar de mês. Cada dia tem a cor do tipo de turno de quem está a ver; o dia do outro aparece como um ponto no canto, e um aro cor-de-rosa marca os dias livres para os dois. Tocar num dia seleciona-o, tocar noutro estende a seleção; abre-se um painel colado ao fundo com os tipos (um toque aplica), "Novo tipo" e "Limpar marcação". As janelas em comum listam-se por baixo e a próxima aparece no cartão principal do Início.
+- **Ideias:** uma lista de cartões com filtros por estado (Todas, Por ver, A fazer, Feitas, cada um com a sua contagem). Cada cartão tem o texto, quem o escreveu e quando, e três botões de estado com as cores dos turnos (por ver âmbar, a fazer azul, feita verde); quem escreveu também tem os ícones de mudar e apagar. Abre-se a partir de **Nós** e do menu lateral, e o **+** abre logo o ecrã de escrever.
+- **Fotos:** no detalhe da viagem, uma grelha de miniaturas quadradas (3 colunas no telemóvel, 4 no computador) com um quadrado a tracejado para juntar mais; a primeira foto é a capa no topo do ecrã, na história e no cartão de memória do Início, em vez da letra do sítio. Tocar numa miniatura abre-a em ecrã inteiro sobre preto (deslizar ou usar as setas para passar de uma a outra, um contador, a legenda, que se muda com um toque, e o caixote do lixo). Juntar fotos mostra uma barra de progresso e uma linha por foto, com o motivo e "tentar outra vez" se alguma falhar. O **+** pede primeiro a viagem.
+- **Folhas que sobem:** no mapa (sítios que cabem), na nova despesa, na viagem já feita e no sítio por ir.
 - **Vidro:** fundos desfocados por cima das fotos, para o texto se ler.
-- **Confetes:** só no sorteio.
+- **Confetes:** só no sorteio. O sorteio é um ecrã que sobe e, ao sortear, fica todo com o degradé de marca: um dado a saltar, os nomes a passar cada vez mais devagar até pararem e a revelação com o aro branco, a capa do sítio e os confetes (44 peças). Depois mostra a origem ("Da vossa lista" ou "Surpresa"), as datas e a distância, com "Boa!", "Juntar à lista Por ir" (só nas surpresas) e "Usar o meu veto". Com "reduzir movimento" não há roleta nem confetes: o resultado aparece logo.
 
 ## 6b. Movimento `[confirmado]`
 
@@ -78,6 +84,8 @@ Mais animação, sem pesar na interface. Tudo usa os tokens e utilitários de `s
 Segue o sistema por defeito, com interruptor manual. As fotos e os ecrãs imersivos ficam iguais nos dois modos. `[confirmado]`
 
 ## 7b. Nome e ícone `[confirmado]`
+
+- **A cebola** é redonda e ligeiramente inclinada, com três traços de camadas só de um lado, sem raízes e com o pin verde no topo. Foi escolhida entre três alternativas para evitar a silhueta simétrica e a fenda vertical da primeira versão. Os ficheiros estão em `brand/` e, para a app, em `app/public/` (`favicon.svg` e `icons/`).
 
 - Em todo o lado onde o nome aparece (título do separador, manifesto da PWA, nome no ecrã inicial do telemóvel) escreve-se **Conti·GO**, com o GO em maiúsculas.
 - O ícone do separador é `favicon.svg`: a cebola maior sobre um tile creme, para se ler a 16 px. Tem PNG de reserva (16, 32 e 48 px) para o Safari e outros browsers que ignoram SVG, e `apple-touch-icon.png` para o iPhone.

@@ -1,0 +1,135 @@
+<ion-content>
+  <div class="ct-page">
+    <header class="top ct-rise" style="--i: 0">
+      <a class="ct-icon-btn back" routerLink="/home" [attr.aria-label]="'nav.home' | transloco">
+        <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
+      </a>
+      <h1 class="ct-page-title">{{ 'wish.title' | transloco }}</h1>
+      <button class="ct-icon-btn add" type="button" (click)="add()" [attr.aria-label]="'wish.add' | transloco">
+        <ion-icon name="add" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    @if (wishlist.sorted().length) {
+      <ul class="list">
+        @for (item of wishlist.sorted(); track item.place.id; let i = $index) {
+          <li class="wish ct-card ct-rise" [style.--i]="i + 1">
+            <div class="wish-head">
+              <span class="tile" [style.background]="tile(item.place.name)" aria-hidden="true">{{ initial(item.place.name) }}</span>
+              <div class="wish-title">
+                <h2>{{ item.place.name }}</h2>
+                @if (subtitle(item)) {
+                  <p class="where">{{ subtitle(item) }}</p>
+                }
+              </div>
+              <button class="ct-icon-btn remove" type="button" (click)="confirmRemove(item)" [attr.aria-label]="'wish.remove' | transloco">
+                <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+              </button>
+            </div>
+
+            @if (item.minStay || distance(item)) {
+              <ul class="chips">
+                @if (item.minStay) {
+                  <li class="chip">{{ 'wish.minStay.' + item.minStay | transloco }}</li>
+                }
+                @if (distance(item); as far) {
+                  <li class="chip chip--muted">{{ 'wish.distance' | transloco: { km: far.km, origin: far.origin } }}</li>
+                }
+              </ul>
+            }
+
+            @if (item.note) {
+              <p class="note">{{ item.note }}</p>
+            }
+
+            @if (item.link) {
+              <a class="link" [href]="item.link" target="_blank" rel="noopener noreferrer">
+                <ion-icon name="link-outline" aria-hidden="true"></ion-icon>
+                {{ 'wish.openLink' | transloco }}
+              </a>
+            }
+
+            <div class="votes">
+              <div class="vote">
+                <span class="vote-who">{{ 'wish.you' | transloco }}</span>
+                <app-stars [value]="wishlist.myStars(item)" [editable]="true" (picked)="setStars(item, $event)" />
+              </div>
+              @if (profile.partner(); as other) {
+                <div class="vote">
+                  <span class="vote-who">{{ other.name || ('wish.theOther' | transloco) }}</span>
+                  @if (partnerStars(item)) {
+                    <app-stars [value]="partnerStars(item)" />
+                  } @else {
+                    <span class="vote-none">{{ 'wish.notYet' | transloco }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    } @else if (wishlist.loaded()) {
+      <div class="ct-card ct-empty ct-rise" style="--i: 1">
+        <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+        <h2>{{ 'wish.emptyTitle' | transloco }}</h2>
+        <p>{{ 'wish.emptyText' | transloco }}</p>
+        <button class="ct-btn" type="button" (click)="add()">{{ 'wish.emptyCta' | transloco }}</button>
+      </div>
+    } @else {
+      <div class="wish skeleton" aria-hidden="true"></div>
+      <div class="wish skeleton" aria-hidden="true"></div>
+    }
+
+    <section class="surprises ct-rise" style="--i: 2">
+      <h2 class="ct-display section-title">
+        <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
+        {{ 'wish.surprises.title' | transloco }}
+      </h2>
+
+      <button
+        class="switch-row"
+        type="button"
+        role="switch"
+        [attr.aria-checked]="wishlist.includeSuggestions()"
+        (click)="setSwitch()"
+      >
+        <span class="switch-text">
+          <strong>{{ 'wish.surprises.switchTitle' | transloco }}</strong>
+          <small>{{ (wishlist.includeSuggestions() ? 'wish.surprises.on' : 'wish.surprises.off') | transloco }}</small>
+        </span>
+        <span class="switch" [class.on]="wishlist.includeSuggestions()" aria-hidden="true"><span></span></span>
+      </button>
+
+      @if (suggestions().length) {
+        <p class="hint">
+          {{ (wishlist.suggestions().length === 1 ? 'wish.surprises.count_one' : 'wish.surprises.count_other') | transloco: { count: wishlist.suggestions().length } }}
+        </p>
+        <ul class="suggestion-list">
+          @for (suggestion of suggestions(); track suggestion.id; let i = $index) {
+            <li class="ct-rise" [style.--i]="i">
+              <button class="suggestion" type="button" (click)="addSuggestion(suggestion)">
+                <span class="tile tile--small" [style.background]="tile(suggestion.name)" aria-hidden="true">{{ initial(suggestion.name) }}</span>
+                <span class="suggestion-text">
+                  <strong>{{ suggestion.name }}</strong>
+                  <small>
+                    {{ 'wish.minStay.' + suggestion.minStay | transloco }} ·
+                    {{ 'wish.distance' | transloco: { km: suggestionDistance(suggestion).km, origin: suggestionDistance(suggestion).origin } }}
+                  </small>
+                </span>
+                <span class="suggestion-add" aria-hidden="true"><ion-icon name="add"></ion-icon></span>
+                <span class="ct-visually-hidden">{{ 'wish.surprises.add' | transloco }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+        @if (hiddenCount() > 0) {
+          <button class="ct-btn ct-btn--ghost more" type="button" (click)="showAll.set(!showAll())">
+            {{ (showAll() ? 'wish.surprises.less' : 'wish.surprises.more') | transloco: { count: hiddenCount() } }}
+          </button>
+        }
+      } @else {
+        <p class="hint">{{ 'wish.surprises.none' | transloco }}</p>
+      }
+    </section>
+  </div>
+</ion-content>

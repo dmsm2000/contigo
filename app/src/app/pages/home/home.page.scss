@@ -1,0 +1,396 @@
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0 4px 4px;
+}
+
+// Com o menu lateral (768 px ou mais) o logótipo e o tema já lá estão.
+@media (min-width: 768px) {
+  .top {
+    display: none;
+  }
+
+  .stories {
+    margin-top: 16px;
+  }
+}
+
+.stories {
+  display: flex;
+  gap: 14px;
+  list-style: none;
+  margin: 8px 0 14px;
+  padding: 0 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.story {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 76px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--ct-tx);
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+    border-radius: 12px;
+  }
+}
+
+.ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  padding: 3px;
+  box-sizing: border-box;
+}
+
+.ring {
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+}
+
+.story:active .ring {
+  transform: scale(0.92);
+}
+
+.ring--grad {
+  background: var(--ct-grad);
+  // Convida a tocar: um halo que se expande devagar.
+  animation: ct-pulse 2.8s ease-out infinite;
+}
+
+.spin-in {
+  animation: ct-spin-in var(--ct-dur-slow) var(--ct-ease-spring) both;
+}
+
+.ring--dashed {
+  border: 2px dashed var(--ct-ring);
+  padding: 2px;
+}
+
+.inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--ct-bg);
+  box-sizing: border-box;
+  background: var(--ct-sf);
+  color: var(--ct-mu);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.inner--draw {
+  background: var(--ct-acs);
+  color: var(--ct-ac);
+}
+
+.story-label {
+  max-width: 76px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+// A viagem mais recente tem o aro em gradiente, como uma história por ver.
+.ring--new {
+  background: var(--ct-grad);
+}
+
+.ring:not(.ring--grad):not(.ring--dashed):not(.ring--new) {
+  background: var(--ct-ring);
+}
+
+.inner--tile {
+  color: #ffffff;
+  font-family: var(--ct-font-display);
+  font-weight: 600;
+  font-size: 26px;
+  border-color: var(--ct-bg);
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: 22px 20px 20px;
+  background: var(--ct-hero);
+  color: #ffffff;
+}
+
+.dice {
+  position: absolute;
+  right: 22px;
+  top: 24px;
+  width: 76px;
+  height: 76px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.16);
+  transform: rotate(14deg);
+  animation: ct-float 6s ease-in-out infinite;
+
+  i {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #ffffff;
+
+    &:nth-child(1) {
+      left: 18px;
+      top: 18px;
+    }
+
+    &:nth-child(2) {
+      left: 33px;
+      top: 33px;
+    }
+
+    &:nth-child(3) {
+      right: 18px;
+      bottom: 18px;
+    }
+  }
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffd9e8;
+}
+
+.hero-title {
+  margin: 4px 0 0;
+  font-size: 30px;
+  line-height: 1.1;
+  max-width: 70%;
+}
+
+.hero-title--window {
+  font-size: 26px;
+}
+
+.hero-text {
+  margin: 8px 0 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #ffe9f1;
+  max-width: 85%;
+}
+
+.stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.stat {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ct-mu);
+}
+
+.stat-value {
+  margin: 2px 0 0;
+  font-size: 26px;
+}
+
+.stat-text {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ct-mu);
+}
+
+.bars {
+  display: flex;
+  gap: 3px;
+  margin-top: 10px;
+
+  span {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--ct-ring);
+    transform-origin: left center;
+    transition: background-color var(--ct-dur) var(--ct-ease);
+
+    &.on {
+      background: var(--ct-ac);
+    }
+
+    // Os doze meses acendem-se um a seguir ao outro.
+    animation: ct-bar var(--ct-dur-slow) var(--ct-ease) both;
+    animation-delay: calc(450ms + var(--bar, 0) * 35ms);
+  }
+}
+
+@keyframes ct-bar {
+  from {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.memories,
+.wishes {
+  margin-top: 24px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+
+  .section-title {
+    flex: 1;
+  }
+}
+
+.see-all {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  color: var(--ct-ac);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.memory-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.memory {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px 12px 12px;
+  border: none;
+  border-radius: 22px;
+  background: var(--ct-sf);
+  color: var(--ct-tx);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+
+  > ion-icon {
+    flex: none;
+    font-size: 20px;
+    color: var(--ct-mu);
+  }
+}
+
+.tile {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  color: #ffffff;
+  font-family: var(--ct-font-display);
+  font-weight: 600;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.memory-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.memory-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.memory-meta {
+  font-size: 13px;
+  color: var(--ct-mu);
+}
+
+.memory-note {
+  margin-top: 2px;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.add-more {
+  width: 100%;
+  margin-top: 12px;
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+.skeleton {
+  height: 80px;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, var(--ct-sf) 25%, var(--ct-ln) 50%, var(--ct-sf) 75%);
+  background-size: 200% 100%;
+  animation: ct-shimmer 1.4s linear infinite;
+}
+
+@keyframes ct-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.section-title {
+  font-size: 21px;
+  margin: 0 4px 10px;
+}

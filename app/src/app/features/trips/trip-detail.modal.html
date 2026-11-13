@@ -1,0 +1,102 @@
+<ion-content>
+  @if (trip; as t) {
+    <div class="hero" [style.background]="heroBackground(t)">
+      <button class="ct-icon-btn close" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+      @if (!hasCover(t)) {
+        <span class="initial ct-pop" aria-hidden="true">{{ labels.initial(t.place) }}</span>
+      }
+    </div>
+
+    <div class="body">
+      <h1 class="ct-display title ct-rise" style="--i: 0">{{ t.place.name }}</h1>
+      @if (labels.where(t.place)) {
+        <p class="where ct-rise" style="--i: 1">{{ labels.where(t.place) }}</p>
+      }
+      <p class="when ct-rise" style="--i: 2">{{ labels.date(t) }}</p>
+
+      @if (isDrawn(t)) {
+        <ul class="chips ct-rise" style="--i: 3">
+          <li class="chip chip--accent">{{ 'trip.detail.drawn' | transloco }}</li>
+          @if (drawSource(t); as source) {
+            <li class="chip">{{ (source === 'wishlist' ? 'draw.fromWishlist' : 'draw.surprise') | transloco }}</li>
+          }
+        </ul>
+      } @else {
+        <ul class="chips ct-rise" style="--i: 3">
+          @let who = labels.who(t);
+          <li class="chip">{{ who.key | transloco: who.params }}</li>
+          @if (labels.wouldReturn(t); as back) {
+            <li class="chip chip--accent">{{ back.key | transloco }}</li>
+          }
+          @if (labels.cost(t); as spent) {
+            <li class="chip">{{ spent.key | transloco: spent.params }}</li>
+          }
+        </ul>
+      }
+
+      @if (t.note) {
+        <section class="note ct-rise" style="--i: 4">
+          <h2>{{ 'trip.detail.noteLabel' | transloco }}</h2>
+          <p>{{ t.note }}</p>
+        </section>
+      }
+
+      @if (!isDrawn(t)) {
+        <section class="gallery ct-rise" style="--i: 5">
+          <h2>
+            {{ 'photos.title' | transloco }}
+            @if (gallery().length) {
+              <span class="gallery-count">{{ gallery().length }}</span>
+            }
+          </h2>
+          <ul class="grid">
+            @for (photo of gallery(); track photo.id; let i = $index) {
+              <li>
+                <button class="thumb" type="button" (click)="openPhoto(i)" [attr.aria-label]="('photos.open' | transloco) + ' ' + (i + 1)">
+                  @if (photos.thumbUrl(photo); as url) {
+                    <img [src]="url" [alt]="photo.caption ?? ''" loading="lazy" draggable="false" />
+                  } @else {
+                    <span class="thumb-wait" aria-hidden="true"></span>
+                  }
+                </button>
+              </li>
+            }
+            <li>
+              <button class="thumb thumb--add" type="button" (click)="addPhotos()" [attr.aria-label]="'photos.addTitle' | transloco">
+                <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                @if (!gallery().length) {
+                  <span>{{ 'photos.addFirst' | transloco }}</span>
+                }
+              </button>
+            </li>
+          </ul>
+        </section>
+      }
+
+      @if (isDrawn(t)) {
+        <section class="veto ct-rise" style="--i: 5">
+          <p>{{ 'trip.detail.vetoHint' | transloco }}</p>
+          @if (draws.myVetoUsed()) {
+            <p class="veto-used">{{ 'draw.vetoUsed' | transloco }}</p>
+          } @else {
+            <button class="ct-btn ct-btn--ghost" type="button" [disabled]="deleting()" (click)="confirmVeto(t)">
+              {{ 'draw.vetoUse' | transloco }}
+            </button>
+          }
+        </section>
+      } @else {
+        <button class="ct-btn ct-btn--ghost danger ct-rise" style="--i: 5" type="button" [disabled]="deleting()" (click)="confirmDelete(t)">
+          <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+          {{ 'trip.detail.delete' | transloco }}
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="body gone">
+      <p>{{ 'trip.detail.notFound' | transloco }}</p>
+      <button class="ct-btn" type="button" (click)="close()">{{ 'common.close' | transloco }}</button>
+    </div>
+  }
+</ion-content>

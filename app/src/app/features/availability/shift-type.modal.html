@@ -1,0 +1,108 @@
+<ion-content>
+  <div class="sheet">
+    <header class="head">
+      <h1 class="ct-display title">{{ (type ? 'shift.form.editTitle' : 'shift.form.title') | transloco }}</h1>
+      <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    <form (ngSubmit)="save()" novalidate>
+      @if (!type) {
+        <section class="block ct-rise" style="--i: 0">
+          <span class="label" id="preset-label">{{ 'shift.form.quick' | transloco }}</span>
+          <div class="chips" role="group" aria-labelledby="preset-label">
+            @for (preset of presets; track preset.key) {
+              <button class="chip" type="button" (click)="usePreset(preset)">
+                {{ 'shift.presets.' + preset.key | transloco }}
+              </button>
+            }
+          </div>
+        </section>
+      }
+
+      <section class="block ct-rise" style="--i: 1">
+        <label class="label" for="shift-name">{{ 'shift.form.name' | transloco }}</label>
+        <input
+          id="shift-name"
+          name="name"
+          type="text"
+          maxlength="40"
+          autocomplete="off"
+          [placeholder]="'shift.form.namePlaceholder' | transloco"
+          [(ngModel)]="name"
+          (ngModelChange)="error.set(null)"
+        />
+      </section>
+
+      <section class="block ct-rise" style="--i: 2">
+        <span class="label" id="kind-label">{{ 'shift.form.kind' | transloco }}</span>
+        <div class="pills" role="group" aria-labelledby="kind-label">
+          @for (option of kinds; track option) {
+            <button
+              class="pill"
+              type="button"
+              [class.on]="kind() === option"
+              [attr.aria-pressed]="kind() === option"
+              (click)="kind.set(option)"
+            >
+              {{ 'shift.kind.' + option | transloco }}
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="block ct-rise" style="--i: 3">
+        <span class="label" id="hours-label">
+          {{ 'shift.form.hours' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
+        </span>
+        <div class="hours" role="group" aria-labelledby="hours-label">
+          <label class="hour">
+            <span class="hour-label">{{ 'shift.form.from' | transloco }}</span>
+            <input name="startsAt" type="time" [(ngModel)]="startsAt" (ngModelChange)="error.set(null)" />
+          </label>
+          <label class="hour">
+            <span class="hour-label">{{ 'shift.form.to' | transloco }}</span>
+            <input name="endsAt" type="time" [(ngModel)]="endsAt" (ngModelChange)="error.set(null)" />
+          </label>
+        </div>
+        <p class="hint">{{ 'shift.form.hoursHint' | transloco }}</p>
+      </section>
+
+      @if (kind() === 'busy') {
+        <section class="block ct-rise" style="--i: 4">
+          <span class="label" id="tone-label">{{ 'shift.form.color' | transloco }}</span>
+          <div class="pills" role="group" aria-labelledby="tone-label">
+            @for (option of tones; track option) {
+              <button
+                class="pill swatch"
+                type="button"
+                [class]="'pill swatch tone-' + option"
+                [class.on]="tone() === option"
+                [attr.aria-pressed]="tone() === option"
+                (click)="tone.set(option)"
+              >
+                {{ 'shift.tone.' + option | transloco }}
+              </button>
+            }
+          </div>
+        </section>
+      }
+
+      @if (error(); as key) {
+        <p class="error" role="alert">{{ key | transloco }}</p>
+      }
+
+      <button class="ct-btn save" type="submit" [disabled]="saving()">
+        {{ (saving() ? 'trip.form.saving' : 'shift.form.save') | transloco }}
+      </button>
+
+      @if (type) {
+        <button class="ct-btn ct-btn--ghost danger" type="button" (click)="confirmDelete()">
+          <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+          {{ 'shift.delete' | transloco }}
+        </button>
+      }
+    </form>
+  </div>
+</ion-content>

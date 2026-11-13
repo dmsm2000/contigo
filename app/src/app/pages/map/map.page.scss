@@ -1,0 +1,234 @@
+ion-content {
+  --background: var(--ct-bg);
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+}
+
+.chips {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.chip {
+  border: none;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 20px;
+  background: var(--ct-bg);
+  color: var(--ct-tx);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+
+  ion-icon {
+    color: var(--ct-ac);
+    font-size: 18px;
+  }
+}
+
+.chip--muted {
+  color: var(--ct-mu);
+  font-weight: 600;
+}
+
+// Os filtros são botões: o contentor deixa passar os toques, mas eles não.
+.chip--toggle {
+  pointer-events: auto;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    opacity var(--ct-dur-fast),
+    transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+
+  // Desligado: fica a pista de que se pode voltar a ligar, sem a cor.
+  &.off {
+    opacity: 0.6;
+    color: var(--ct-mu);
+
+    ion-icon {
+      color: var(--ct-mu);
+    }
+  }
+}
+
+.fabs {
+  position: absolute;
+  right: 12px;
+  bottom: 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fab {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 24px;
+  background: var(--ct-bg);
+  color: var(--ct-tx);
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+.fab--primary {
+  background: var(--ct-btn);
+  color: #ffffff;
+}
+
+.empty {
+  position: absolute;
+  left: 12px;
+  right: 72px;
+  bottom: 28px;
+  max-width: 380px;
+  padding: 18px;
+  border-radius: 24px;
+  background: var(--ct-bg);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+
+  h2 {
+    margin: 0 0 4px;
+    font-size: 19px;
+  }
+
+  p {
+    margin: 0 0 14px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ct-mu);
+  }
+
+  .ct-btn {
+    height: 46px;
+    width: 100%;
+  }
+}
+
+.unavailable {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--ct-sf);
+}
+
+.empty .ct-btn + .ct-btn {
+  margin-top: 8px;
+}
+
+.wish-card {
+  position: absolute;
+  left: 12px;
+  right: 72px;
+  bottom: 28px;
+  max-width: 380px;
+  padding: 18px;
+  border-radius: 24px;
+  background: var(--ct-bg);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+
+  h2 {
+    margin: 0;
+    padding-right: 44px;
+    font-size: 21px;
+  }
+
+  .ct-btn {
+    width: 100%;
+    height: 46px;
+    margin-top: 14px;
+  }
+}
+
+.wish-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 22px;
+  color: var(--ct-mu);
+}
+
+.wish-where {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--ct-mu);
+}
+
+.wish-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 10px;
+}
+
+.wish-chip {
+  padding: 5px 11px;
+  border-radius: 14px;
+  background: var(--ct-acs);
+  color: var(--ct-act);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wish-chip--muted {
+  background: var(--ct-sf);
+  color: var(--ct-mu);
+}
+
+.wish-note {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

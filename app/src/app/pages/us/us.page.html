@@ -1,0 +1,130 @@
+<ion-content>
+  <div class="ct-page">
+    <h1 class="ct-page-title ct-rise" style="--i: 0">{{ 'us.title' | transloco }}</h1>
+
+    <div class="ct-card me ct-rise" style="--i: 1">
+      <span class="avatar" aria-hidden="true">{{ initial() }}</span>
+      <div class="me-text">
+        <p class="me-name">{{ profile.profile()?.name || ('us.noName' | transloco) }}</p>
+        <p class="me-email">{{ auth.email() }}</p>
+      </div>
+    </div>
+
+    <a class="ct-card link-row ct-rise" style="--i: 2" routerLink="/ideas">
+      <span class="link-icon" aria-hidden="true"><ion-icon name="bulb-outline"></ion-icon></span>
+      <span class="link-text">
+        <strong>{{ 'ideas.title' | transloco }}</strong>
+        <small>
+          @if (ideas.counts().open) {
+            {{ (ideas.counts().open === 1 ? 'ideas.toSee_one' : 'ideas.toSee_other') | transloco: { count: ideas.counts().open } }}
+          } @else {
+            {{ 'ideas.linkText' | transloco }}
+          }
+        </small>
+      </span>
+      <ion-icon class="link-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+    </a>
+
+    <section class="setting ct-rise" style="--i: 2">
+      <h2 class="setting-title">{{ 'us.nameTitle' | transloco }}</h2>
+      <form class="ct-card password-form" (ngSubmit)="saveName()" novalidate>
+        <label class="field">
+          <span class="field-label">{{ 'us.nameLabel' | transloco }}</span>
+          <input
+            type="text"
+            name="name"
+            autocomplete="given-name"
+            [attr.maxlength]="maxNameLength + 20"
+            [(ngModel)]="name"
+            (ngModelChange)="onName()"
+          />
+        </label>
+        <p class="hint">{{ 'us.nameHint' | transloco }}</p>
+        @switch (nameStatus().kind) {
+          @case ('error') {
+            <p class="status status--error" role="alert">{{ $any(nameStatus()).message | transloco }}</p>
+          }
+          @case ('saved') {
+            <p class="status status--ok" role="status">{{ 'us.nameSaved' | transloco }}</p>
+          }
+        }
+        <button class="ct-btn save" type="submit" [disabled]="nameBusy()">{{ 'us.saveName' | transloco }}</button>
+      </form>
+    </section>
+
+    <section class="setting ct-rise" style="--i: 2">
+      <h2 class="setting-title">{{ 'us.language' | transloco }}</h2>
+      <div class="segmented" role="group" [attr.aria-label]="'us.language' | transloco" [style.--idx]="languages.indexOf(language.language())">
+        @for (option of languages; track option) {
+          <button
+            type="button"
+            [class.on]="language.language() === option"
+            [attr.aria-pressed]="language.language() === option"
+            (click)="setLanguage(option)"
+          >
+            {{ 'languages.' + option | transloco }}
+          </button>
+        }
+      </div>
+    </section>
+
+    <section class="setting ct-rise" style="--i: 3">
+      <h2 class="setting-title">{{ 'us.theme' | transloco }}</h2>
+      <div class="segmented" role="group" [attr.aria-label]="'us.theme' | transloco" [style.--idx]="themes.indexOf(theme.preference())">
+        @for (option of themes; track option) {
+          <button
+            type="button"
+            [class.on]="theme.preference() === option"
+            [attr.aria-pressed]="theme.preference() === option"
+            (click)="setTheme(option)"
+          >
+            {{ 'theme.' + option | transloco }}
+          </button>
+        }
+      </div>
+    </section>
+
+    <section class="setting ct-rise" style="--i: 4">
+      <h2 class="setting-title">{{ 'us.password' | transloco }}</h2>
+      <form class="ct-card password-form" (ngSubmit)="savePassword()" novalidate>
+        <input class="ct-visually-hidden" type="text" name="username" autocomplete="username" [value]="auth.email()" tabindex="-1" aria-hidden="true" />
+        <label class="field">
+          <span class="field-label">{{ 'us.newPassword' | transloco }}</span>
+          <input
+            type="password"
+            name="newPassword"
+            autocomplete="new-password"
+            [attr.minlength]="minPasswordLength"
+            [(ngModel)]="newPassword"
+            (ngModelChange)="clearPasswordStatus()"
+          />
+        </label>
+        <label class="field">
+          <span class="field-label">{{ 'us.confirmPassword' | transloco }}</span>
+          <input
+            type="password"
+            name="confirmPassword"
+            autocomplete="new-password"
+            [(ngModel)]="confirmPassword"
+            (ngModelChange)="clearPasswordStatus()"
+          />
+        </label>
+        <p class="hint">{{ 'us.passwordHint' | transloco: { count: minPasswordLength } }}</p>
+        @switch (passwordStatus().kind) {
+          @case ('error') {
+            <p class="status status--error" role="alert">{{ $any(passwordStatus()).message | transloco }}</p>
+          }
+          @case ('saved') {
+            <p class="status status--ok" role="status">{{ 'us.passwordSaved' | transloco }}</p>
+          }
+        }
+        <button class="ct-btn save" type="submit" [disabled]="passwordBusy()">{{ 'us.savePassword' | transloco }}</button>
+      </form>
+    </section>
+
+    <button class="ct-btn ct-btn--ghost sign-out ct-rise" style="--i: 5" type="button" (click)="signOut()">
+      <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+      {{ 'us.signOut' | transloco }}
+    </button>
+  </div>
+</ion-content>

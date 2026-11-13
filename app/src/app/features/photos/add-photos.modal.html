@@ -1,0 +1,91 @@
+<ion-content>
+  <div class="sheet">
+    <header class="head">
+      <h1 class="ct-display title">{{ 'photos.addTitle' | transloco }}</h1>
+      <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    <section class="block ct-rise" style="--i: 0">
+      <label class="label" for="photos-trip">{{ 'photos.whichTrip' | transloco }}</label>
+      <select id="photos-trip" [value]="chosenTrip()" [disabled]="started() || !!tripId" (change)="onTrip($event)">
+        @for (option of options(); track option.id) {
+          <option [value]="option.id" [selected]="option.id === chosenTrip()">{{ option.label }}</option>
+        }
+      </select>
+    </section>
+
+    <input
+      #picker
+      class="ct-visually-hidden"
+      type="file"
+      accept="image/*"
+      multiple
+      tabindex="-1"
+      aria-hidden="true"
+      (change)="onFiles($event)"
+    />
+
+    <button class="choose ct-rise" style="--i: 1" type="button" [disabled]="!chosenTrip()" (click)="choose()">
+      <ion-icon name="images-outline" aria-hidden="true"></ion-icon>
+      <strong>{{ 'photos.choose' | transloco }}</strong>
+      <small>{{ 'photos.chooseHint' | transloco }}</small>
+    </button>
+
+    @if (started()) {
+      <section class="queue ct-rise" style="--i: 2">
+        <div class="progress" role="progressbar" [attr.aria-valuenow]="progress()" aria-valuemin="0" aria-valuemax="100">
+          <span [style.width.%]="progress()"></span>
+        </div>
+        <p class="progress-text">
+          {{ 'photos.progress' | transloco: { done: doneCount(), total: items().length } }}
+        </p>
+
+        <ul class="list">
+          @for (item of items(); track item.id) {
+            <li class="row" [class.is-error]="item.status === 'error'">
+              <img class="preview" [src]="item.preview" alt="" />
+              <span class="row-text">
+                <strong>{{ item.file.name }}</strong>
+                <small>
+                  @switch (item.status) {
+                    @case ('waiting') {
+                      {{ 'photos.status.waiting' | transloco }}
+                    }
+                    @case ('working') {
+                      {{ 'photos.status.working' | transloco }}
+                    }
+                    @case ('done') {
+                      {{ 'photos.status.done' | transloco }}
+                    }
+                    @case ('error') {
+                      {{ (item.reason ?? 'photos.errors.upload') | transloco }}
+                    }
+                  }
+                </small>
+              </span>
+              @switch (item.status) {
+                @case ('done') {
+                  <ion-icon class="state state--done" name="checkmark-circle" aria-hidden="true"></ion-icon>
+                }
+                @case ('working') {
+                  <span class="spinner" aria-hidden="true"></span>
+                }
+                @case ('error') {
+                  <button class="retry" type="button" (click)="retry(item)" [attr.aria-label]="'photos.retry' | transloco">
+                    <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+                  </button>
+                }
+              }
+            </li>
+          }
+        </ul>
+
+        @if (!working()) {
+          <button class="ct-btn done" type="button" (click)="close()">{{ 'photos.finish' | transloco }}</button>
+        }
+      </section>
+    }
+  </div>
+</ion-content>

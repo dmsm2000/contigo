@@ -1,0 +1,334 @@
+.top {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .ct-page-title {
+    flex: 1;
+    margin: 8px 0 16px;
+  }
+
+  .add {
+    margin-bottom: 8px;
+    background: var(--ct-acs);
+    color: var(--ct-act);
+  }
+
+  .back {
+    margin-bottom: 8px;
+    margin-left: -8px;
+    text-decoration: none;
+  }
+}
+
+// Com o menu lateral (768 px ou mais) já não é preciso a seta de voltar.
+@media (min-width: 768px) {
+  .back {
+    display: none;
+  }
+}
+
+.list,
+.suggestion-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wish {
+  padding: 14px;
+  border-radius: 24px;
+}
+
+.wish-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wish-title {
+  flex: 1;
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .where {
+    margin: 1px 0 0;
+    font-size: 13px;
+    color: var(--ct-mu);
+  }
+}
+
+.remove {
+  flex: none;
+  color: var(--ct-mu);
+  font-size: 20px;
+}
+
+.tile {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  color: #ffffff;
+  font-family: var(--ct-font-display);
+  font-weight: 600;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.tile--small {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    font-size: 20px;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: var(--ct-acs);
+  color: var(--ct-act);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chip--muted {
+  background: var(--ct-bg);
+  color: var(--ct-mu);
+}
+
+.note {
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-top: 4px;
+  color: var(--ct-ac);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    border-radius: 8px;
+  }
+}
+
+.votes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--ct-ln);
+}
+
+.vote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.vote-who {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ct-mu);
+}
+
+.vote-none {
+  font-size: 13px;
+  color: var(--ct-mu);
+  font-style: italic;
+}
+
+.skeleton {
+  height: 150px;
+  margin-bottom: 12px;
+  border-radius: 24px;
+  background: linear-gradient(90deg, var(--ct-sf) 25%, var(--ct-ln) 50%, var(--ct-sf) 75%);
+  background-size: 200% 100%;
+  animation: ct-shimmer 1.4s linear infinite;
+}
+
+@keyframes ct-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.surprises {
+  margin-top: 28px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 21px;
+  margin: 0 4px 12px;
+
+  ion-icon {
+    color: var(--ct-ac);
+  }
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  min-height: 64px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 18px;
+  background: var(--ct-sf);
+  color: var(--ct-tx);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.switch-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  strong {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  small {
+    font-size: 13px;
+    color: var(--ct-mu);
+    margin-top: 1px;
+    line-height: 1.35;
+  }
+}
+
+.switch {
+  position: relative;
+  flex: none;
+  width: 46px;
+  height: 28px;
+  border-radius: 14px;
+  background: var(--ct-ring);
+  transition: background-color var(--ct-dur) var(--ct-ease);
+
+  span {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: left var(--ct-dur) var(--ct-ease-spring);
+  }
+
+  &.on {
+    background: var(--ct-btn);
+
+    span {
+      left: 21px;
+    }
+  }
+}
+
+.hint {
+  margin: 14px 4px 10px;
+  font-size: 13px;
+  color: var(--ct-mu);
+}
+
+.suggestion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 20px;
+  background: var(--ct-sf);
+  color: var(--ct-tx);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+.suggestion-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  strong {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  small {
+    font-size: 13px;
+    color: var(--ct-mu);
+    margin-top: 1px;
+  }
+}
+
+.suggestion-add {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ct-acs);
+  color: var(--ct-act);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.more {
+  width: 100%;
+  margin-top: 12px;
+  background: var(--ct-sf);
+}

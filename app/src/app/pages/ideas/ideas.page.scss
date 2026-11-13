@@ -1,0 +1,219 @@
+.top {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .ct-page-title {
+    flex: 1;
+    margin: 8px 0 16px;
+  }
+
+  .add {
+    margin-bottom: 8px;
+    background: var(--ct-acs);
+    color: var(--ct-act);
+  }
+
+  .back {
+    margin-bottom: 8px;
+    margin-left: -8px;
+    text-decoration: none;
+  }
+}
+
+// Com o menu lateral (768 px ou mais) já não é preciso a seta de voltar.
+@media (min-width: 768px) {
+  .back {
+    display: none;
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.filter {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid var(--ct-ln);
+  border-radius: 22px;
+  background: var(--ct-sf);
+  color: var(--ct-tx);
+  font: 600 14px var(--ion-font-family);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--ct-dur-fast),
+    border-color var(--ct-dur-fast),
+    transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &.on {
+    background: var(--ct-acs);
+    border-color: var(--ct-ac);
+    color: var(--ct-act);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+.filter-count {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 11px;
+  background: var(--ct-bg);
+  color: var(--ct-mu);
+  font-size: 12px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.idea {
+  padding: 16px;
+  border-radius: 24px;
+}
+
+.idea-body {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.idea-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  min-height: 32px;
+  font-size: 13px;
+  color: var(--ct-mu);
+}
+
+.idea-tools {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.tool {
+  width: 44px;
+  height: 44px;
+  margin: -6px 0;
+  border: none;
+  border-radius: 22px;
+  background: transparent;
+  color: var(--ct-mu);
+  font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+  }
+}
+
+.status {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ct-ln);
+}
+
+.status-pill {
+  flex: 1;
+  min-height: 40px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 20px;
+  background: var(--ct-bg);
+  color: var(--ct-mu);
+  font: 600 13px var(--ion-font-family);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--ct-dur) var(--ct-ease),
+    color var(--ct-dur) var(--ct-ease),
+    transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 1px;
+  }
+
+  // Cada estado tem a sua cor, as mesmas dos turnos: por ver (manhã), a fazer (intermédio), feita (verde).
+  &.on {
+    background: var(--tone-bg);
+    color: var(--tone-tx);
+  }
+
+  &--open {
+    --tone-bg: var(--tone-morning-bg);
+    --tone-tx: var(--tone-morning-tx);
+  }
+
+  &--planned {
+    --tone-bg: var(--tone-middle-bg);
+    --tone-tx: var(--tone-middle-tx);
+  }
+
+  &--done {
+    --tone-bg: var(--tone-free-bg);
+    --tone-tx: var(--tone-free-tx);
+  }
+}
+
+.none {
+  margin: 24px 4px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--ct-mu);
+}
+
+.skeleton {
+  height: 130px;
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, var(--ct-sf) 25%, var(--ct-ln) 50%, var(--ct-sf) 75%);
+  background-size: 200% 100%;
+  animation: ct-shimmer 1.4s linear infinite;
+}
+
+@keyframes ct-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}

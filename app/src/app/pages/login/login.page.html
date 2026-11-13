@@ -1,0 +1,75 @@
+<ion-content>
+  <main class="login">
+    <div class="brand">
+      <img class="logo ct-pop" src="icons/icon.svg" alt="" width="96" height="96" />
+      <div class="ct-wordmark wordmark ct-rise" style="--i: 2">Conti<span>·GO</span></div>
+      <p class="tagline ct-rise" style="--i: 3">{{ 'app.tagline' | transloco }}</p>
+    </div>
+
+    <form class="form ct-rise" style="--i: 4" (ngSubmit)="signIn()" novalidate>
+      <h1 class="ct-display title">{{ 'login.title' | transloco }}</h1>
+      <p class="subtitle">{{ 'login.subtitle' | transloco }}</p>
+
+      <label class="field">
+        <span class="field-label">{{ 'login.email' | transloco }}</span>
+        <input
+          type="email"
+          name="email"
+          autocomplete="username"
+          inputmode="email"
+          required
+          [(ngModel)]="email"
+          (ngModelChange)="clearError()"
+          [placeholder]="'login.emailPlaceholder' | transloco"
+          [attr.aria-invalid]="error() ? true : null"
+          aria-describedby="login-error"
+        />
+      </label>
+
+      <label class="field">
+        <span class="field-label">{{ 'login.password' | transloco }}</span>
+        <span class="password">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            name="password"
+            autocomplete="current-password"
+            required
+            [(ngModel)]="password"
+            (ngModelChange)="clearError()"
+            [attr.aria-invalid]="error() ? true : null"
+            aria-describedby="login-error"
+          />
+          <button
+            class="reveal"
+            type="button"
+            (click)="togglePassword()"
+            [attr.aria-label]="(showPassword() ? 'login.hidePassword' : 'login.showPassword') | transloco"
+            [attr.aria-pressed]="showPassword()"
+          >
+            <ion-icon [name]="showPassword() ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+          </button>
+        </span>
+      </label>
+
+      @if (error()) {
+        <p class="error" id="login-error" role="alert">{{ error()! | transloco }}</p>
+      }
+
+      <button class="ct-btn submit" type="submit" [disabled]="busy()">{{ 'login.enter' | transloco }}</button>
+      <p class="forgot">{{ 'login.forgot' | transloco }}</p>
+    </form>
+
+    <div class="languages ct-rise" style="--i: 6" role="group" aria-label="Língua · Idioma · Language">
+      @for (option of languages; track option) {
+        <button
+          type="button"
+          [class.on]="language.language() === option"
+          [attr.aria-pressed]="language.language() === option"
+          (click)="setLanguage(option)"
+        >
+          {{ 'languages.' + option | transloco }}
+        </button>
+      }
+    </div>
+  </main>
+</ion-content>

@@ -1,0 +1,81 @@
+<ion-content>
+  <div class="ct-page">
+    <header class="top ct-rise" style="--i: 0">
+      <a class="ct-icon-btn back" routerLink="/us" [attr.aria-label]="'nav.us' | transloco">
+        <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
+      </a>
+      <h1 class="ct-page-title">{{ 'ideas.title' | transloco }}</h1>
+      <button class="ct-icon-btn add" type="button" (click)="add()" [attr.aria-label]="'ideas.add' | transloco">
+        <ion-icon name="add" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    @if (total()) {
+      <div class="filters ct-rise" style="--i: 1" role="group" [attr.aria-label]="'ideas.filterLabel' | transloco">
+        @for (option of filters; track option) {
+          <button
+            class="filter"
+            type="button"
+            [class.on]="filter() === option"
+            [attr.aria-pressed]="filter() === option"
+            (click)="filter.set(option)"
+          >
+            {{ 'ideas.filter.' + option | transloco }}
+            <span class="filter-count">{{ count(option) }}</span>
+          </button>
+        }
+      </div>
+    }
+
+    @if (shown().length) {
+      <ul class="list">
+        @for (idea of shown(); track idea.id; let i = $index) {
+          <li class="idea ct-card ct-rise" [style.--i]="i + 2">
+            <p class="idea-body">{{ idea.body }}</p>
+
+            <div class="idea-meta">
+              <span>{{ author(idea) }} · {{ date(idea) }}</span>
+              @if (ideas.isMine(idea)) {
+                <span class="idea-tools">
+                  <button class="tool" type="button" (click)="edit(idea)" [attr.aria-label]="'ideas.edit' | transloco">
+                    <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+                  </button>
+                  <button class="tool" type="button" (click)="confirmRemove(idea)" [attr.aria-label]="'ideas.remove' | transloco">
+                    <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+                  </button>
+                </span>
+              }
+            </div>
+
+            <div class="status" role="group" [attr.aria-label]="'ideas.statusLabel' | transloco">
+              @for (status of statuses; track status) {
+                <button
+                  class="status-pill"
+                  type="button"
+                  [class]="'status-pill status-pill--' + status"
+                  [class.on]="idea.status === status"
+                  [attr.aria-pressed]="idea.status === status"
+                  (click)="setStatus(idea, status)"
+                >
+                  {{ 'ideas.status.' + status | transloco }}
+                </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    } @else if (ideas.loaded() && !total()) {
+      <div class="ct-card ct-empty ct-rise" style="--i: 1">
+        <ion-icon name="bulb-outline" aria-hidden="true"></ion-icon>
+        <h2>{{ 'ideas.emptyTitle' | transloco }}</h2>
+        <p>{{ 'ideas.emptyText' | transloco }}</p>
+        <button class="ct-btn" type="button" (click)="add()">{{ 'ideas.emptyCta' | transloco }}</button>
+      </div>
+    } @else if (ideas.loaded()) {
+      <p class="none">{{ 'ideas.noneInFilter' | transloco }}</p>
+    } @else {
+      <div class="idea skeleton" aria-hidden="true"></div>
+      <div class="idea skeleton" aria-hidden="true"></div>
+    }
+  </div>
+</ion-content>

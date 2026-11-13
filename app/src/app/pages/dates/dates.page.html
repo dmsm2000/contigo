@@ -1,0 +1,163 @@
+<ion-content>
+  <div class="ct-page">
+    <h1 class="ct-page-title ct-rise" style="--i: 0">{{ 'dates.title' | transloco }}</h1>
+
+    <section class="calendar ct-card ct-rise" style="--i: 1">
+      <header class="month">
+        <button class="ct-icon-btn nav" type="button" (click)="go(-1)" [disabled]="!canGoBack()" [attr.aria-label]="'dates.previous' | transloco">
+          <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
+        </button>
+        <h2 class="ct-display month-title" aria-live="polite">{{ title() }}</h2>
+        <button class="ct-icon-btn nav" type="button" (click)="go(1)" [disabled]="!canGoForward()" [attr.aria-label]="'dates.next' | transloco">
+          <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </header>
+
+      <div class="weekdays" aria-hidden="true">
+        @for (name of weekdays(); track $index) {
+          <span>{{ name }}</span>
+        }
+      </div>
+
+      <div class="grid" role="grid" [attr.aria-label]="title()" (touchstart)="touchStart($event)" (touchend)="touchEnd($event)">
+        @for (week of weeks(); track week[0].iso) {
+          <div class="week" role="row">
+            @for (cell of week; track cell.iso) {
+              <button
+                class="cell"
+                role="gridcell"
+                type="button"
+                [class]="'cell ' + toneClass(cell.mine)"
+                [class.outside]="!cell.inMonth"
+                [class.past]="cell.past"
+                [class.today]="cell.today"
+                [class.selected]="cell.selected"
+                [class.shared]="cell.shared"
+                [disabled]="cell.past"
+                [attr.aria-selected]="cell.selected"
+                [attr.aria-label]="cell.iso + (cell.mine ? ', ' + cell.mine.name : '')"
+                (click)="tap(cell)"
+              >
+                <span class="num">{{ cell.day }}</span>
+                @if (cell.partner) {
+                  <span class="dot" [class]="'dot ' + toneClass(cell.partner)" aria-hidden="true"></span>
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <p class="legend">
+        @if (hasPartner()) {
+          <span class="legend-dot" aria-hidden="true"></span>
+          {{ 'dates.legendPartner' | transloco: { name: partnerName() || ('wish.theOther' | transloco) } }}
+          ·
+        }
+        <span class="legend-ring" aria-hidden="true"></span>
+        {{ 'dates.legendShared' | transloco }}
+      </p>
+    </section>
+
+    @if (selected().length) {
+      <section class="panel ct-card ct-pop" role="region" [attr.aria-label]="'dates.panelLabel' | transloco">
+        <header class="panel-head">
+          <div>
+            <strong class="panel-title">{{ selectionLabel() }}</strong>
+            <span class="panel-count">
+              {{ (selected().length === 1 ? 'dates.days_one' : 'dates.days_other') | transloco: { count: selected().length } }}
+            </span>
+          </div>
+          <button class="ct-icon-btn" type="button" (click)="clearSelection()" [attr.aria-label]="'common.close' | transloco">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </header>
+
+        @if (selected().length === 1) {
+          <p class="panel-hint">{{ 'dates.rangeHint' | transloco }}</p>
+        }
+
+        @if (availability.myTypes().length) {
+          <div class="type-chips">
+            @for (type of availability.myTypes(); track type.id) {
+              <button class="type-chip" [class]="'type-chip ' + toneClass(type)" type="button" (click)="applyType(type.id)">
+                <span class="type-name">{{ type.name }}</span>
+                @if (time(type)) {
+                  <span class="type-time">{{ time(type) }}</span>
+                }
+              </button>
+            }
+          </div>
+        } @else {
+          <p class="panel-hint">{{ 'dates.noTypesYet' | transloco }}</p>
+        }
+
+        <div class="panel-actions">
+          <button class="ct-btn ct-btn--ghost small" type="button" (click)="openType(null)">
+            <ion-icon name="add" aria-hidden="true"></ion-icon>
+            {{ 'dates.newType' | transloco }}
+          </button>
+          <button class="ct-btn ct-btn--ghost small" type="button" (click)="applyType(null)">
+            {{ 'dates.clearDays' | transloco }}
+          </button>
+        </div>
+      </section>
+    } @else if (availability.loaded() && !availability.myTypes().length) {
+      <section class="ct-card start ct-rise" style="--i: 2">
+        <h2 class="ct-display">{{ 'dates.startTitle' | transloco }}</h2>
+        <p>{{ 'dates.startText' | transloco }}</p>
+        <button class="ct-btn" type="button" (click)="openType(null)">{{ 'dates.newType' | transloco }}</button>
+      </section>
+    }
+
+    <section class="windows ct-rise" style="--i: 3">
+      <h2 class="ct-display section-title">{{ 'dates.windowsTitle' | transloco }}</h2>
+      @if (windows().length) {
+        <ul class="window-list">
+          @for (window of windows(); track window.start; let i = $index) {
+            <li class="window ct-card ct-rise" [style.--i]="i">
+              <span class="window-label">{{ window.label }}</span>
+              <span class="window-meta">
+                {{ (window.days === 1 ? 'dates.days_one' : 'dates.days_other') | transloco: { count: window.days } }}
+                · {{ 'dates.window.' + window.kind | transloco }}
+              </span>
+            </li>
+          }
+        </ul>
+      } @else if (!hasPartner()) {
+        <p class="empty-text">{{ 'dates.windowsNoPartner' | transloco }}</p>
+      } @else {
+        <p class="empty-text">{{ 'dates.windowsEmpty' | transloco }}</p>
+      }
+    </section>
+
+    @if (availability.myTypes().length) {
+      <section class="types ct-rise" style="--i: 4">
+        <h2 class="ct-display section-title">{{ 'dates.typesTitle' | transloco }}</h2>
+        <ul class="type-list">
+          @for (type of availability.myTypes(); track type.id) {
+            <li>
+              <button class="type-row" type="button" (click)="openType(type)">
+                <span class="swatch" [class]="'swatch ' + toneClass(type)" aria-hidden="true"></span>
+                <span class="type-row-text">
+                  <strong>{{ type.name }}</strong>
+                  <small>
+                    {{ 'shift.kind.' + type.kind | transloco }}
+                    @if (time(type)) {
+                      · {{ time(type) }}
+                    }
+                  </small>
+                </span>
+                <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+              </button>
+            </li>
+          }
+        </ul>
+        <button class="ct-btn ct-btn--ghost add-type" type="button" (click)="openType(null)">
+          <ion-icon name="add" aria-hidden="true"></ion-icon>
+          {{ 'dates.newType' | transloco }}
+        </button>
+      </section>
+    }
+  </div>
+</ion-content>

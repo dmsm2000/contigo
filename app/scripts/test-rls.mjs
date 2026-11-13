@@ -1,0 +1,287 @@
+// Confirma as regras de acesso no Supabase LOCAL: quem não entrou não vê nada, e os dois utilizadores partilham tudo.
+// Cria duas contas temporárias e apaga-as no fim. Nunca corre contra o projeto na nuvem.
+import { execSync } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
+import { createClient } from '@supabase/supabase-js';
+
+const status = JSON.parse(execSync('supabase status -o json', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }));
+const url = status.API_URL;
+if (!/^http:\/\/(127\.0\.0\.1|localhost)[:/]/.test(url)) {
+  throw new Error(`Este teste só corre contra o Supabase local, não contra ${url}.`);
+}
+
+const options = { auth: { persistSession: false, autoRefreshToken: false } };
+const admin = createClient(url, status.SECRET_KEY ?? status.SERVICE_ROLE_KEY, options);
+const publicKey = status.PUBLISHABLE_KEY ?? status.ANON_KEY;
+
+const password = `rls-${randomUUID()}`;
+const run = randomUUID().slice(0, 8);
+const emails = [`rls-a-${run}@contigo.test`, `rls-b-${run}@contigo.test`];
+const created = [];
+let failures = 0;
+
+function check(name, ok, detail = '') {
+  console.log(`${ok ? 'ok     ' : 'FALHOU '} ${name}${ok ? '' : detail ? ` (${detail})` : ''}`);
+  if (!ok) failures += 1;
+}
+
+async function signedIn(email) {
+  const client = createClient(url, publicKey, options);
+  const { error } = await client.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return client;
+}
+
+try {
+  for (const email of emails) {
+    const { data, error } = await admin.auth.admin.createUser({ email, password, email_confirm: true });
+    if (error) throw error;
+    created.push(data.user.id);
+  }
+  const [a, b] = await Promise.all(emails.map(signedIn));
+  const anon = createClient(url, publicKey, options);
+
+  // 1) Quem não entrou não pode ler nem escrever.
+  const anonRead = await anon.from('trips').select('id');
+  check('sem sessão: não lê viagens', !anonRead.error && anonRead.data.length === 0);
+  const anonInsert = await anon.from('places').insert({ name: 'Intruso' });
+  check('sem sessão: não cria sítios', Boolean(anonInsert.error));
+
+  // 2) A pessoa A cria um sítio e uma viagem.
+  const placeA = await a.from('places').insert({ name: `Teste ${run}`, osm_ref: `N${Date.now()}` }).select().single();
+  check('A cria um sítio', !placeA.error, placeA.error?.message);
+  const tripA = await a
+    .from('trips')
+    .insert({ place_id: placeA.data.id, start_date: '2026-10-01', date_precision: 'month', with_partner: true })
+    .select()
+    .single();
+  check('A cria uma viagem', !tripA.error, tripA.error?.message);
+  check('a viagem fica com o autor certo', tripA.data?.created_by === created[0]);
+
+  // 3) A pessoa B vê, edita e apaga o que A criou.
+  const seenByB = await b.from('trips').select('id, place:places(name)').eq('id', tripA.data.id);
+  check('B vê a viagem de A', seenByB.data?.length === 1 && seenByB.data[0].place?.name === `Teste ${run}`);
+  const edited = await b.from('trips').update({ note: 'editada por B' }).eq('id', tripA.data.id).select();
+  check('B edita a viagem de A', edited.data?.length === 1 && edited.data[0].note === 'editada por B');
+
+  // 4) Ninguém pode fingir ser outro autor.
+  const forged = await b.from('places').insert({ name: 'Falso', created_by: created[0] });
+  check('não se pode registar em nome do outro', Boolean(forged.error));
+
+  // 5) Regras de dados.
+  const badDate = await a
+    .from('trips')
+    .insert({ place_id: placeA.data.id, start_date: '2026-10-15', date_precision: 'month' });
+  check('mês tem de começar no dia 1', Boolean(badDate.error));
+  const badCoords = await a.from('places').insert({ name: 'Meio', lat: 41.1 });
+  check('latitude sem longitude é recusada', Boolean(badCoords.error));
+  const badCost = await a.from('trips').insert({ place_id: placeA.data.id, start_date: '2026-10-01', cost_eur: -5 });
+  check('custo negativo é recusado', Boolean(badCost.error));
+
+  // 6) Apagar: o sítio só sai quando já não tem viagens.
+  const placeBlocked = await b.from('places').delete().eq('id', placeA.data.id);
+  check('sítio com viagens não se apaga', Boolean(placeBlocked.error));
+  const tripGone = await b.from('trips').delete().eq('id', tripA.data.id).select();
+  check('B apaga a viagem', tripGone.data?.length === 1);
+  const placeGone = await b.from('places').delete().eq('id', placeA.data.id).select();
+  check('depois o sítio apaga-se', placeGone.data?.length === 1);
+
+  // 7) Lista de sítios por ir: cada um dá as suas estrelas.
+  const wished = await a
+    .from('places')
+    .insert({ name: `Desejo ${run}`, note: 'porque sim', min_stay: 'weekend', link: 'https://exemplo.pt' })
+    .select()
+    .single();
+  check('A cria um sítio por ir', !wished.error, wished.error?.message);
+  const wishA = await a.from('place_wishes').insert({ place_id: wished.data.id, stars: 3 }).select().single();
+  check('A dá estrelas', !wishA.error, wishA.error?.message);
+  check('o desejo fica com o autor certo', wishA.data?.user_id === created[0]);
+  const seenWish = await b.from('place_wishes').select('stars').eq('place_id', wished.data.id);
+  check('B vê as estrelas de A', seenWish.data?.length === 1 && seenWish.data[0].stars === 3);
+  const stolen = await b.from('place_wishes').update({ stars: 1 }).eq('place_id', wished.data.id).eq('user_id', created[0]).select();
+  check('B não altera as estrelas de A', (stolen.data ?? []).length === 0);
+  const forgedWish = await b.from('place_wishes').insert({ place_id: wished.data.id, user_id: created[0], stars: 1 });
+  check('não se dão estrelas em nome do outro', Boolean(forgedWish.error));
+  const wishB = await b.from('place_wishes').insert({ place_id: wished.data.id, stars: 2 }).select().single();
+  check('B junta as suas estrelas ao mesmo sítio', !wishB.error, wishB.error?.message);
+  const tooMany = await b.from('place_wishes').update({ stars: 4 }).eq('place_id', wished.data.id).eq('user_id', created[1]);
+  check('mais de 3 estrelas é recusado', Boolean(tooMany.error));
+  const badLink = await a.from('places').insert({ name: 'Ligação má', link: 'javascript:alert(1)' });
+  check('só se aceitam ligações http(s)', Boolean(badLink.error));
+  const wishedBlocked = await a.from('places').delete().eq('id', wished.data.id);
+  check('sítio com desejos não se apaga', Boolean(wishedBlocked.error));
+  await a.from('place_wishes').delete().eq('place_id', wished.data.id);
+  await b.from('place_wishes').delete().eq('place_id', wished.data.id);
+  const wishedGone = await a.from('places').delete().eq('id', wished.data.id).select();
+  check('sem desejos, o sítio apaga-se', wishedGone.data?.length === 1);
+
+  // 6) Disponibilidade: tipos de turno e dias marcados.
+  const shiftA = await a.from('shift_types').insert({ name: 'Manhã 7h–15h', kind: 'busy', starts_at: '07:00', ends_at: '15:00', tone: 'morning' }).select().single();
+  check('A cria um tipo de turno', !shiftA.error, shiftA.error?.message);
+  check('o tipo fica com o autor certo', shiftA.data?.user_id === created[0]);
+  const seenShift = await b.from('shift_types').select('name').eq('id', shiftA.data.id);
+  check('B vê os tipos de A', seenShift.data?.length === 1);
+  const editedShift = await b.from('shift_types').update({ name: 'Roubado' }).eq('id', shiftA.data.id).select();
+  check('B não altera os tipos de A', (editedShift.data ?? []).length === 0);
+  const deletedShift = await b.from('shift_types').delete().eq('id', shiftA.data.id).select();
+  check('B não apaga os tipos de A', (deletedShift.data ?? []).length === 0);
+  const forgedShift = await b.from('shift_types').insert({ name: 'Falso', kind: 'free', user_id: created[0] });
+  check('não se criam tipos em nome do outro', Boolean(forgedShift.error));
+  const badKind = await a.from('shift_types').insert({ name: 'Mau', kind: 'talvez' });
+  check('o tipo tem de ser "busy" ou "free"', Boolean(badKind.error));
+  const oneTime = await a.from('shift_types').insert({ name: 'Meia hora', kind: 'busy', starts_at: '07:00' });
+  check('as horas vêm as duas ou nenhuma', Boolean(oneTime.error));
+  const noName = await a.from('shift_types').insert({ name: '   ', kind: 'free' });
+  check('o tipo precisa de nome', Boolean(noName.error));
+
+  const freeA = await a.from('shift_types').insert({ name: 'Folga', kind: 'free' }).select().single();
+  check('A cria um tipo livre', !freeA.error, freeA.error?.message);
+  const dayA = await a.from('availability_days').insert({ day: '2026-12-05', shift_type_id: freeA.data.id }).select().single();
+  check('A marca um dia', !dayA.error, dayA.error?.message);
+  check('o dia fica com o autor certo', dayA.data?.user_id === created[0]);
+  const seenDay = await b.from('availability_days').select('day').eq('user_id', created[0]);
+  check('B vê os dias de A', seenDay.data?.length === 1 && seenDay.data[0].day === '2026-12-05');
+  const dayMoved = await a.from('availability_days').upsert({ day: '2026-12-05', shift_type_id: shiftA.data.id }, { onConflict: 'user_id,day' }).select();
+  check('marcar outra vez o mesmo dia troca o tipo', !dayMoved.error && dayMoved.data?.length === 1 && dayMoved.data[0].shift_type_id === shiftA.data.id, dayMoved.error?.message);
+  const stolenDay = await b.from('availability_days').update({ shift_type_id: freeA.data.id }).eq('user_id', created[0]).select();
+  check('B não altera os dias de A', (stolenDay.data ?? []).length === 0);
+  const forgedDay = await b.from('availability_days').insert({ day: '2026-12-06', shift_type_id: freeA.data.id, user_id: created[0] });
+  check('não se marcam dias em nome do outro', Boolean(forgedDay.error));
+  const otherType = await b.from('availability_days').insert({ day: '2026-12-06', shift_type_id: freeA.data.id });
+  check('não se marca um dia com o tipo do outro', Boolean(otherType.error));
+  const clearedB = await b.from('availability_days').delete().eq('user_id', created[0]).select();
+  check('B não apaga os dias de A', (clearedB.data ?? []).length === 0);
+
+  const cascade = await a.from('shift_types').delete().eq('id', shiftA.data.id).select();
+  check('A apaga um tipo', cascade.data?.length === 1);
+  const orphanDays = await a.from('availability_days').select('day').eq('user_id', created[0]);
+  check('apagar um tipo apaga os dias que o usavam', orphanDays.data?.length === 0);
+  await a.from('shift_types').delete().eq('id', freeA.data.id);
+
+  // 7) Sorteio: viagem sorteada e vetos (um por pessoa e por mês).
+  const drawnPlace = await a.from('places').insert({ name: `Sorteado ${run}` }).select().single();
+  check('A cria o sítio sorteado', !drawnPlace.error, drawnPlace.error?.message);
+  const drawnTrip = await a
+    .from('trips')
+    .insert({ place_id: drawnPlace.data.id, status: 'drawn', start_date: '2026-12-05', end_date: '2026-12-06', date_precision: 'day', draw_entry: `wish:${drawnPlace.data.id}` })
+    .select()
+    .single();
+  check('A guarda a viagem sorteada', !drawnTrip.error, drawnTrip.error?.message);
+  const seenDrawn = await b.from('trips').select('draw_entry, status').eq('id', drawnTrip.data.id);
+  check('B vê de onde saiu o sorteio', seenDrawn.data?.[0]?.status === 'drawn' && seenDrawn.data[0].draw_entry === `wish:${drawnPlace.data.id}`);
+  const emptyEntry = await a.from('trips').insert({ place_id: drawnPlace.data.id, status: 'drawn', start_date: '2026-12-05', draw_entry: '' });
+  check('a origem do sorteio não pode ser vazia', Boolean(emptyEntry.error));
+
+  const vetoA = await a.from('draw_vetoes').insert({ month: '2026-12-01', entry_id: `wish:${drawnPlace.data.id}` }).select().single();
+  check('A usa o veto do mês', !vetoA.error, vetoA.error?.message);
+  check('o veto fica com o autor certo', vetoA.data?.user_id === created[0]);
+  const vetoTwice = await a.from('draw_vetoes').insert({ month: '2026-12-01', entry_id: 'suggestion:braga' });
+  check('A não tem um segundo veto no mesmo mês', Boolean(vetoTwice.error));
+  const vetoNext = await a.from('draw_vetoes').insert({ month: '2027-01-01', entry_id: 'suggestion:braga' });
+  check('no mês seguinte há um veto novo', !vetoNext.error, vetoNext.error?.message);
+  const vetoB = await b.from('draw_vetoes').insert({ month: '2026-12-01', entry_id: 'suggestion:aveiro' });
+  check('B tem o seu veto, independente do de A', !vetoB.error, vetoB.error?.message);
+  const seenVetoes = await b.from('draw_vetoes').select('user_id').eq('month', '2026-12-01');
+  check('os dois veem os vetos do mês', seenVetoes.data?.length === 2);
+  const midMonth = await a.from('draw_vetoes').insert({ month: '2027-02-15', entry_id: 'x' });
+  check('o veto é do primeiro dia do mês', Boolean(midMonth.error));
+  const forgedVeto = await b.from('draw_vetoes').insert({ month: '2027-03-01', entry_id: 'x', user_id: created[0] });
+  check('não se usa o veto do outro', Boolean(forgedVeto.error));
+  const undoVeto = await a.from('draw_vetoes').delete().eq('user_id', created[0]).select();
+  check('um veto usado não se desfaz', (undoVeto.data ?? []).length === 0);
+  const editVeto = await a.from('draw_vetoes').update({ entry_id: 'outra' }).eq('user_id', created[0]).select();
+  check('um veto usado não se muda', (editVeto.data ?? []).length === 0);
+
+  await a.from('trips').delete().eq('id', drawnTrip.data.id);
+  await a.from('places').delete().eq('id', drawnPlace.data.id);
+
+  // 8) Ideias: os dois leem e mudam o estado, mas o texto é de quem o escreveu.
+  const ideaA = await a.from('ideas').insert({ body: 'Mostrar o preço dos voos' }).select().single();
+  check('A escreve uma ideia', !ideaA.error, ideaA.error?.message);
+  check('a ideia fica com o autor certo', ideaA.data?.user_id === created[0]);
+  check('a ideia começa por ver', ideaA.data?.status === 'open');
+  const seenIdea = await b.from('ideas').select('body').eq('id', ideaA.data.id);
+  check('B vê a ideia de A', seenIdea.data?.length === 1 && seenIdea.data[0].body === 'Mostrar o preço dos voos');
+  const statusB = await b.from('ideas').update({ status: 'planned' }).eq('id', ideaA.data.id).select();
+  check('B muda o estado da ideia de A', statusB.data?.length === 1 && statusB.data[0].status === 'planned', statusB.error?.message);
+  const bodyB = await b.from('ideas').update({ body: 'Texto roubado' }).eq('id', ideaA.data.id).select();
+  check('B não muda o texto da ideia de A', Boolean(bodyB.error));
+  const bodyA = await a.from('ideas').update({ body: 'Mostrar o preço dos voos e dos comboios' }).eq('id', ideaA.data.id).select();
+  check('A muda o texto da sua ideia', bodyA.data?.length === 1 && bodyA.data[0].body.endsWith('comboios'), bodyA.error?.message);
+  check('mudar a ideia atualiza a data', bodyA.data?.[0]?.updated_at > ideaA.data.created_at);
+  const authorChange = await a.from('ideas').update({ user_id: created[1] }).eq('id', ideaA.data.id).select();
+  check('uma ideia não muda de autor', Boolean(authorChange.error));
+  const forgedIdea = await b.from('ideas').insert({ body: 'Falsa', user_id: created[0] });
+  check('não se escrevem ideias em nome do outro', Boolean(forgedIdea.error));
+  const emptyIdea = await a.from('ideas').insert({ body: '   ' });
+  check('a ideia precisa de texto', Boolean(emptyIdea.error));
+  const longIdea = await a.from('ideas').insert({ body: 'x'.repeat(501) });
+  check('a ideia tem um limite de 500 caracteres', Boolean(longIdea.error));
+  const badStatus = await a.from('ideas').update({ status: 'talvez' }).eq('id', ideaA.data.id);
+  check('o estado tem de ser um dos três', Boolean(badStatus.error));
+  const deleteB = await b.from('ideas').delete().eq('id', ideaA.data.id).select();
+  check('B não apaga a ideia de A', (deleteB.data ?? []).length === 0);
+  const deleteA = await a.from('ideas').delete().eq('id', ideaA.data.id).select();
+  check('A apaga a sua ideia', deleteA.data?.length === 1);
+
+  // 9) Fotos: registo na tabela e ficheiros no bucket privado.
+  const photoPlace = await a.from('places').insert({ name: `Fotos ${run}` }).select().single();
+  const photoTrip = await a.from('trips').insert({ place_id: photoPlace.data.id, start_date: '2026-10-01', date_precision: 'month' }).select().single();
+  const photoId = randomUUID();
+  const photoPath = `${photoTrip.data.id}/${photoId}.jpg`;
+  const photoThumb = `${photoTrip.data.id}/${photoId}_t.jpg`;
+  const jpeg = new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0xff, 0xd9])], { type: 'image/jpeg' });
+
+  const anonUpload = await anon.storage.from('trip-photos').upload(`${photoTrip.data.id}/intruso.jpg`, jpeg, { contentType: 'image/jpeg' });
+  check('sem sessão: não envia fotos', Boolean(anonUpload.error));
+  const upA = await a.storage.from('trip-photos').upload(photoPath, jpeg, { contentType: 'image/jpeg' });
+  check('A envia uma foto', !upA.error, upA.error?.message);
+  const upThumb = await a.storage.from('trip-photos').upload(photoThumb, jpeg, { contentType: 'image/jpeg' });
+  check('A envia a miniatura', !upThumb.error, upThumb.error?.message);
+  const badType = await a.storage.from('trip-photos').upload(`${photoTrip.data.id}/ficheiro.txt`, new Blob(['olá'], { type: 'text/plain' }), { contentType: 'text/plain' });
+  check('o bucket só aceita imagens JPEG ou WebP', Boolean(badType.error));
+  const tooBigFile = await a.storage.from('trip-photos').upload(`${photoTrip.data.id}/enorme.jpg`, new Blob([new Uint8Array(5 * 1024 * 1024 + 1)], { type: 'image/jpeg' }), { contentType: 'image/jpeg' });
+  check('o bucket recusa ficheiros com mais de 5 MB', Boolean(tooBigFile.error));
+  const downloadB = await b.storage.from('trip-photos').download(photoPath);
+  check('B descarrega a foto de A', !downloadB.error && downloadB.data?.size === jpeg.size, downloadB.error?.message);
+  const anonDownload = await anon.storage.from('trip-photos').download(photoPath);
+  check('sem sessão: não descarrega fotos', Boolean(anonDownload.error));
+  const signed = await b.storage.from('trip-photos').createSignedUrl(photoPath, 60);
+  check('B pede um link temporário', !signed.error && Boolean(signed.data?.signedUrl), signed.error?.message);
+  const publicTry = await fetch(`${url}/storage/v1/object/public/trip-photos/${photoPath}`);
+  check('o bucket não é público', !publicTry.ok);
+
+  const rowA = await a
+    .from('trip_photos')
+    .insert({ id: photoId, trip_id: photoTrip.data.id, path: photoPath, thumb_path: photoThumb, width: 1600, height: 1200 })
+    .select()
+    .single();
+  check('A regista a foto na viagem', !rowA.error, rowA.error?.message);
+  check('a foto fica com o autor certo', rowA.data?.user_id === created[0]);
+  const seenRow = await b.from('trip_photos').select('id').eq('trip_id', photoTrip.data.id);
+  check('B vê as fotos da viagem', seenRow.data?.length === 1);
+  const forgedPhoto = await b.from('trip_photos').insert({ trip_id: photoTrip.data.id, path: 'x/y.jpg', thumb_path: 'x/y_t.jpg', width: 10, height: 10, user_id: created[0] });
+  check('não se juntam fotos em nome do outro', Boolean(forgedPhoto.error));
+  const captionB = await b.from('trip_photos').update({ caption: 'Pôr do sol' }).eq('id', photoId).select();
+  check('B muda a legenda', captionB.data?.length === 1 && captionB.data[0].caption === 'Pôr do sol', captionB.error?.message);
+  const moveB = await b.from('trip_photos').update({ path: 'outro/sitio.jpg' }).eq('id', photoId).select();
+  check('só a legenda se pode mudar', Boolean(moveB.error));
+  const longCaption = await a.from('trip_photos').update({ caption: 'x'.repeat(201) }).eq('id', photoId);
+  check('a legenda tem um limite de 200 caracteres', Boolean(longCaption.error));
+  const badSize = await a.from('trip_photos').insert({ trip_id: photoTrip.data.id, path: 'z/z.jpg', thumb_path: 'z/z_t.jpg', width: 0, height: 10 });
+  check('as medidas da foto têm de ser positivas', Boolean(badSize.error));
+
+  const removeFiles = await a.storage.from('trip-photos').remove([photoPath, photoThumb]);
+  check('A apaga os ficheiros', !removeFiles.error && removeFiles.data?.length === 2, removeFiles.error?.message);
+  const photoTripGone = await a.from('trips').delete().eq('id', photoTrip.data.id).select();
+  check('apagar a viagem apaga os registos das fotos', photoTripGone.data?.length === 1 && (await a.from('trip_photos').select('id').eq('id', photoId)).data?.length === 0);
+  await a.from('places').delete().eq('id', photoPlace.data.id);
+} finally {
+  for (const id of created) await admin.auth.admin.deleteUser(id);
+}
+
+if (failures) {
+  console.error(`\n${failures} verificação(ões) falharam.`);
+  process.exit(1);
+}
+console.log('\nTodas as regras de acesso estão como esperado.');

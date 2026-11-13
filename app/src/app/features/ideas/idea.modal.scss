@@ -1,0 +1,18 @@
+@use '../shared/form';
+
+textarea {
+  min-height: 150px;
+}
+
+.counter {
+  text-align: right;
+
+  &.over {
+    color: #d64545;
+    font-weight: 600;
+  }
+}
+
+:host-context(.ion-palette-dark) .counter.over {
+  color: #ff8a8a;
+}

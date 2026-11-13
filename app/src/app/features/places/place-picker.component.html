@@ -1,0 +1,66 @@
+<label class="label" [for]="inputId()">{{ labelKey() | transloco }}</label>
+
+@if (place(); as chosen) {
+  <div class="chosen">
+    <span class="tile" [style.background]="tile(chosen)" aria-hidden="true">{{ initial(chosen) }}</span>
+    <span class="chosen-text">
+      <strong>{{ chosen.name }}</strong>
+      @if (subtitle(chosen)) {
+        <small>{{ subtitle(chosen) }}</small>
+      }
+    </span>
+    <button class="link" type="button" (click)="change()">{{ 'trip.form.change' | transloco }}</button>
+  </div>
+} @else {
+  <div class="search">
+    <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+    <input
+      #search
+      [id]="inputId()"
+      name="search"
+      type="search"
+      autocomplete="off"
+      autocapitalize="words"
+      enterkeyhint="search"
+      [placeholder]="'trip.form.searchPlaceholder' | transloco"
+      [value]="query()"
+      (input)="onQuery($any($event.target).value)"
+      (keydown.enter)="$event.preventDefault()"
+    />
+  </div>
+
+  <div class="results" aria-live="polite">
+    @if (searching()) {
+      <p class="hint">{{ 'trip.form.searching' | transloco }}</p>
+    } @else if (searchFailed()) {
+      <p class="hint">{{ 'trip.form.searchError' | transloco }}</p>
+    } @else if (searched() && results().length === 0) {
+      <p class="hint">{{ 'trip.form.noResults' | transloco }}</p>
+    }
+
+    @if (results().length) {
+      <ul class="result-list">
+        @for (candidate of results(); track candidate.osmRef ?? candidate.name + $index; let i = $index) {
+          <li class="ct-rise" [style.--i]="i">
+            <button class="result" type="button" (click)="choose(candidate)">
+              <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+              <span class="result-text">
+                <strong>{{ candidate.name }}</strong>
+                @if (subtitle(candidate)) {
+                  <small>{{ subtitle(candidate) }}</small>
+                }
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (typed(); as name) {
+      <button class="typed" type="button" (click)="chooseTyped(name)">
+        {{ 'trip.form.useTyped' | transloco: { name: name } }}
+      </button>
+    }
+  </div>
+  <p class="attribution">{{ 'trip.form.attribution' | transloco }}</p>
+}

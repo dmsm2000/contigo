@@ -1,0 +1,72 @@
+<ion-content [scrollY]="false">
+  @if (current(); as photo) {
+    <div class="viewer" (touchstart)="touchStart($event)" (touchend)="touchEnd($event)">
+      <header class="bar">
+        <span class="counter" aria-live="polite">{{ position() }} / {{ list().length }}</span>
+        <button class="round" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </header>
+
+      <div class="stage">
+        @if (list().length > 1) {
+          <button class="arrow arrow--prev" type="button" (click)="go(-1)" [attr.aria-label]="'photos.previous' | transloco">
+            <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
+          </button>
+        }
+
+        @let full = photos.fullUrl(photo);
+        @let thumb = photos.thumbUrl(photo);
+        @if (full || thumb) {
+          @for (key of [photo.id]; track key) {
+            <img
+              class="image ct-pop"
+              [class.loading]="!full"
+              [src]="full ?? thumb"
+              [attr.width]="photo.width"
+              [attr.height]="photo.height"
+              [alt]="photo.caption ?? ('photos.alt' | transloco)"
+              draggable="false"
+            />
+          }
+        } @else {
+          <span class="spinner" aria-hidden="true"></span>
+        }
+
+        @if (list().length > 1) {
+          <button class="arrow arrow--next" type="button" (click)="go(1)" [attr.aria-label]="'photos.next' | transloco">
+            <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+          </button>
+        }
+      </div>
+
+      <footer class="foot">
+        @if (editing()) {
+          <input
+            id="photo-caption"
+            class="caption-input"
+            type="text"
+            [value]="photo.caption ?? ''"
+            [attr.maxlength]="maxCaption + 40"
+            [placeholder]="'photos.captionPlaceholder' | transloco"
+            (keydown.enter)="saveCaption(photo, $any($event.target).value)"
+            (keydown.escape)="editing.set(false)"
+            (blur)="saveCaption(photo, $any($event.target).value)"
+          />
+        } @else {
+          <button class="caption" type="button" (click)="startEdit()">
+            @if (photo.caption) {
+              <span>{{ photo.caption }}</span>
+            } @else {
+              <span class="caption-empty">{{ 'photos.addCaption' | transloco }}</span>
+            }
+            <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+          </button>
+        }
+        <button class="round danger" type="button" [disabled]="busy()" (click)="confirmRemove(photo)" [attr.aria-label]="'photos.remove' | transloco">
+          <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </footer>
+    </div>
+  }
+</ion-content>

@@ -24,7 +24,7 @@ A ideia de partida: uma viagem curta por mês, com orçamento fixo, alojamento t
 
 - **Nome:** Contigo. É igual em português e em espanhol e diz o essencial. `[confirmado]`
 - **Logótipo:** **Conti·GO**, com o "GO" numa cor de destaque. Funciona nas três línguas, porque "go" também é inglês. `[confirmado]`
-  - Primeira proposta de desenho em [`brand/`](brand/): cebola magenta `#B8336F` com pin verde `#4CAF6A`, GO a magenta e fonte provisória Fredoka. `[proposta]`
+  - Desenho em [`brand/`](brand/): cebola redonda e inclinada, com os anéis só de um lado e sem raízes (a primeira versão, simétrica e com uma fenda ao meio, lia-se como uma imagem obscena), magenta `#C2306F` com pin verde `#3FA864`, GO a magenta e Fredoka no nome. `[confirmado: versão A]`
 - **Lema:** *pão e cebola*, do provérbio "Contigo, pão e cebola" / "Contigo, pan y cebolla" (viver com o mínimo, desde que seja contigo). É a piada certa para 200€ e comida de supermercado. `[confirmado]` Se ela não conhecer o provérbio, explica-se na apresentação.
 - **Mascote:** uma cebola com um pin de mapa. É o ícone da app. `[confirmado]`
 - **Visual:** moderno, com as fotos em primeiro lugar, ao estilo do Instagram, em modo claro e escuro. Detalhes em [DESIGN.md](DESIGN.md) e no protótipo. `[confirmado: direção]`
@@ -61,6 +61,7 @@ A ideia de partida: uma viagem curta por mês, com orçamento fixo, alojamento t
   - Pode também marcar uma janela inteira (folga, férias, indisponível). Ele marca as férias da mesma forma.
   - A app calcula as **janelas em comum** (um dia, fim-de-semana, 3+ dias).
 - **Sorteio do mês:** filtra a wishlist pelo que cabe na janela, no teto e no tempo de viagem. Sorteia com mais peso para o que mais desejamos e cada um tem **1 veto por mês**. Tem uma pequena cerimónia visual. `[confirmado: filtro + peso + veto]`
+- **A rotação inclui sugestões que não estão na wishlist** `[confirmado: o pedido; proposta: o como]`. O sorteio não fica limitado ao que já conhecem: junta à wishlist uma lista curada de sugestões (sítios entre o Porto e Madrid e arredores, sem os que já visitaram nem os que já estão na wishlist). Cada fonte tem a sua fatia da probabilidade (por defeito, 25% para as sugestões, o que não muda se a wishlist for grande) e há um interruptor para as desligar. Uma sugestão sorteada pode ir para a wishlist, e o veto também vale para elas.
 
 ### Viver — a viagem
 

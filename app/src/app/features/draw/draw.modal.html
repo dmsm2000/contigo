@@ -1,0 +1,179 @@
+<ion-content [class.stage]="phase() !== 'setup'">
+  @if (phase() === 'setup') {
+    <div class="sheet">
+      <header class="head">
+        <h1 class="ct-display title">{{ 'draw.title' | transloco }}</h1>
+        <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </header>
+
+      @if (draws.active(); as active) {
+        <section class="block ct-card existing ct-rise" style="--i: 0">
+          <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+          <h2 class="ct-display">{{ 'draw.existingTitle' | transloco }}</h2>
+          <p class="existing-place">{{ active.place.name }}</p>
+          <p>{{ 'draw.existingText' | transloco }}</p>
+          <button class="ct-btn" type="button" (click)="openActive(active)">{{ 'draw.seeTrip' | transloco }}</button>
+        </section>
+      } @else {
+        <section class="block ct-rise" style="--i: 0">
+          <span class="label" id="when-label">{{ 'draw.whenTitle' | transloco }}</span>
+          <div class="chips" role="group" aria-labelledby="when-label">
+            @for (option of windows(); track option.start) {
+              <button
+                class="chip"
+                type="button"
+                [class.on]="window()?.start === option.start"
+                [attr.aria-pressed]="window()?.start === option.start"
+                (click)="chooseWindow(option.start)"
+              >
+                <strong>{{ option.label }}</strong>
+                <small>
+                  {{ (option.days === 1 ? 'dates.days_one' : 'dates.days_other') | transloco: { count: option.days } }}
+                  · {{ 'dates.window.' + option.kind | transloco }}
+                </small>
+              </button>
+            }
+            <button class="chip" type="button" [class.on]="anyDate()" [attr.aria-pressed]="anyDate()" (click)="chooseWindow('')">
+              <strong>{{ 'draw.anyDate' | transloco }}</strong>
+              <small>{{ 'draw.anyDateHint' | transloco }}</small>
+            </button>
+          </div>
+          @if (!windows().length) {
+            <p class="hint">{{ 'draw.noWindows' | transloco }}</p>
+          }
+        </section>
+
+        <section class="block ct-rise" style="--i: 1">
+          <span class="label">{{ 'draw.poolTitle' | transloco }}</span>
+          <div class="pool ct-card">
+            <div class="pool-row">
+              <ion-icon name="heart-outline" aria-hidden="true"></ion-icon>
+              <span>
+                {{ (summary().wishes === 1 ? 'draw.poolWishes_one' : 'draw.poolWishes_other') | transloco: { count: summary().wishes } }}
+              </span>
+            </div>
+            <div class="pool-row">
+              <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
+              <span>
+                @if (wishlist.includeSuggestions()) {
+                  {{ (summary().surprises === 1 ? 'draw.poolSurprises_one' : 'draw.poolSurprises_other') | transloco: { count: summary().surprises } }}
+                  @if (summary().surprises && summary().wishes) {
+                    · {{ 'draw.surpriseChance' | transloco: { percent: chancePercent() } }}
+                  }
+                } @else {
+                  {{ 'draw.surprisesOff' | transloco }}
+                }
+              </span>
+            </div>
+          </div>
+          <button
+            class="switch-row"
+            type="button"
+            role="switch"
+            [attr.aria-checked]="wishlist.includeSuggestions()"
+            (click)="setSurprises()"
+          >
+            <span class="switch-text">
+              <strong>{{ 'draw.surprisesSwitch' | transloco }}</strong>
+            </span>
+            <span class="switch" [class.on]="wishlist.includeSuggestions()" aria-hidden="true"><span></span></span>
+          </button>
+        </section>
+
+        <section class="block ct-rise" style="--i: 2">
+          <span class="label">{{ 'draw.vetoesTitle' | transloco }}</span>
+          <ul class="vetoes">
+            <li [class.spent]="draws.myVetoUsed()">
+              <span>{{ 'wish.you' | transloco }}</span>
+              <strong>{{ (draws.myVetoUsed() ? 'draw.vetoSpent' : 'draw.vetoAvailable') | transloco }}</strong>
+            </li>
+            @if (hasPartner()) {
+              <li [class.spent]="draws.partnerVetoUsed()">
+                <span>{{ partnerName() }}</span>
+                <strong>{{ (draws.partnerVetoUsed() ? 'draw.vetoSpent' : 'draw.vetoAvailable') | transloco }}</strong>
+              </li>
+            }
+          </ul>
+        </section>
+
+        @if (!pool().length) {
+          <p class="error ct-rise" role="status" style="--i: 3">{{ 'draw.emptyPool' | transloco }}</p>
+        }
+
+        <button class="ct-btn roll ct-rise" style="--i: 3" type="button" [disabled]="!pool().length || busy()" (click)="roll()">
+          <ion-icon name="dice-outline" aria-hidden="true"></ion-icon>
+          {{ 'draw.roll' | transloco }}
+        </button>
+      }
+    </div>
+  } @else if (phase() === 'rolling') {
+    <div class="center">
+      <span class="dice-big" aria-hidden="true"><i></i><i></i><i></i></span>
+      <p class="eyebrow">{{ 'draw.rolling' | transloco }}</p>
+      @for (frame of [reelKey()]; track frame) {
+        <p class="reel ct-display" aria-live="off">{{ reelName() }}</p>
+      }
+    </div>
+  } @else if (outcome(); as result) {
+    @if (shown(); as place) {
+      <div class="center result">
+        <div class="confetti" aria-hidden="true">
+          @for (piece of confetti(); track $index) {
+            <i
+              [style.--x]="piece.x + 'px'"
+              [style.--y]="piece.y + 'px'"
+              [style.--r]="piece.r + 'deg'"
+              [style.--delay]="piece.delay + 'ms'"
+              [style.background]="piece.color"
+            ></i>
+          }
+        </div>
+
+        <p class="eyebrow ct-rise" style="--i: 0">{{ 'draw.result' | transloco }}</p>
+        <span class="result-tile ct-pop" [style.background]="place.tile" aria-hidden="true">{{ place.initial }}</span>
+        <h2 class="result-name ct-display ct-rise" style="--i: 1" role="status">{{ place.name }}</h2>
+        @if (place.where) {
+          <p class="result-where ct-rise" style="--i: 2">{{ place.where }}</p>
+        }
+
+        <ul class="result-chips ct-rise" style="--i: 3">
+          <li class="result-chip">
+            {{ (place.kind === 'wishlist' ? 'draw.fromWishlist' : 'draw.surprise') | transloco }}
+          </li>
+          @if (place.when) {
+            <li class="result-chip">{{ place.when }}</li>
+          }
+          @if (place.distance; as far) {
+            <li class="result-chip">{{ 'wish.distance' | transloco: { km: far.km, origin: far.origin } }}</li>
+          }
+        </ul>
+
+        <div class="result-actions ct-rise" style="--i: 4">
+          @if (result.trip) {
+            <button class="ct-btn ct-btn--light" type="button" (click)="close()">{{ 'draw.gotIt' | transloco }}</button>
+
+            @if (place.kind === 'suggestion' && place.placeId && !onWishlist()) {
+              <button class="ghost" type="button" (click)="addToWishlist()">
+                <ion-icon name="heart-outline" aria-hidden="true"></ion-icon>
+                {{ 'draw.addToWishlist' | transloco }}
+              </button>
+            }
+
+            @if (draws.myVetoUsed()) {
+              <p class="veto-note">{{ 'draw.vetoUsed' | transloco }}</p>
+            } @else {
+              <button class="ghost" type="button" (click)="confirmVeto()">{{ 'draw.vetoUse' | transloco }}</button>
+            }
+          } @else {
+            <p class="veto-note" role="alert">{{ 'draw.saveFailed' | transloco }}</p>
+            <button class="ct-btn ct-btn--light" type="button" [disabled]="busy()" (click)="retrySave()">
+              {{ 'draw.retrySave' | transloco }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+  }
+</ion-content>

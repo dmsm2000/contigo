@@ -1,0 +1,365 @@
+.calendar {
+  padding: 12px 10px 14px;
+  border-radius: 26px;
+}
+
+.month {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.month-title {
+  margin: 0;
+  font-size: 20px;
+
+  // Só a primeira letra em maiúscula ("Novembro de 2026"); `capitalize` poria também o "De".
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+// Com mais largura, as células ficam mais baixas do que largas: o mês inteiro cabe no ecrã.
+@media (min-width: 768px) {
+  .cell {
+    aspect-ratio: 1.35 / 1;
+  }
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 4px 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ct-mu);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  // Deixa o deslize horizontal para mudar de mês sem a página andar para o lado.
+  touch-action: pan-y;
+}
+
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  min-height: 44px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background: var(--tone-bg, transparent);
+  color: var(--tone-tx, var(--ct-tx));
+  font: 600 15px var(--ion-font-family);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--ct-dur-fast) var(--ct-ease),
+    background-color var(--ct-dur) var(--ct-ease),
+    border-color var(--ct-dur-fast);
+
+  &:active:not(:disabled) {
+    transform: scale(0.92);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 1px;
+  }
+
+  &.outside {
+    opacity: 0.35;
+  }
+
+  &.past {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  &.today .num {
+    // Hoje: um sublinhado a cor de marca, que não rouba a cor do turno.
+    text-decoration: underline;
+    text-decoration-color: var(--ct-ac);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  // Dias livres para os dois: um aro com a cor de marca.
+  &.shared {
+    border-color: var(--ct-ac);
+  }
+
+  &.selected {
+    background: var(--ct-ac);
+    border-color: var(--ct-ac);
+    color: #ffffff;
+    animation: ct-pop var(--ct-dur) var(--ct-ease-spring) both;
+  }
+}
+
+// O dia do outro: um ponto no canto, com a cor do tipo.
+.dot {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tone-tx, var(--ct-mu));
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin: 12px 6px 0;
+  font-size: 12px;
+  color: var(--ct-mu);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tone-free-tx);
+}
+
+.legend-ring {
+  width: 12px;
+  height: 12px;
+  border-radius: 5px;
+  border: 2px solid var(--ct-ac);
+}
+
+.panel {
+  position: sticky;
+  bottom: 8px;
+  z-index: 2;
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 24px;
+  background: var(--ct-bg);
+  border: 1.5px solid var(--ct-ln);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.panel-title {
+  display: block;
+  font-size: 17px;
+}
+
+.panel-count {
+  font-size: 13px;
+  color: var(--ct-mu);
+}
+
+.panel-hint {
+  margin: 6px 2px 0;
+  font-size: 13px;
+  color: var(--ct-mu);
+  line-height: 1.4;
+}
+
+.type-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.type-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 48px;
+  padding: 6px 16px;
+  border: none;
+  border-radius: 18px;
+  background: var(--tone-bg, var(--ct-sf));
+  color: var(--tone-tx, var(--ct-tx));
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+.type-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.type-time {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+
+  .small {
+    height: 44px;
+    padding: 0 16px;
+    font-size: 14px;
+    background: var(--ct-sf);
+  }
+}
+
+.start {
+  margin-top: 12px;
+  text-align: center;
+
+  h2 {
+    margin: 4px 0 6px;
+    font-size: 19px;
+  }
+
+  p {
+    margin: 0 auto 14px;
+    max-width: 340px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ct-mu);
+  }
+}
+
+.windows,
+.types {
+  margin-top: 24px;
+}
+
+.section-title {
+  margin: 0 4px 10px;
+  font-size: 21px;
+}
+
+.window-list,
+.type-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.window {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  border-radius: 20px;
+}
+
+.window-label {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.window-meta {
+  font-size: 13px;
+  color: var(--ct-mu);
+}
+
+.empty-text {
+  margin: 0 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ct-mu);
+}
+
+.type-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 14px 8px 12px;
+  border: none;
+  border-radius: 18px;
+  background: var(--ct-sf);
+  color: var(--ct-tx);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  ion-icon {
+    flex: none;
+    font-size: 20px;
+    color: var(--ct-mu);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+.swatch {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--tone-bg);
+  border: 2px solid var(--tone-tx);
+}
+
+.type-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  strong {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  small {
+    font-size: 13px;
+    color: var(--ct-mu);
+  }
+}
+
+.add-type {
+  width: 100%;
+  margin-top: 10px;
+}

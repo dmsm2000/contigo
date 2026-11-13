@@ -1,0 +1,16 @@
+@use '../shared/form';
+
+.stars-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 6px 2px 4px;
+  border-radius: 18px;
+  background: var(--ct-sf);
+}
+
+.stars-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ct-act);
+}
