@@ -58,9 +58,29 @@ Moderna, com as fotos em primeiro lugar, ao estilo do Instagram: histórias no t
 - **Vidro:** fundos desfocados por cima das fotos, para o texto se ler.
 - **Confetes:** só no sorteio.
 
+## 6b. Movimento `[confirmado]`
+
+Mais animação, sem pesar na interface. Tudo usa os tokens e utilitários de `src/styles.scss`:
+
+- **Entrada em escada** (`ct-rise`, com `--i`): os blocos de cada ecrã sobem e aparecem um a seguir ao outro. Repete-se cada vez que o ecrã volta a aparecer.
+- **Aparecer com mola** (`ct-pop`): o logótipo no ecrã de entrada.
+- **Toque:** botões encolhem ao carregar e sobem 1 px com o rato; o **+** encolhe e o sinal roda.
+- **Separador ativo:** o ícone dá um pequeno salto.
+- **Seletores** (língua e aparência): o botão branco desliza para a opção escolhida.
+- **Claro e escuro:** as cores passam suavemente de um modo ao outro (350 ms).
+- **Vida própria:** o dado do cartão principal flutua, o aro de "Sortear" pulsa e as barras do ano acendem-se uma a uma.
+- **Erros:** o campo abana uma vez e a mensagem sobe.
+- **Movimento reduzido:** quem tem "reduzir movimento" ligado no sistema não vê animações nem transições.
+- Nas funcionalidades novas: pins a cair no mapa, confetes no sorteio, anel do orçamento a encher-se e número da cebola a subir.
+
 ## 7. Modo claro e escuro
 
 Segue o sistema por defeito, com interruptor manual. As fotos e os ecrãs imersivos ficam iguais nos dois modos. `[confirmado]`
+
+## 7b. Nome e ícone `[confirmado]`
+
+- Em todo o lado onde o nome aparece (título do separador, manifesto da PWA, nome no ecrã inicial do telemóvel) escreve-se **Conti·GO**, com o GO em maiúsculas.
+- O ícone do separador é `favicon.svg`: a cebola maior sobre um tile creme, para se ler a 16 px. Tem PNG de reserva (16, 32 e 48 px) para o Safari e outros browsers que ignoram SVG, e `apple-touch-icon.png` para o iPhone.
 
 ## 8. Imagens
 

@@ -120,7 +120,7 @@ Madrid está uma hora à frente de Portugal continental. Por isso:
 **Desenvolvimento local:** o Supabase corre na máquina (Supabase CLI com Docker), por isso não precisamos da conta nem do projeto na nuvem para começar. `[confirmado]`
 
 - A máquina já tem o necessário: Docker a correr (com 8 GB), Supabase CLI, Node, git e GitHub CLI.
-- A base de dados, o login, as fotos e o tempo real correm localmente. Os emails de login (convite, link mágico) caem numa caixa de correio local, sem enviar nada.
+- A base de dados, o login, as fotos e o tempo real correm localmente. O Supabase local da Contigo usa as portas 553xx, para não chocar com outros projetos Supabase na mesma máquina.
 - O esquema e as regras de acesso vivem no repositório, em migrações (`supabase/migrations`), e os dados de exemplo em `supabase/seed.sql`, só com viagens inventadas. Mais tarde, as mesmas migrações aplicam-se ao projeto na nuvem.
 - Limite: testar a PWA instalada no telemóvel pede HTTPS e acesso à rede, por isso essa parte faz-se contra o projeto na nuvem, já com a conta nova.
 - O projeto na nuvem só é preciso quando quisermos mostrar a app a ela.
