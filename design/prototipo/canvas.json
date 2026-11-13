@@ -1,0 +1,36 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-11-13T18:00:00Z" },
+  "title": "Contigo · protótipo",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 300, "w": 390, "h": 844, "title": "Início", "is_interactive": true, "radius": 44 },
+    "Mapa.dc.html": { "x": 470, "y": 300, "w": 390, "h": 844, "title": "Mapa", "is_interactive": true, "radius": 44 },
+    "Sorteio.dc.html": { "x": 940, "y": 300, "w": 390, "h": 844, "title": "Sorteio", "is_interactive": true, "radius": 44 },
+    "Datas.dc.html": { "x": 1410, "y": 300, "w": 390, "h": 844, "title": "Disponibilidade", "is_interactive": true, "radius": 44 },
+    "Viagem.dc.html": { "x": 1880, "y": 300, "w": 390, "h": 844, "title": "Dia de viagem", "is_interactive": true, "radius": 44 },
+    "Despesa.dc.html": { "x": 2350, "y": 300, "w": 390, "h": 844, "title": "Nova despesa", "is_interactive": true, "radius": 44 },
+    "Escuro.dc.html": { "x": 0, "y": 1484, "w": 2740, "h": 844, "title": "Modo escuro", "is_interactive": true },
+    "Desktop.dc.html": { "x": 0, "y": 2668, "w": 1440, "h": 1200, "title": "Computador", "expand": "fill", "is_interactive": true },
+    "Scene.dc.html": { "x": 1520, "y": 2668, "w": 400, "h": 300, "title": "Ilustrações" }
+  },
+  "order": [
+    "Main.dc.html",
+    "Mapa.dc.html",
+    "Sorteio.dc.html",
+    "Datas.dc.html",
+    "Viagem.dc.html",
+    "Despesa.dc.html",
+    "Escuro.dc.html",
+    "Desktop.dc.html",
+    "Scene.dc.html"
+  ],
+  "notes": {
+    "claro": { "x": 0, "y": 0, "text": "Contigo · modo claro", "kind": "title1", "maxW": 2740 },
+    "escuro": { "x": 0, "y": 1184, "text": "Modo escuro", "kind": "title1", "maxW": 2740 },
+    "computador": { "x": 0, "y": 2368, "text": "Computador", "kind": "title1", "maxW": 1920 },
+    "fotos": { "x": 1520, "y": 3048, "w": 400, "text": "As imagens são ilustrações provisórias. Na app a sério entram as vossas fotos.", "fill": "pink", "size": "m" }
+  },
+  "designSystems": []
+}

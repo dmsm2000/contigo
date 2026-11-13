@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Mapa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; font-family: Inter, system-ui, sans-serif; background: {{m.water}}; color: {{t.tx}}">
+
+<svg width="390" height="844" viewBox="0 -10 175 379" style="position: absolute; left: 0; top: 0; display: block" role="img" aria-label="Mapa de Portugal e do oeste de Espanha">
+<defs><linearGradient id="mp-line" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C2306F"/><stop offset="1" stop-color="#F7A55A"/></linearGradient></defs>
+<rect x="-10" y="-20" width="200" height="400" fill="{{m.water}}"/>
+<path d="M13 34L36 20L55 7L107 15L156 19L179 20L205 22L242 41L281 44L307 53L341 58L312 88L278 112L247 155L260 180L229 217L191 245L140 248L116 269L91 255L74 231L49 238L21 238L23 206L8 177L10 158L18 150L23 131L28 114L30 97L25 78L25 72L27 61Z" fill="{{m.land}}" stroke="{{m.coast}}" stroke-width="0.6" stroke-linejoin="round"/>
+<path d="M50 70q10-6 20 0q6 8-4 14q-12 4-16-4z" fill="{{m.park}}"/>
+<path d="M70 128q12-8 22 0q4 10-8 14q-12 2-14-14z" fill="{{m.park}}"/>
+<path d="M120 150q14-6 24 2q2 10-10 12q-12 0-14-14z" fill="{{m.park}}"/>
+<path d="M25 73L60 78L79 75L92 85L80 100L77 116L72 140L75 155L69 173L62 200L60 215L62 231" fill="none" stroke="{{m.border}}" stroke-width="0.7" stroke-dasharray="1.6 1.6"/>
+<g fill="none" stroke="{{m.river}}" stroke-linecap="round"><path d="M30 97C45 96 55 92 70 92S95 86 110 88S140 86 160 80" stroke-width="1.3"/><path d="M17 180C35 172 55 165 75 160S110 150 130 140S150 128 165 125" stroke-width="1.5"/><path d="M24 130C34 129 44 127 56 124" stroke-width="0.9"/></g>
+<g fill="none" stroke="{{m.road}}" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round"><path d="M30 97L60 100L107 104L135 115L159 122"/><path d="M30 97L28 114L36 129L30 150L17 180"/><path d="M30 97L36 83"/><path d="M107 104L89 155"/></g>
+<path d="M30 97Q95 72 159 122" fill="none" stroke="url(#mp-line)" stroke-width="1.4" stroke-dasharray="3 2.4" stroke-linecap="round"/>
+</svg>
+
+<div style="position: absolute; left: 26px; top: 430px; font-size: 12px; font-weight: 600; color: {{m.label}}">Lisboa</div>
+
+<div style="position: absolute; left: 54px; top: 225px; width: 26px; height: 26px; border-radius: 50%; background: {{t.sf2}}; border: 2px solid #3FA864; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: #3FA864">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>
+</div>
+<div style="position: absolute; left: 86px; top: 231px; font-size: 12px; font-weight: 700; color: {{t.tx}}">Porto</div>
+<div style="position: absolute; left: 341px; top: 281px; width: 26px; height: 26px; border-radius: 50%; background: {{t.sf2}}; border: 2px solid #3FA864; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: #3FA864">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>
+</div>
+<div style="position: absolute; left: 332px; top: 310px; font-size: 12px; font-weight: 700; color: {{t.tx}}">Madrid</div>
+
+<div style="position: absolute; left: 63px; top: 181px; width: 38px; height: 38px; border-radius: 50%; border: 3px solid {{t.sf2}}; box-sizing: border-box; overflow: hidden"><div style="position: relative; width: 100%; height: 100%"><dc-import name="Scene" kind="braga" hint-size="100%,100%"></dc-import></div></div>
+<span style="position: absolute; left: 91px; top: 175px; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #C2306F; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid {{t.sf2}}">3</span>
+<div style="position: absolute; left: 45px; top: 259px; width: 34px; height: 34px; border-radius: 50%; border: 3px solid {{t.sf2}}; box-sizing: border-box; overflow: hidden"><div style="position: relative; width: 100%; height: 100%"><dc-import name="Scene" kind="aveiro" hint-size="100%,100%"></dc-import></div></div>
+<span style="position: absolute; left: 70px; top: 253px; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #C2306F; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid {{t.sf2}}">2</span>
+
+<a href="Sorteio.dc.html" style="position: absolute; left: 176px; top: 238px; height: 32px; padding: 0 12px 0 10px; border-radius: 16px; background: #C2306F; color: #FFFFFF; display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; text-decoration: none; box-shadow: 0 6px 16px rgba(194,48,111,0.35)">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Salamanca</a>
+<div style="position: absolute; left: 298px; top: 230px; height: 32px; padding: 0 12px 0 10px; border-radius: 16px; background: {{t.sf2}}; border: 1px solid {{t.ln}}; box-sizing: border-box; color: {{t.tx}}; display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="{{t.ac}}" stroke-width="2.4" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Segóvia</div>
+<div style="position: absolute; left: 40px; top: 300px; height: 32px; padding: 0 12px 0 10px; border-radius: 16px; background: {{t.sf2}}; border: 1px solid {{t.ln}}; box-sizing: border-box; color: {{t.tx}}; display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="{{t.ac}}" stroke-width="2.4" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Coimbra</div>
+<div style="position: absolute; left: 158px; top: 352px; height: 32px; padding: 0 12px 0 10px; border-radius: 16px; background: {{t.sf2}}; border: 1px solid {{t.ln}}; box-sizing: border-box; color: {{t.tx}}; display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="{{t.ac}}" stroke-width="2.4" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Cáceres</div>
+
+<div style="position: absolute; left: 16px; right: 16px; top: 12px; height: 52px; border-radius: 26px; background: {{t.sf2}}; border: 1px solid {{t.ln}}; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 6px 0 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.10)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{t.mu}}" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+<label for="mapa-procura" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Procurar um sítio</label>
+<input id="mapa-procura" placeholder="Procurar um sítio" style="flex: 1; min-width: 0; border: none; outline: none; background: transparent; font: 500 15px Inter, sans-serif; color: {{t.tx}}">
+<button aria-label="Filtros" style="width: 40px; height: 40px; border-radius: 20px; border: none; background: {{t.sf}}; color: {{t.tx}}; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+</div>
+<div style="position: absolute; left: 16px; top: 74px; display: flex; gap: 8px; white-space: nowrap">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="3">
+<button onClick="{{c.pick}}" style="height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid {{c.border}}; background: {{c.bg}}; color: {{c.fg}}; font: 600 14px Inter, sans-serif; cursor: pointer; flex: none">{{c.label}}</button>
+</sc-for>
+</div>
+
+<section style="position: absolute; left: 0; right: 0; top: 494px; bottom: 0; background: {{t.bg}}; border-radius: 28px 28px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.12)">
+<div style="width: 40px; height: 5px; border-radius: 3px; background: {{t.ring}}; margin: 10px auto 10px"></div>
+<div style="display: flex; justify-content: space-between; align-items: baseline; padding: 0 20px">
+<h2 style="margin: 0; font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 20px">Cabem na próxima janela</h2>
+<a href="Main.dc.html" style="font-size: 14px; font-weight: 600; color: {{t.ac}}; text-decoration: none">Ver lista</a>
+</div>
+<div style="padding: 2px 20px 0; font-size: 13px; color: {{t.mu}}">Sáb 5 – Dom 6 dez · 4 sítios</div>
+<div style="display: flex; gap: 12px; padding: 14px 0 0 20px; overflow: hidden">
+<sc-for list="{{cards}}" as="p" hint-placeholder-count="2">
+<a href="Sorteio.dc.html" style="width: 232px; flex: none; text-decoration: none; color: {{t.tx}}">
+<div style="position: relative; height: 124px; border-radius: 20px; overflow: hidden">
+<dc-import name="Scene" kind="{{p.kind}}" hint-size="100%,100%"></dc-import>
+<span style="position: absolute; left: 10px; top: 10px; font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 12px; background: rgba(255,255,255,0.92); color: #17683C">Cabe</span>
+<span style="position: absolute; right: 10px; top: 10px; width: 32px; height: 32px; border-radius: 16px; background: rgba(20,14,24,0.45); color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px">
+<span style="font-size: 16px; font-weight: 700">{{p.name}}</span>
+<span style="font-size: 15px; font-weight: 700">{{p.price}}</span>
+</div>
+<div style="font-size: 13px; color: {{t.mu}}; margin-top: 2px">{{p.meta}}</div>
+</a>
+</sc-for>
+</div>
+</section>
+
+<nav style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 6px 8px 24px; background: {{t.nav}}; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-top: 1px solid {{t.ln}}; display: flex; justify-content: space-around; align-items: center">
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 52px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{t.mu}}">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Início</a>
+<a href="Mapa.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 52px; text-decoration: none; font-size: 11px; font-weight: 700; color: {{t.tx}}">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/></svg>Mapa</a>
+<a href="Despesa.dc.html" aria-label="Adicionar" style="width: 56px; height: 56px; border-radius: 28px; background: {{grad}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; margin-top: -14px; text-decoration: none">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></a>
+<a href="Datas.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 52px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{t.mu}}">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>Datas</a>
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 52px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{t.mu}}">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Nós</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  theme(dark) {
+    return dark
+      ? { bg: '#0E0C11', sf: '#1A171E', sf2: '#221E27', ln: '#2B2631', tx: '#F6F2F8', mu: '#A89FAE', ac: '#F2649F', ring: '#3A3440', nav: 'rgba(14,12,17,0.86)' }
+      : { bg: '#FFFFFF', sf: '#F5F2F6', sf2: '#FFFFFF', ln: '#ECE6EE', tx: '#17121B', mu: '#6C6472', ac: '#C2306F', ring: '#DAD3DE', nav: 'rgba(255,255,255,0.88)' };
+  }
+  renderVals() {
+    const dark = !!this.props.dark;
+    const t = this.theme(dark);
+    const m = dark
+      ? { water: '#0D1E2B', land: '#1D1B22', coast: '#2C2832', park: '#1B2B21', road: '#34303B', border: '#7A3C5E', river: '#173A55', label: '#A89FAE' }
+      : { water: '#CFE4EF', land: '#F4F0E8', coast: '#DDD4C4', park: '#DCEBD3', road: '#FFFFFF', border: '#D59AB8', river: '#B8D8EA', label: '#6C6472' };
+    const sel = (this.state && this.state.chip) || 0;
+    const labels = ['Por ir · 4', 'Já fomos · 5', 'Cabem em dezembro'];
+    const chips = labels.map((label, i) => ({
+      label,
+      bg: i === sel ? t.tx : t.sf2,
+      fg: i === sel ? t.bg : t.tx,
+      border: i === sel ? t.tx : t.ln,
+      pick: () => this.setState({ chip: i })
+    }));
+    const cards = [
+      { name: 'Salamanca', kind: 'salamanca', price: '~183€', meta: 'Porto 18€ · Madrid 15€' },
+      { name: 'Coimbra', kind: 'coimbra', price: '~164€', meta: 'Porto 12€ · Madrid 32€' }
+    ];
+    return {
+      t,
+      m,
+      chips,
+      cards,
+      grad: 'linear-gradient(135deg, #C2306F 0%, #EE5A62 55%, #F7A55A 100%)'
+    };
+  }
+}
+</script>
+</body>
+</html>

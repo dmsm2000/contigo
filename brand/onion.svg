@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 120 120" role="img">
+  <title>Contigo: cebola com pin</title>
+  <desc>Cebola magenta com um pin de mapa verde no topo.</desc>
+  <g fill="none" stroke="#8A2352" stroke-width="2.5" stroke-linecap="round">
+    <path d="M54 106q-1 6-6 8"/>
+    <path d="M60 107v8"/>
+    <path d="M66 106q1 6 6 8"/>
+  </g>
+  <path d="M60 24C64 36 92 44 92 72C92 94 76 106 60 106C44 106 28 94 28 72C28 44 56 36 60 24Z" fill="#B8336F"/>
+  <g fill="none" stroke="#F3B4D3" stroke-width="2.5" stroke-linecap="round">
+    <path d="M60 30C50 48 46 60 46 76C46 92 53 102 60 105"/>
+    <path d="M60 30C70 48 74 60 74 76C74 92 67 102 60 105"/>
+    <path d="M57 31C41 46 36 62 37 80"/>
+    <path d="M63 31C79 46 84 62 83 80"/>
+  </g>
+  <path d="M60 27C54 21 51 17 51 13.5A9 9 0 1 1 69 13.5C69 17 66 21 60 27Z" fill="#4CAF6A"/>
+  <circle cx="60" cy="13.5" r="3.4" fill="#FFFFFF"/>
+</svg>

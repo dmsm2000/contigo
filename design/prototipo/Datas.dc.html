@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Disponibilidade</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; font-family: Inter, system-ui, sans-serif; background: {{t.bg}}; color: {{t.tx}}">
+
+<header style="display: flex; align-items: center; justify-content: space-between; padding: 14px 10px 6px 20px">
+<h1 style="margin: 0; font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 28px; letter-spacing: -0.3px">Disponibilidade</h1>
+<button aria-label="Gerir tipos de turno" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: transparent; color: {{t.tx}}; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+</header>
+
+<div style="display: flex; margin: 4px 16px 0; padding: 4px; border-radius: 24px; background: {{t.sf}}">
+<sc-for list="{{segs}}" as="g" hint-placeholder-count="3">
+<button onClick="{{g.pick}}" style="flex: 1; height: 40px; border: none; border-radius: 20px; background: {{g.bg}}; color: {{g.fg}}; box-shadow: {{g.shadow}}; font: 600 14px Inter, sans-serif; cursor: pointer">{{g.label}}</button>
+</sc-for>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 8px 4px">
+<button aria-label="Mês anterior" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: transparent; color: {{t.mu}}; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
+<div style="font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 19px">Dezembro 2026</div>
+<button aria-label="Mês seguinte" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: transparent; color: {{t.mu}}; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 20px; font-size: 12px; font-weight: 600; color: {{t.mu}}; text-align: center; margin-bottom: 6px">
+<span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span><span>D</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 20px">
+<sc-for list="{{cells}}" as="c" hint-placeholder-count="35">
+<sc-if value="{{c.isDay}}" hint-placeholder-val="{{true}}">
+<button onClick="{{c.pick}}" aria-label="{{c.label}}" style="height: 44px; border-radius: 14px; border: 1.5px dashed {{c.border}}; background: {{c.bg}}; color: {{c.fg}}; font: 700 15px Inter, sans-serif; cursor: pointer; padding: 0">{{c.n}}</button>
+</sc-if>
+<sc-if value="{{c.blank}}" hint-placeholder-val="{{false}}"><span></span></sc-if>
+</sc-for>
+</div>
+
+<div style="display: flex; gap: 8px; padding: 16px 0 0 16px; overflow: hidden">
+<sc-for list="{{palette}}" as="p" hint-placeholder-count="4">
+<button onClick="{{p.pick}}" style="height: 44px; flex: none; padding: 0 14px 0 12px; border-radius: 22px; border: 2px solid {{p.ring}}; background: {{p.bg}}; color: {{p.fg}}; display: flex; align-items: center; gap: 6px; font: 700 14px Inter, sans-serif; cursor: pointer">{{p.name}}<span style="font-weight: 500">{{p.hours}}</span></button>
+</sc-for>
+<button style="height: 44px; flex: none; padding: 0 14px; border-radius: 22px; border: 1.5px dashed {{t.ac}}; background: transparent; color: {{t.ac}}; font: 700 14px Inter, sans-serif; cursor: pointer">+ Novo turno</button>
+</div>
+<div style="padding: 8px 20px 0; font-size: 13px; color: {{t.mu}}">Escolhe um turno e toca nos dias.</div>
+
+<div style="display: flex; justify-content: space-between; align-items: baseline; padding: 18px 20px 10px">
+<h2 style="margin: 0; font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 19px">Juntos este mês</h2>
+<span style="font-size: 13px; color: {{t.mu}}">3 janelas</span>
+</div>
+<div style="display: flex; gap: 10px; padding: 0 0 0 20px; overflow: hidden">
+<a href="Sorteio.dc.html" style="width: 200px; flex: none; box-sizing: border-box; padding: 14px; border-radius: 20px; background: {{t.sf}}; color: {{t.tx}}; text-decoration: none">
+<span style="display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 10px; background: {{t.grs}}; color: {{t.grt}}">2 dias</span>
+<div style="font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 18px; margin-top: 8px">Sáb 5 – Dom 6</div>
+<div style="font-size: 13px; color: {{t.mu}}; margin-top: 2px">Eu: folga · Ele: livre</div>
+</a>
+<a href="Sorteio.dc.html" style="width: 200px; flex: none; box-sizing: border-box; padding: 14px; border-radius: 20px; background: {{t.sf}}; color: {{t.tx}}; text-decoration: none">
+<span style="display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 10px; background: {{t.grs}}; color: {{t.grt}}">3 dias</span>
+<div style="font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 18px; margin-top: 8px">Sáb 19 – Seg 21</div>
+<div style="font-size: 13px; color: {{t.mu}}; margin-top: 2px">Eu: folga · Ele: férias</div>
+</a>
+<a href="Sorteio.dc.html" style="width: 200px; flex: none; box-sizing: border-box; padding: 14px; border-radius: 20px; background: {{t.sf}}; color: {{t.tx}}; text-decoration: none">
+<span style="display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 10px; background: {{t.ams}}; color: {{t.amt}}">meio dia</span>
+<div style="font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 18px; margin-top: 8px">Qua 3 · tarde</div>
+<div style="font-size: 13px; color: {{t.mu}}; margin-top: 2px">Saio às 15h (14h no Porto)</div>
+</a>
+</div>
+
+<nav style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 6px 8px 24px; background: {{t.nav}}; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-top: 1px solid {{t.ln}}; display: flex; justify-content: space-around; align-items: center">
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 52px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{t.mu}}">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Início</a>
+<a href="Mapa.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 52px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{t.mu}}">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg>Mapa</a>
+<a href="Despesa.dc.html" aria-label="Adicionar" style="width: 56px; height: 56px; border-radius: 28px; background: {{grad}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; margin-top: -14px; text-decoration: none">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></a>
+<a href="Datas.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 52px; text-decoration: none; font-size: 11px; font-weight: 700; color: {{t.tx}}">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="currentColor"/><path d="M8 3v4M16 3v4"/><path d="M3.5 10h17" stroke="{{t.bg}}"/></svg>Datas</a>
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 52px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{t.mu}}">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Nós</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  theme(dark) {
+    return dark
+      ? { bg: '#0E0C11', sf: '#1A171E', sel: '#2E2935', ln: '#2B2631', tx: '#F6F2F8', mu: '#A89FAE', ac: '#F2649F', nav: 'rgba(14,12,17,0.86)', ams: '#33230E', amt: '#FFC47E', vis: '#241E45', vit: '#BCB1FF', bls: '#0F2A45', blt: '#93C5FF', grs: '#12301F', grt: '#86E3AC', empty: '#3A3440' }
+      : { bg: '#FFFFFF', sf: '#F5F2F6', sel: '#FFFFFF', ln: '#ECE6EE', tx: '#17121B', mu: '#6C6472', ac: '#C2306F', nav: 'rgba(255,255,255,0.88)', ams: '#FFF0DA', amt: '#8A4A00', vis: '#EEEAFE', vit: '#4936A6', bls: '#E3EFFC', blt: '#1B5BA6', grs: '#E2F5E9', grt: '#17683C', empty: '#D6CFDA' };
+  }
+  renderVals() {
+    const dark = !!this.props.dark;
+    const t = this.theme(dark);
+    const s = this.state || {};
+    const type = s.type || 'm';
+    const seg = typeof s.seg === 'number' ? s.seg : 0;
+    const types = {
+      m: { name: 'Manhã', hours: '7–15', bg: t.ams, fg: t.amt },
+      t: { name: 'Tarde', hours: '15–23', bg: t.vis, fg: t.vit },
+      i: { name: 'Intermédio', hours: '10–18', bg: t.bls, fg: t.blt },
+      f: { name: 'Folga', hours: '', bg: t.grs, fg: t.grt }
+    };
+    const base = { 1: 't', 2: 't', 3: 'm', 4: 'm', 5: 'f', 6: 'f', 7: 'm', 8: 'm', 9: 'i', 10: 't', 11: 't', 12: 't', 13: 'f', 14: 'm', 15: 'm', 16: 'm', 17: 'i', 18: 't', 19: 'f', 20: 'f', 21: 'f', 22: 'm', 23: 'm', 24: 't' };
+    const days = Object.assign({}, base, s.days || {});
+    const cells = [{ isDay: false, blank: true }];
+    for (let d = 1; d <= 31; d++) {
+      const ty = types[days[d]];
+      cells.push({
+        isDay: true,
+        blank: false,
+        n: d,
+        label: d + ' de dezembro' + (ty ? ', ' + ty.name : ', por marcar'),
+        bg: ty ? ty.bg : 'transparent',
+        fg: ty ? ty.fg : t.mu,
+        border: ty ? 'transparent' : t.empty,
+        pick: () => {
+          const next = Object.assign({}, days);
+          next[d] = type;
+          this.setState({ days: next });
+        }
+      });
+    }
+    while (cells.length % 7) cells.push({ isDay: false, blank: true });
+    const palette = ['m', 't', 'i', 'f'].map((id) => ({
+      name: types[id].name,
+      hours: types[id].hours,
+      bg: types[id].bg,
+      fg: types[id].fg,
+      ring: id === type ? t.tx : 'transparent',
+      pick: () => this.setState({ type: id })
+    }));
+    const segs = ['Eu', 'Ele', 'Juntos'].map((label, i) => ({
+      label,
+      bg: i === seg ? t.sel : 'transparent',
+      fg: i === seg ? t.tx : t.mu,
+      shadow: i === seg ? '0 2px 8px rgba(0,0,0,0.10)' : 'none',
+      pick: () => this.setState({ seg: i })
+    }));
+    return {
+      t,
+      cells,
+      palette,
+      segs,
+      grad: 'linear-gradient(135deg, #C2306F 0%, #EE5A62 55%, #F7A55A 100%)'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Início no computador</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; font-family: Inter, system-ui, sans-serif; background: {{t.bg}}; color: {{t.tx}}">
+
+<aside style="flex: 1 1 240px; max-width: 100%; box-sizing: border-box; padding: 24px 14px; border-right: 1px solid {{t.ln}}; display: flex; flex-direction: column; gap: 4px">
+<div style="padding: 4px 14px 20px">
+<div style="font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 32px; letter-spacing: -0.5px; line-height: 1">Conti<span style="background: {{grad}}; -webkit-background-clip: text; background-clip: text; color: transparent">·GO</span></div>
+<div style="font-size: 12px; letter-spacing: 2px; color: {{t.mu}}; margin-top: 6px">pão e cebola</div>
+</div>
+<a href="Desktop.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 14px; border-radius: 14px; text-decoration: none; color: {{t.tx}}; background: {{t.sf}}; font-size: 15px; font-weight: 700">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Início</a>
+<a href="Mapa.dc.html" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 14px; border-radius: 14px; text-decoration: none; color: {{t.tx}}; font-size: 15px; font-weight: 600">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg>Mapa e sítios</a>
+<a href="Datas.dc.html" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 14px; border-radius: 14px; text-decoration: none; color: {{t.tx}}; font-size: 15px; font-weight: 600">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>Disponibilidade</a>
+<a href="Viagem.dc.html" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 14px; border-radius: 14px; text-decoration: none; color: {{t.tx}}; font-size: 15px; font-weight: 600">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="3"/><circle cx="9" cy="9.5" r="1.8"/><path d="m20.5 16-5-5-9 9"/></svg>Viagens</a>
+<a href="Desktop.dc.html" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 14px; border-radius: 14px; text-decoration: none; color: {{t.tx}}; font-size: 15px; font-weight: 600">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>Ideias</a>
+<a href="Desktop.dc.html" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 14px; border-radius: 14px; text-decoration: none; color: {{t.tx}}; font-size: 15px; font-weight: 600">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Nós</a>
+<a href="Despesa.dc.html" style="margin-top: 14px; height: 48px; border-radius: 24px; background: #C2306F; color: #FFFFFF; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 700; text-decoration: none">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Adicionar</a>
+<button onClick="{{toggle}}" aria-pressed="{{dark}}" style="margin-top: auto; height: 48px; width: 100%; border: none; border-radius: 14px; background: transparent; color: {{t.tx}}; display: flex; align-items: center; gap: 14px; padding: 0 14px; font: 600 15px Inter, sans-serif; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+<span style="flex: 1; text-align: left">Modo escuro</span>
+<span style="width: 42px; height: 26px; border-radius: 13px; background: {{switchBg}}; position: relative; flex: none"><span style="position: absolute; top: 3px; left: {{knob}}; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF"></span></span>
+</button>
+</aside>
+
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 24px 32px 40px">
+<div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
+<h1 style="margin: 0; font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 30px; flex: 1 1 auto">Bom dia, vocês os dois</h1>
+<div style="flex: 0 1 360px; min-width: 220px; height: 46px; border-radius: 23px; background: {{t.sf}}; display: flex; align-items: center; gap: 10px; padding: 0 18px; box-sizing: border-box">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{t.mu}}" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+<label for="pc-procura" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Procurar sítios e memórias</label>
+<input id="pc-procura" placeholder="Procurar sítios e memórias" style="flex: 1; min-width: 0; border: none; outline: none; background: transparent; font: 500 15px Inter, sans-serif; color: {{t.tx}}">
+</div>
+<button aria-label="Novidades" style="position: relative; width: 46px; height: 46px; border: none; border-radius: 23px; background: {{t.sf}}; color: {{t.tx}}; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>
+<span style="position: absolute; top: 9px; right: 10px; width: 10px; height: 10px; border-radius: 50%; background: {{t.ac}}; border: 2px solid {{t.sf}}"></span></button>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 28px; margin-top: 24px; align-items: flex-start">
+
+<div style="flex: 999 1 460px; min-width: 0; max-width: 700px">
+<div style="display: flex; gap: 18px; overflow: hidden; padding-bottom: 6px">
+<a href="Sorteio.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 84px; flex: none; text-decoration: none; color: {{t.tx}}">
+<div style="width: 84px; height: 84px; border-radius: 50%; padding: 3px; box-sizing: border-box; background: {{grad}}"><div style="width: 100%; height: 100%; border-radius: 50%; border: 3px solid {{t.bg}}; box-sizing: border-box; background: {{t.acs}}; color: {{t.ac}}; display: flex; align-items: center; justify-content: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.3" fill="currentColor"/><circle cx="15" cy="9" r="1.3" fill="currentColor"/><circle cx="9" cy="15" r="1.3" fill="currentColor"/><circle cx="15" cy="15" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg></div></div>
+<span style="font-size: 13px; font-weight: 600">Sortear</span></a>
+<sc-for list="{{stories}}" as="s" hint-placeholder-count="5">
+<a href="Viagem.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 84px; flex: none; text-decoration: none; color: {{t.tx}}">
+<div style="width: 84px; height: 84px; border-radius: 50%; padding: 3px; box-sizing: border-box; background: {{s.ring}}"><div style="position: relative; width: 100%; height: 100%; border-radius: 50%; border: 3px solid {{t.bg}}; box-sizing: border-box; overflow: hidden"><dc-import name="Scene" kind="{{s.kind}}" hint-size="100%,100%"></dc-import></div></div>
+<span style="font-size: 13px; color: {{t.mu}}">{{s.name}}</span></a>
+</sc-for>
+</div>
+
+<section style="position: relative; overflow: hidden; margin-top: 18px; border-radius: 28px; padding: 28px; background: {{heroGrad}}; color: #FFFFFF">
+<div style="position: absolute; right: 40px; top: 34px; width: 96px; height: 96px; border-radius: 24px; background: rgba(255,255,255,0.16); transform: rotate(14deg)">
+<span style="position: absolute; left: 22px; top: 22px; width: 13px; height: 13px; border-radius: 50%; background: #FFFFFF"></span>
+<span style="position: absolute; left: 42px; top: 42px; width: 13px; height: 13px; border-radius: 50%; background: #FFFFFF"></span>
+<span style="position: absolute; right: 22px; bottom: 22px; width: 13px; height: 13px; border-radius: 50%; background: #FFFFFF"></span>
+</div>
+<div style="font-size: 14px; font-weight: 600; color: #FFD9E8">Próxima janela livre</div>
+<div style="font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin-top: 6px">Sáb 5 – Dom 6 dez</div>
+<div style="font-size: 15px; margin-top: 6px; color: #FFE9F1">2 dias para os dois · 6 sítios cabem no teto</div>
+<a href="Sorteio.dc.html" style="margin-top: 20px; display: inline-flex; align-items: center; gap: 8px; height: 50px; padding: 0 24px; border-radius: 25px; background: #FFFFFF; color: #9E2462; font-weight: 700; font-size: 15px; text-decoration: none">Sortear o sítio</a>
+</section>
+
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin: 30px 0 12px">
+<h2 style="margin: 0; font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 23px">Memórias</h2>
+<a href="Viagem.dc.html" style="font-size: 14px; font-weight: 600; color: {{t.ac}}; text-decoration: none">Ver tudo</a>
+</div>
+<article style="border: 1px solid {{t.ln}}; border-radius: 26px; overflow: hidden">
+<div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px">
+<div style="position: relative; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex: none"><dc-import name="Scene" kind="aveiro" hint-size="100%,100%"></dc-import></div>
+<div style="flex: 1"><div style="font-weight: 700; font-size: 15px">Aveiro</div><div style="font-size: 13px; color: {{t.mu}}">Outubro · fomos os dois · 6 fotos</div></div>
+<span style="font-size: 12px; font-weight: 700; padding: 6px 11px; border-radius: 14px; background: {{t.acs}}; color: {{t.act}}">Voltávamos</span>
+</div>
+<div style="position: relative; height: 380px"><dc-import name="Scene" kind="aveiro" hint-size="100%,100%"></dc-import></div>
+<div style="display: flex; align-items: center; gap: 6px; padding: 10px 10px 0">
+<button aria-label="Gostámos" style="width: 44px; height: 44px; border: none; background: transparent; color: {{t.ac}}; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+<button aria-label="Notas" style="width: 44px; height: 44px; border: none; background: transparent; color: {{t.tx}}; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4A8 8 0 1 1 20 12z"/></svg></button>
+<span style="flex: 1"></span>
+<span style="font-size: 13px; color: {{t.mu}}; padding-right: 8px">Gastámos 152€ de 400€</span>
+</div>
+<p style="margin: 4px 16px 16px; font-size: 15px; line-height: 1.5">As casas às riscas da Costa Nova e um gelado que não dividimos.</p>
+</article>
+</div>
+
+<div style="flex: 1 1 300px; min-width: 0; max-width: 400px; display: flex; flex-direction: column; gap: 20px">
+<div style="position: relative; height: 250px; border-radius: 24px; overflow: hidden; background: {{m.water}}">
+<svg width="100%" height="100%" viewBox="0 40 175 140" preserveAspectRatio="xMidYMid slice" style="display: block" role="img" aria-label="Mapa com as viagens e os sítios por ir">
+<path d="M13 34L36 20L55 7L107 15L156 19L179 20L205 22L242 41L281 44L307 53L341 58L312 88L278 112L247 155L260 180L229 217L191 245L140 248L116 269L91 255L74 231L49 238L21 238L23 206L8 177L10 158L18 150L23 131L28 114L30 97L25 78L25 72L27 61Z" fill="{{m.land}}" stroke="{{m.coast}}" stroke-width="0.5"/>
+<path d="M25 73L60 78L79 75L92 85L80 100L77 116L72 140L75 155L69 173L62 200L60 215L62 231" fill="none" stroke="{{m.border}}" stroke-width="0.6" stroke-dasharray="1.4 1.4"/>
+<path d="M30 97Q95 72 159 122" fill="none" stroke="#C2306F" stroke-width="1.2" stroke-dasharray="3 2.4" stroke-linecap="round"/>
+<g fill="#3FA864" stroke="{{m.land}}" stroke-width="1"><circle cx="30" cy="97" r="3.4"/><circle cx="159" cy="122" r="3.4"/></g>
+<g fill="#C2306F" stroke="#FFFFFF" stroke-width="1"><circle cx="38" cy="82" r="4.4"/><circle cx="28" cy="114" r="3.8"/></g>
+<g fill="#FFFFFF" stroke="#C2306F" stroke-width="1.4"><circle cx="107" cy="104" r="3.6"/><circle cx="36" cy="129" r="3.2"/><circle cx="89" cy="155" r="3.2"/><circle cx="148" cy="105" r="3.2"/></g>
+</svg>
+<a href="Mapa.dc.html" style="position: absolute; left: 14px; bottom: 14px; height: 40px; padding: 0 16px; border-radius: 20px; background: {{t.bg}}; color: {{t.tx}}; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; text-decoration: none; box-shadow: 0 6px 18px rgba(0,0,0,0.14)">Abrir o mapa</a>
+<span style="position: absolute; right: 14px; top: 14px; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 12px; background: {{t.bg}}; color: {{t.tx}}">5 visitados · 4 por ir</span>
+</div>
+
+<div style="border-radius: 24px; background: {{t.sf}}; padding: 18px">
+<h3 style="margin: 0 0 4px; font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 19px">Cabem na próxima janela</h3>
+<div style="font-size: 13px; color: {{t.mu}}; margin-bottom: 8px">Sáb 5 – Dom 6 dez</div>
+<sc-for list="{{fits}}" as="f" hint-placeholder-count="3">
+<a href="Sorteio.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 8px 0; text-decoration: none; color: {{t.tx}}">
+<div style="position: relative; width: 52px; height: 52px; border-radius: 14px; overflow: hidden; flex: none"><dc-import name="Scene" kind="{{f.kind}}" hint-size="100%,100%"></dc-import></div>
+<div style="flex: 1; min-width: 0"><div style="font-weight: 700; font-size: 15px">{{f.name}}</div><div style="font-size: 13px; color: {{t.mu}}">{{f.meta}}</div></div>
+<span style="font-weight: 700; font-size: 15px">{{f.price}}</span>
+</a>
+</sc-for>
+</div>
+
+<div style="border-radius: 24px; background: {{t.sf}}; padding: 18px">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: {{t.mu}}">
+<svg width="20" height="20" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 24C64 36 92 44 92 72C92 94 76 106 60 106C44 106 28 94 28 72C28 44 56 36 60 24Z" fill="#C2306F"/><g fill="none" stroke="#F3B4D3" stroke-width="5" stroke-linecap="round"><path d="M60 32C50 50 46 62 46 76C46 92 53 100 60 103"/><path d="M60 32C70 50 74 62 74 76C74 92 67 100 60 103"/></g><path d="M60 27C54 21 51 17 51 13.5A9 9 0 1 1 69 13.5C69 17 66 21 60 27Z" fill="#3FA864"/></svg>
+A cebola</div>
+<div style="font-family: Fredoka, Inter, sans-serif; font-weight: 600; font-size: 34px; margin-top: 4px">+140€</div>
+<div style="font-size: 13px; color: {{t.mu}}">Para a viagem grande · meta 900€</div>
+<div style="height: 8px; border-radius: 4px; background: {{t.ring}}; margin-top: 10px; overflow: hidden"><div style="width: 16%; height: 8px; border-radius: 4px; background: {{grad}}"></div></div>
+</div>
+</div>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+  theme(dark) {
+    return dark
+      ? { bg: '#0E0C11', sf: '#1A171E', ln: '#2B2631', tx: '#F6F2F8', mu: '#A89FAE', ac: '#F2649F', acs: '#3A1428', act: '#FF9DC6', ring: '#3A3440' }
+      : { bg: '#FFFFFF', sf: '#F5F2F6', ln: '#ECE6EE', tx: '#17121B', mu: '#6C6472', ac: '#C2306F', acs: '#FCE7F0', act: '#8E1F52', ring: '#DAD3DE' };
+  }
+  renderVals() {
+    const dark = this.state && typeof this.state.dark === 'boolean' ? this.state.dark : !!this.props.dark;
+    const t = this.theme(dark);
+    const m = dark
+      ? { water: '#0D1E2B', land: '#1D1B22', coast: '#2C2832', border: '#7A3C5E' }
+      : { water: '#CFE4EF', land: '#F4F0E8', coast: '#DDD4C4', border: '#D59AB8' };
+    const grad = 'linear-gradient(135deg, #C2306F 0%, #EE5A62 55%, #F7A55A 100%)';
+    return {
+      t,
+      m,
+      dark,
+      grad,
+      heroGrad: 'linear-gradient(125deg, #5E1747 0%, #9E2462 50%, #D8455E 100%)',
+      switchBg: dark ? '#C2306F' : t.ring,
+      knob: dark ? '19px' : '3px',
+      toggle: () => this.setState({ dark: !dark }),
+      stories: [
+        { name: 'Aveiro', kind: 'aveiro', ring: grad },
+        { name: 'Braga', kind: 'braga', ring: t.ring },
+        { name: 'Guimarães', kind: 'guimaraes', ring: t.ring },
+        { name: 'Porto', kind: 'porto', ring: t.ring }
+      ],
+      fits: [
+        { name: 'Salamanca', kind: 'salamanca', meta: 'Porto 18€ · Madrid 15€', price: '~183€' },
+        { name: 'Coimbra', kind: 'coimbra', meta: 'Porto 12€ · Madrid 32€', price: '~164€' },
+        { name: 'Segóvia', kind: 'segovia', meta: 'Porto 34€ · Madrid 9€', price: '~176€' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
