@@ -320,7 +320,10 @@
     "addWish": "Juntar um sítio por ir",
     "openWishlist": "Ver na lista",
     "unavailableTitle": "Não conseguimos mostrar o mapa",
-    "unavailableText": "O teu browser não conseguiu iniciar o mapa. Tenta abrir a app noutro browser."
+    "unavailableText": "O teu browser não conseguiu iniciar o mapa. Tenta abrir a app noutro browser.",
+    "filterNext": "A seguir",
+    "filterReturn": "Voltávamos",
+    "next": "Próxima viagem"
   },
   "dates": {
     "title": "Disponibilidade",
@@ -418,7 +421,13 @@
     },
     "photoChange": "Mudar foto de perfil",
     "photoRemove": "Remover foto",
-    "photoError": "Não foi possível guardar a foto. Tenta outra vez."
+    "photoError": "Não foi possível guardar a foto. Tenta outra vez.",
+    "home": "Onde moras",
+    "homes": {
+      "porto": "Porto",
+      "madrid": "Madrid"
+    },
+    "homeHint": "No mapa, a tua foto fica na tua casa."
   },
   "login": {
     "title": "Olá de novo",
@@ -502,5 +511,11 @@
     "cebolaFirst": "Ainda é o primeiro mês: o que sobrar dele passa para a cebola.",
     "available": "Para gastar este mês",
     "availableText": "{{monthly}} de dotação, mais a cebola, menos {{spent}} já gastos."
+  },
+  "audit": {
+    "added": "Registado por {{name}} · {{when}}",
+    "written": "Escrita por {{name}} · {{when}}",
+    "updated": "Atualizado por {{name}} · {{when}}",
+    "someone": "alguém"
   }
 }

@@ -3,13 +3,16 @@ import { RouterLink } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { add, closeOutline, heartOutline, locationSharp, scanOutline } from 'ionicons/icons';
+import { add, closeOutline, heartOutline, locationSharp, scanOutline, sparklesOutline } from 'ionicons/icons';
 import { LngLatBounds, Map as MapLibreMap, Marker, setWorkerUrl } from 'maplibre-gl';
 import { boundsOf, Box, clusterPoints, curve, LabelCandidate, LngLat, MapPin, pinsFromTrips, visibleLabels } from '../../core/map.logic';
 import { ThemeService } from '../../core/theme.service';
 import { LanguageService } from '../../core/language.service';
-import { placeSubtitle } from '../../core/trips.logic';
+import { initialOf, placeSubtitle, Trip } from '../../core/trips.logic';
 import { TripsService } from '../../core/trips.service';
+import { DrawService } from '../../core/draw.service';
+import { PhotosService } from '../../core/photos.service';
+import { HomeKey, ProfileService } from '../../core/profile.service';
 import { averageStars, nearestOrigin, WishlistItem, WishPin, wishPins } from '../../core/wishlist.logic';
 import { WishlistService } from '../../core/wishlist.service';
 import { TripFlowService } from '../../features/trips/trip-flow.service';
@@ -20,9 +23,9 @@ const STYLE_LIGHT = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.js
 const STYLE_DARK = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 
 // Onde cada um de nós mora: as duas pontas da "raia".
-const HOMES: readonly { name: string; at: LngLat }[] = [
-  { name: 'Porto', at: [-8.611, 41.1496] },
-  { name: 'Madrid', at: [-3.7038, 40.4168] },
+const HOMES: readonly { key: HomeKey; name: string; at: LngLat }[] = [
+  { key: 'porto', name: 'Porto', at: [-8.611, 41.1496] },
+  { key: 'madrid', name: 'Madrid', at: [-3.7038, 40.4168] },
 ];
 
 const IBERIA: LngLat = [-5.5, 40.2];
@@ -40,6 +43,9 @@ export class MapPage implements AfterViewInit, OnDestroy {
   private readonly language = inject(LanguageService).language;
   protected readonly trips = inject(TripsService);
   protected readonly wishlist = inject(WishlistService);
+  private readonly profile = inject(ProfileService);
+  private readonly photos = inject(PhotosService);
+  private readonly draws = inject(DrawService);
 
   private readonly container = viewChild.required<ElementRef<HTMLDivElement>>('map');
   private map: MapLibreMap | undefined;
@@ -49,6 +55,7 @@ export class MapPage implements AfterViewInit, OnDestroy {
   /** Os pins por ir, com o que os desenhou: só se refazem quando mudam. */
   private readonly wishMarkers = new Map<string, { marker: Marker; signature: string }>();
   private homeMarkers: Marker[] = [];
+  private nextMarker: Marker | undefined;
   /** Os grupos de pins que, com o mapa afastado, ficariam uns por cima dos outros. */
   private clusterMarkers: { marker: Marker; signature: string }[] = [];
   private clusterSignature = '';
@@ -58,14 +65,32 @@ export class MapPage implements AfterViewInit, OnDestroy {
   protected readonly summary = computed(() => pinsFromTrips(this.trips.done()));
   protected readonly visited = computed(() => this.summary().pins.length + this.summary().withoutLocation);
   protected readonly failed = signal(false);
+  /** Passa a verdadeiro quando o mapa existe: os marcadores que dependem de dados esperam por isto. */
+  private readonly mapCreated = signal(false);
 
   // Que pins se veem: os sítios onde já fomos e os que estão na lista "Por ir".
   protected readonly showVisited = signal(true);
   protected readonly showWishes = signal(true);
+  /** Só os sítios onde voltávamos (os que marcámos "voltava"). */
+  protected readonly onlyReturn = signal(false);
+  protected readonly showNext = signal(true);
+  protected readonly returnCount = computed(() => this.trips.done().filter((trip) => trip.wouldReturn === 'yes').length);
+  /** A viagem sorteada que vem a seguir, se o sítio tiver coordenadas. */
+  protected readonly next = computed(() => {
+    const trip = this.draws.active();
+    return trip && trip.place.lat !== null && trip.place.lng !== null ? trip : null;
+  });
   private readonly wishPinList = computed(() =>
     wishPins(this.wishlist.items(), new Set(this.trips.done().map((trip) => trip.placeId))),
   );
-  private readonly visiblePins = computed(() => (this.showVisited() ? this.summary().pins : []));
+  private readonly visiblePins = computed(() => {
+    if (!this.showVisited()) return [];
+    const pins = this.onlyReturn()
+      ? pinsFromTrips(this.trips.done().filter((trip) => trip.wouldReturn === 'yes')).pins
+      : this.summary().pins;
+    // A capa da última viagem (se tem fotos) serve de rosto ao pin.
+    return pins.map((pin) => ({ ...pin, cover: this.photos.coverThumbUrl(pin.latestTripId) }));
+  });
   private readonly visibleWishPins = computed(() => (this.showWishes() ? this.wishPinList() : []));
   /** O sítio por ir em que se tocou: abre um cartão em baixo. */
   protected readonly selectedWish = signal<WishlistItem | null>(null);
@@ -74,7 +99,7 @@ export class MapPage implements AfterViewInit, OnDestroy {
   );
 
   constructor() {
-    addIcons({ add, closeOutline, heartOutline, locationSharp, scanOutline });
+    addIcons({ add, closeOutline, heartOutline, locationSharp, scanOutline, sparklesOutline });
 
     // O mapa muda de estilo quando a app muda entre claro e escuro.
     effect(() => {
@@ -96,6 +121,21 @@ export class MapPage implements AfterViewInit, OnDestroy {
           this.fit(false);
         }
       });
+    });
+
+    // As casas mostram a foto de quem mora lá; refazem-se quando as pessoas (ou as fotos) mudam.
+    effect(() => {
+      if (!this.mapCreated()) return;
+      this.profile.people();
+      this.profile.avatarUrl(this.profile.profile()?.id ?? null);
+      this.profile.avatarUrl(this.profile.partner()?.id ?? null);
+      untracked(() => this.addHomes());
+    });
+
+    effect(() => {
+      if (!this.mapCreated()) return;
+      const next = this.showNext() ? this.next() : null;
+      untracked(() => this.syncNext(next));
     });
 
     // Se o sítio selecionado sai da lista, o cartão fecha.
@@ -177,10 +217,12 @@ export class MapPage implements AfterViewInit, OnDestroy {
     map.touchZoomRotate.disableRotation();
     this.map = map;
     this.mapStyleIsDark = dark;
+    this.zone.run(() => this.mapCreated.set(true));
 
     map.on('style.load', () => this.addRaia());
     map.on('load', () => {
       this.addHomes();
+      this.syncNext(this.showNext() ? this.next() : null);
       this.syncPins(this.visiblePins());
       this.syncWishPins(this.visibleWishPins());
       if (this.trips.loaded() && (this.wishlist.loaded() || this.wishlist.loadFailed())) {
@@ -215,6 +257,7 @@ export class MapPage implements AfterViewInit, OnDestroy {
   private declutter(): void {
     const groups: { element: HTMLElement; priority: number }[] = [
       ...this.homeMarkers.map((marker) => ({ element: marker.getElement(), priority: 0 })),
+      ...(this.nextMarker ? [{ element: this.nextMarker.getElement(), priority: 0 }] : []),
       ...[...this.pinMarkers.values()].map((marker) => ({ element: marker.getElement(), priority: 1 })),
       ...[...this.wishMarkers.values()].map((entry) => ({ element: entry.marker.getElement(), priority: 2 })),
     ];
@@ -316,21 +359,66 @@ export class MapPage implements AfterViewInit, OnDestroy {
     });
   }
 
+  /** As duas casas: com a foto de perfil de quem lá mora (ou a casinha, se ainda ninguém disse onde mora). */
   private addHomes(): void {
     const map = this.map;
-    if (!map || this.homeMarkers.length) return;
+    if (!map) return;
+    for (const marker of this.homeMarkers) marker.remove();
     this.homeMarkers = HOMES.map((home) => {
+      const people = this.profile.people().filter((person) => person.home === home.key);
       const element = document.createElement('div');
       element.className = 'ct-home-pin';
-      element.innerHTML =
-        '<span class="ct-home-pin__dot" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg></span>' +
-        `<span class="ct-home-pin__label">${home.name}</span>`;
+      const dot = document.createElement('span');
+      dot.setAttribute('aria-hidden', 'true');
+      if (people.length) {
+        dot.className = 'ct-home-pin__dot ct-home-pin__dot--faces';
+        for (const person of people) {
+          const face = document.createElement('span');
+          face.className = 'ct-home-pin__face';
+          face.textContent = (person.name || '?').charAt(0).toUpperCase();
+          const url = this.profile.avatarUrl(person.id);
+          if (url) face.style.backgroundImage = `url("${url}")`;
+          if (url) face.textContent = '';
+          dot.append(face);
+        }
+      } else {
+        dot.className = 'ct-home-pin__dot';
+        dot.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>';
+      }
+      const label = document.createElement('span');
+      label.className = 'ct-home-pin__label';
+      label.textContent = home.name;
+      element.append(dot, label);
       return new Marker({ element, anchor: 'center' }).setLngLat(home.at).addTo(map);
     });
     this.scheduleDeclutter();
   }
 
-  private syncPins(pins: readonly MapPin[]): void {
+  /** O pin da viagem sorteada: maior, com um halo que pulsa. Abre a viagem. */
+  private syncNext(trip: Trip | null): void {
+    const map = this.map;
+    this.nextMarker?.remove();
+    this.nextMarker = undefined;
+    if (!map || !trip || trip.place.lat === null || trip.place.lng === null) return;
+    const element = document.createElement('div');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'ct-pin ct-pin--next';
+    button.setAttribute('aria-label', trip.place.name);
+    button.textContent = initialOf(trip.place.name);
+    const label = document.createElement('span');
+    label.className = 'ct-pin__label';
+    label.textContent = trip.place.name;
+    element.append(button, label);
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
+      this.zone.run(() => void this.flow.openDetail(trip.id));
+    });
+    this.nextMarker = new Marker({ element, anchor: 'center' }).setLngLat([trip.place.lng, trip.place.lat]).addTo(map);
+    this.scheduleDeclutter();
+  }
+
+  private syncPins(pins: readonly (MapPin & { cover?: string | null })[]): void {
     const map = this.map;
     if (!map) return;
 
@@ -350,7 +438,7 @@ export class MapPage implements AfterViewInit, OnDestroy {
     this.scheduleDeclutter();
   }
 
-  private createPin(pin: MapPin, map: MapLibreMap): Marker {
+  private createPin(pin: MapPin & { cover?: string | null }, map: MapLibreMap): Marker {
     // O elemento de fora é do MapLibre (ele move-o); o botão de dentro é nosso.
     const element = document.createElement('div');
     const button = document.createElement('button');
@@ -358,7 +446,12 @@ export class MapPage implements AfterViewInit, OnDestroy {
     button.className = 'ct-pin';
     button.style.background = `linear-gradient(135deg, ${pin.colors.from}, ${pin.colors.to})`;
     button.setAttribute('aria-label', pin.name);
-    button.textContent = pin.initial;
+    if (pin.cover) {
+      button.classList.add('ct-pin--photo');
+      button.style.backgroundImage = `url("${pin.cover}")`;
+    } else {
+      button.textContent = pin.initial;
+    }
     if (pin.trips > 1) {
       const count = document.createElement('span');
       count.className = 'ct-pin__count';
@@ -427,7 +520,12 @@ export class MapPage implements AfterViewInit, OnDestroy {
     const map = this.map;
     if (!map) return;
     const pins = [...this.visiblePins(), ...this.visibleWishPins()];
-    const points: LngLat[] = [...pins.map((pin): LngLat => [pin.lng, pin.lat]), ...HOMES.map((home) => home.at)];
+    const next = this.showNext() ? this.next() : null;
+    const points: LngLat[] = [
+      ...pins.map((pin): LngLat => [pin.lng, pin.lat]),
+      ...(next ? [[next.place.lng!, next.place.lat!] as LngLat] : []),
+      ...HOMES.map((home) => home.at),
+    ];
     const box = boundsOf(points);
     if (!box) return;
 

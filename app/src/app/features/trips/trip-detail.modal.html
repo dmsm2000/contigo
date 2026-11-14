@@ -71,6 +71,8 @@
         </section>
       }
 
+      <app-audit-line class="audit ct-rise" style="--i: 5" [data]="t" />
+
       @if (isDrawn(t)) {
         <section class="veto ct-rise" style="--i: 5">
           <p>{{ 'trip.detail.vetoHint' | transloco }}</p>

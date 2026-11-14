@@ -5,6 +5,9 @@ import { Language, LanguageService } from './language.service';
 import { SupabaseService } from './supabase.service';
 import { ThemePreference, ThemeService } from './theme.service';
 
+/** As duas pontas da raia. */
+export type HomeKey = 'porto' | 'madrid';
+
 export interface Profile {
   id: string;
   name: string;
@@ -14,12 +17,14 @@ export interface Profile {
   monthly_allowance: number;
   /** Onde está a foto de perfil no bucket `avatars`, se a pessoa pôs uma. */
   avatar_path: string | null;
+  /** Onde mora, se já escolheu. */
+  home: HomeKey | null;
 }
 
 const BUCKET = 'avatars';
 const URL_TTL_SECONDS = 12 * 60 * 60;
 
-const COLUMNS = 'id, name, language, theme, monthly_allowance, avatar_path';
+const COLUMNS = 'id, name, language, theme, monthly_allowance, avatar_path, home';
 
 /** O perfil de quem está a usar a app. A língua e o tema seguem a pessoa entre dispositivos. */
 @Injectable({ providedIn: 'root' })
@@ -147,6 +152,22 @@ export class ProfileService {
     const { data, error } = await this.supabase
       .from('profiles')
       .update({ name })
+      .eq('id', userId)
+      .select(COLUMNS)
+      .single<Profile>();
+    if (error || !data) return false;
+    this.profile.set(data);
+    this.people.update((people) => people.map((person) => (person.id === data.id ? data : person)));
+    return true;
+  }
+
+  /** Diz onde moro (ou tira a escolha). Devolve false se a base de dados recusou. */
+  async setHome(home: HomeKey | null): Promise<boolean> {
+    const userId = this.auth.userId();
+    if (!userId) return false;
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .update({ home })
       .eq('id', userId)
       .select(COLUMNS)
       .single<Profile>();

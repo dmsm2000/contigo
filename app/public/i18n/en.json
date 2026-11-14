@@ -320,7 +320,10 @@
     "addWish": "Add a place to go",
     "openWishlist": "See on the list",
     "unavailableTitle": "We can't show the map",
-    "unavailableText": "Your browser couldn't start the map. Try opening the app in another browser."
+    "unavailableText": "Your browser couldn't start the map. Try opening the app in another browser.",
+    "filterNext": "Up next",
+    "filterReturn": "We'd go back",
+    "next": "Next trip"
   },
   "dates": {
     "title": "Availability",
@@ -418,7 +421,13 @@
     },
     "photoChange": "Change profile photo",
     "photoRemove": "Remove photo",
-    "photoError": "Couldn't save the photo. Try again."
+    "photoError": "Couldn't save the photo. Try again.",
+    "home": "Where you live",
+    "homes": {
+      "porto": "Porto",
+      "madrid": "Madrid"
+    },
+    "homeHint": "On the map, your photo sits on your home."
   },
   "login": {
     "title": "Hello again",
@@ -502,5 +511,11 @@
     "cebolaFirst": "It is still the first month: whatever is left carries into the onion.",
     "available": "To spend this month",
     "availableText": "{{monthly}} allowance, plus the onion, minus {{spent}} already spent."
+  },
+  "audit": {
+    "added": "Added by {{name}} · {{when}}",
+    "written": "Written by {{name}} · {{when}}",
+    "updated": "Updated by {{name}} · {{when}}",
+    "someone": "someone"
   }
 }

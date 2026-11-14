@@ -32,6 +32,30 @@
             {{ 'map.filterWishes' | transloco }} · {{ wishlist.items().length }}
           </button>
         }
+        @if (returnCount()) {
+          <button
+            class="chip chip--toggle"
+            type="button"
+            [class.off]="!onlyReturn()"
+            [attr.aria-pressed]="onlyReturn()"
+            (click)="onlyReturn.set(!onlyReturn())"
+          >
+            <ion-icon name="heart-outline" aria-hidden="true"></ion-icon>
+            {{ 'map.filterReturn' | transloco }} · {{ returnCount() }}
+          </button>
+        }
+        @if (next()) {
+          <button
+            class="chip chip--toggle"
+            type="button"
+            [class.off]="!showNext()"
+            [attr.aria-pressed]="showNext()"
+            (click)="showNext.set(!showNext())"
+          >
+            <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
+            {{ 'map.filterNext' | transloco }}
+          </button>
+        }
         @if (summary().withoutLocation) {
           <span class="chip chip--muted">{{ 'map.noLocation' | transloco: { count: summary().withoutLocation } }}</span>
         }

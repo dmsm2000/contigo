@@ -30,6 +30,8 @@ export interface Trip {
   drawEntry: string | null;
   createdBy: string | null;
   createdAt: string;
+  updatedBy: string | null;
+  updatedAt: string;
   place: Place;
 }
 
@@ -58,6 +60,8 @@ export interface TripRow {
   draw_entry: string | null;
   created_by: string | null;
   created_at: string;
+  updated_by: string | null;
+  updated_at: string;
   place: PlaceRow;
 }
 
@@ -91,6 +95,8 @@ export function toTrip(row: TripRow): Trip {
     drawEntry: row.draw_entry,
     createdBy: row.created_by,
     createdAt: row.created_at,
+    updatedBy: row.updated_by,
+    updatedAt: row.updated_at,
     place: toPlace(row.place),
   };
 }

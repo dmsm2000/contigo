@@ -291,6 +291,11 @@ try {
   check('não se registam despesas em nome do outro', Boolean(expForged.error));
   const expFix = await b.from('expenses').update({ amount_eur: 40, category: 'transport' }).eq('id', expA.data.id).select();
   check('B corrige o valor e a categoria', expFix.data?.length === 1 && Number(expFix.data[0].amount_eur) === 40, expFix.error?.message);
+  check('a despesa guarda quem a corrigiu por último', expFix.data?.[0]?.updated_by === created[1], String(expFix.data?.[0]?.updated_by));
+  const tripTouch = await b.from('trips').update({ note: 'Mexido por B' }).eq('id', expTrip.data.id).select();
+  check('a viagem guarda quem a alterou por último', tripTouch.data?.[0]?.updated_by === created[1], tripTouch.error?.message);
+  const tripForge = await b.from('trips').update({ note: 'x', updated_by: created[0] }).eq('id', expTrip.data.id).select();
+  check('não se escreve o nome de outra pessoa em updated_by', tripForge.data?.[0]?.updated_by === created[1], tripForge.error?.message);
   const expMove = await b.from('expenses').update({ user_id: created[1] }).eq('id', expA.data.id).select();
   check('uma despesa não muda de autor', Boolean(expMove.error));
   const expZero = await a.from('expenses').insert({ trip_id: expTrip.data.id, amount_eur: 0 });
@@ -325,6 +330,12 @@ try {
   check('só se aceita JPEG', Boolean(avatarPng.error));
   const avatarRow = await a.from('profiles').update({ avatar_path: `${created[0]}/1.jpg` }).eq('id', created[0]).select();
   check('A guarda o caminho da foto no perfil', avatarRow.data?.length === 1, avatarRow.error?.message);
+  const homeOk = await a.from('profiles').update({ home: 'porto' }).eq('id', created[0]).select();
+  check('A diz onde mora', homeOk.data?.length === 1 && homeOk.data[0].home === 'porto', homeOk.error?.message);
+  const homeBad = await a.from('profiles').update({ home: 'lisboa' }).eq('id', created[0]);
+  check('só se aceita Porto ou Madrid', Boolean(homeBad.error));
+  const homeForged = await b.from('profiles').update({ home: 'madrid' }).eq('id', created[0]).select();
+  check('B não muda a casa de A', !homeForged.error && homeForged.data?.length === 0);
   const avatarRemoveA = await a.storage.from('avatars').remove([`${created[0]}/1.jpg`]);
   check('A apaga a sua foto', avatarRemoveA.data?.length === 1);
 } finally {

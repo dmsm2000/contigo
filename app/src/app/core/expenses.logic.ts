@@ -19,6 +19,8 @@ export interface ExpenseRow {
   note: string | null;
   spent_on: string;
   created_at: string;
+  updated_at: string;
+  updated_by: string | null;
 }
 
 export interface Expense {
@@ -31,6 +33,8 @@ export interface Expense {
   /** O dia em que se gastou: "2026-11-14". */
   spentOn: string;
   createdAt: string;
+  updatedAt: string;
+  updatedBy: string | null;
 }
 
 export function toExpense(row: ExpenseRow): Expense {
@@ -44,6 +48,8 @@ export function toExpense(row: ExpenseRow): Expense {
     note: row.note,
     spentOn: row.spent_on,
     createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    updatedBy: row.updated_by,
   };
 }
 

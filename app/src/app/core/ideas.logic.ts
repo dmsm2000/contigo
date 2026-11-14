@@ -16,6 +16,7 @@ export interface IdeaRow {
   status: IdeaStatus;
   created_at: string;
   updated_at: string;
+  updated_by: string | null;
 }
 
 export interface Idea {
@@ -25,6 +26,7 @@ export interface Idea {
   status: IdeaStatus;
   createdAt: string;
   updatedAt: string;
+  updatedBy: string | null;
 }
 
 export function toIdea(row: IdeaRow): Idea {
@@ -35,6 +37,7 @@ export function toIdea(row: IdeaRow): Idea {
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    updatedBy: row.updated_by,
   };
 }
 

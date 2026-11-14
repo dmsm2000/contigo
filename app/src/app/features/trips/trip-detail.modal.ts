@@ -9,6 +9,7 @@ import { TripsService } from '../../core/trips.service';
 import { Photo } from '../../core/photos.logic';
 import { PhotosService } from '../../core/photos.service';
 import { Trip } from '../../core/trips.logic';
+import { AuditLineComponent } from '../audit/audit-line.component';
 import { AddPhotosModal } from '../photos/add-photos.modal';
 import { PhotoImgComponent } from '../photos/photo-img.component';
 import { PhotoViewerModal } from '../photos/photo-viewer.modal';
@@ -16,7 +17,7 @@ import { TripLabels } from './trip-labels.service';
 
 @Component({
   selector: 'app-trip-detail-modal',
-  imports: [IonContent, IonIcon, TranslocoPipe, PhotoImgComponent],
+  imports: [IonContent, IonIcon, TranslocoPipe, PhotoImgComponent, AuditLineComponent],
   templateUrl: './trip-detail.modal.html',
   styleUrl: './trip-detail.modal.scss',
 })

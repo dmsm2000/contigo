@@ -90,6 +90,7 @@
                 <span class="expense-body">
                   <strong>{{ expense.note || ('expenses.category.' + expense.category | transloco) }}</strong>
                   <small>{{ 'expenses.category.' + expense.category | transloco }} · {{ tripName(expense) }}</small>
+                  <app-audit-line [data]="{ createdBy: expense.userId, createdAt: expense.createdAt, updatedBy: expense.updatedBy, updatedAt: expense.updatedAt }" />
                 </span>
                 <span class="amount">{{ money(expense.amount) }}</span>
                 <button class="ct-icon-btn del" type="button" (click)="confirmRemove(expense)" [attr.aria-label]="'expenses.remove' | transloco">

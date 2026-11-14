@@ -12,11 +12,12 @@ import { formatCost, formatTripDate } from '../../core/trips.logic';
 import { TripsService } from '../../core/trips.service';
 import { TripFlowService } from '../../features/trips/trip-flow.service';
 import { TripLabels } from '../../features/trips/trip-labels.service';
+import { AuditLineComponent } from '../../features/audit/audit-line.component';
 
 /** Quanto se gastou, por viagem e por categoria, e a cebola: o que sobra das dotações. */
 @Component({
   selector: 'app-expenses',
-  imports: [IonContent, IonIcon, RouterLink, TranslocoPipe],
+  imports: [IonContent, IonIcon, RouterLink, TranslocoPipe, AuditLineComponent],
   templateUrl: './expenses.page.html',
   styleUrl: './expenses.page.scss',
 })

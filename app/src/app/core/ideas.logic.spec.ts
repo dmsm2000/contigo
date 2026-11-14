@@ -17,6 +17,7 @@ const idea = (id: string, status: Idea['status'], createdAt: string): Idea => ({
   status,
   createdAt,
   updatedAt: createdAt,
+  updatedBy: null,
 });
 
 describe('cleanIdeaText', () => {
@@ -77,8 +78,8 @@ describe('countByStatus e filterIdeas', () => {
 describe('toIdea e formatIdeaDate', () => {
   it('traduz a linha da base de dados', () => {
     expect(
-      toIdea({ id: 'i', user_id: 'u', body: 'Texto', status: 'planned', created_at: '2026-11-13T10:00:00Z', updated_at: '2026-11-14T10:00:00Z' }),
-    ).toEqual({ id: 'i', userId: 'u', body: 'Texto', status: 'planned', createdAt: '2026-11-13T10:00:00Z', updatedAt: '2026-11-14T10:00:00Z' });
+      toIdea({ id: 'i', user_id: 'u', body: 'Texto', status: 'planned', created_at: '2026-11-13T10:00:00Z', updated_at: '2026-11-14T10:00:00Z', updated_by: 'v' }),
+    ).toEqual({ id: 'i', userId: 'u', body: 'Texto', status: 'planned', createdAt: '2026-11-13T10:00:00Z', updatedAt: '2026-11-14T10:00:00Z', updatedBy: 'v' });
   });
 
   it('escreve o dia e o mês', () => {

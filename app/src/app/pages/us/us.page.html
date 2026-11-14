@@ -67,6 +67,18 @@
     </section>
 
     <section class="setting ct-rise" style="--i: 2">
+      <h2 class="setting-title">{{ 'us.home' | transloco }}</h2>
+      <div class="segmented" [class.none]="!profile.profile()?.home" style="--n: 2" role="group" [attr.aria-label]="'us.home' | transloco" [style.--idx]="homes.indexOf(profile.profile()?.home ?? 'porto')">
+        @for (option of homes; track option) {
+          <button type="button" [class.on]="profile.profile()?.home === option" [attr.aria-pressed]="profile.profile()?.home === option" (click)="setHome(option)">
+            {{ 'us.homes.' + option | transloco }}
+          </button>
+        }
+      </div>
+      <p class="hint home-hint">{{ 'us.homeHint' | transloco }}</p>
+    </section>
+
+    <section class="setting ct-rise" style="--i: 2">
       <h2 class="setting-title">{{ 'us.language' | transloco }}</h2>
       <div class="segmented" role="group" [attr.aria-label]="'us.language' | transloco" [style.--idx]="languages.indexOf(language.language())">
         @for (option of languages; track option) {

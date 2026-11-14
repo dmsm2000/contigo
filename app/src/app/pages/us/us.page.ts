@@ -9,7 +9,7 @@ import { AuthService } from '../../core/auth.service';
 import { IdeasService } from '../../core/ideas.service';
 import { Language, LANGUAGES, LanguageService } from '../../core/language.service';
 import { cleanName, MAX_NAME_LENGTH } from '../../core/profile.logic';
-import { ProfileService } from '../../core/profile.service';
+import { HomeKey, ProfileService } from '../../core/profile.service';
 import { ThemePreference, ThemeService } from '../../core/theme.service';
 import { AvatarComponent } from '../../features/profile/avatar.component';
 
@@ -39,6 +39,7 @@ export class UsPage {
   protected readonly avatarBusy = signal(false);
   protected readonly avatarFailed = signal(false);
 
+  protected readonly homes: readonly HomeKey[] = ['porto', 'madrid'];
   protected readonly maxNameLength = MAX_NAME_LENGTH;
   protected readonly nameBusy = signal(false);
   protected readonly nameStatus = signal<NameStatus>({ kind: 'idle' });
@@ -68,6 +69,10 @@ export class UsPage {
 
   protected setTheme(theme: ThemePreference): void {
     void this.profile.setTheme(theme);
+  }
+
+  protected setHome(home: HomeKey): void {
+    void this.profile.setHome(this.profile.profile()?.home === home ? null : home);
   }
 
   protected onName(): void {

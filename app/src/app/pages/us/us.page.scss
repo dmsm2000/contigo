@@ -145,6 +145,16 @@
   color: var(--ct-mu);
 }
 
+.segmented.none::before {
+  opacity: 0;
+}
+
+.home-hint {
+  margin: 8px 4px 0;
+  font-size: 13px;
+  color: var(--ct-mu);
+}
+
 .segmented {
   --n: 3;
   --idx: 0;

@@ -34,7 +34,7 @@
             <p class="idea-body">{{ idea.body }}</p>
 
             <div class="idea-meta">
-              <span>{{ author(idea) }} · {{ date(idea) }}</span>
+              <app-audit-line kind="written" [data]="{ createdBy: idea.userId, createdAt: idea.createdAt, updatedBy: idea.updatedBy, updatedAt: idea.updatedAt }" />
               @if (ideas.isMine(idea)) {
                 <span class="idea-tools">
                   <button class="tool" type="button" (click)="edit(idea)" [attr.aria-label]="'ideas.edit' | transloco">

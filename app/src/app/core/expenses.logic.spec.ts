@@ -21,6 +21,8 @@ const expense = (id: string, amount: number, extra: Partial<Expense> = {}): Expe
   note: null,
   spentOn: '2026-10-05',
   createdAt: '2026-10-05T10:00:00Z',
+  updatedAt: '2026-10-05T10:00:00Z',
+  updatedBy: null,
   ...extra,
 });
 
@@ -67,7 +69,7 @@ describe('totais', () => {
 
 describe('toExpense', () => {
   it('converte o numeric (texto) em número', () => {
-    const row = { id: 'x', trip_id: 't', user_id: null, amount_eur: '42.50', category: 'food' as const, note: null, spent_on: '2026-10-01', created_at: '2026-10-01T00:00:00Z' };
+    const row = { id: 'x', trip_id: 't', user_id: null, amount_eur: '42.50', category: 'food' as const, note: null, spent_on: '2026-10-01', created_at: '2026-10-01T00:00:00Z', updated_at: '2026-10-02T00:00:00Z', updated_by: 'u' };
     expect(toExpense(row).amount).toBe(42.5);
   });
 });

@@ -155,6 +155,8 @@ describe('linhas do Supabase', () => {
       draw_entry: null,
       created_by: 'u1',
       created_at: '2026-11-13T18:00:00Z',
+      updated_by: 'u2',
+      updated_at: '2026-11-14T09:00:00Z',
       place: { id: 'p1', name: 'Braga', admin1: 'Braga', country_code: 'PT', lat: 41.55, lng: -8.42, osm_ref: 'R4115866' },
     };
     const trip = toTrip(row);
@@ -163,6 +165,8 @@ describe('linhas do Supabase', () => {
     expect(trip.place.countryCode).toBe('PT');
     expect(trip.place.osmRef).toBe('R4115866');
     expect(trip.drawEntry).toBeNull();
+    expect(trip.updatedBy).toBe('u2');
+    expect(trip.updatedAt).toBe('2026-11-14T09:00:00Z');
   });
 
   it('mantém o custo vazio como nulo', () => {

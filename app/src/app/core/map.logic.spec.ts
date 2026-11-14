@@ -26,6 +26,8 @@ const trip = (id: string, p: Place, startDate: string): Trip => ({
   drawEntry: null,
   createdBy: null,
   createdAt: '2026-11-13T18:00:00Z',
+  updatedBy: null,
+  updatedAt: '2026-11-13T18:00:00Z',
   place: p,
 });
 
