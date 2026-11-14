@@ -1,5 +1,7 @@
 {
-  "app": { "tagline": "bread and onions" },
+  "app": {
+    "tagline": "bread and onions"
+  },
   "nav": {
     "label": "Main navigation",
     "home": "Home",
@@ -9,7 +11,8 @@
     "wishlist": "Wishlist",
     "us": "Us",
     "ideas": "Ideas",
-    "add": "Add"
+    "add": "Add",
+    "trips": "Trips"
   },
   "add": {
     "title": "What do you want to save?",
@@ -19,7 +22,11 @@
     "place": "Place to go",
     "idea": "Idea"
   },
-  "common": { "cancel": "Cancel", "close": "Close", "soon": "Coming soon." },
+  "common": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "soon": "Coming soon."
+  },
   "trip": {
     "form": {
       "title": "Past trip",
@@ -60,7 +67,11 @@
       "only": "Only {{name}}",
       "onlyMe": "Only me",
       "onlyOne": "Only one of us",
-      "wouldReturn": { "yes": "We'd go back", "maybe": "We might go back", "no": "We wouldn't go back" },
+      "wouldReturn": {
+        "yes": "We'd go back",
+        "maybe": "We might go back",
+        "no": "We wouldn't go back"
+      },
       "cost": "We spent {{amount}}",
       "noteLabel": "Note",
       "delete": "Delete trip",
@@ -284,7 +295,8 @@
     "seeAvailability": "See the calendar",
     "nextTrip": "Your next trip",
     "viewTrip": "See the trip",
-    "drawNow": "Draw"
+    "drawNow": "Draw",
+    "seeAll": "See all"
   },
   "map": {
     "title": "Map",
@@ -375,7 +387,11 @@
     "nameHint": "It's the name the other person sees on ideas, vetoes and lists.",
     "saveName": "Save name",
     "nameSaved": "Name saved.",
-    "nameErrors": {"empty": "Write your name.", "tooLong": "The name is too long.", "generic": "Couldn't save. Try again."},
+    "nameErrors": {
+      "empty": "Write your name.",
+      "tooLong": "The name is too long.",
+      "generic": "Couldn't save. Try again."
+    },
     "language": "Language",
     "theme": "Appearance",
     "signOut": "Sign out",
@@ -410,5 +426,15 @@
       "generic": "Something went wrong. Try again."
     }
   },
-  "languages": { "pt": "Português", "es": "Español", "en": "English" }
+  "languages": {
+    "pt": "Português",
+    "es": "Español",
+    "en": "English"
+  },
+  "trips": {
+    "title": "Trips",
+    "asStories": "Watch as stories",
+    "count_one": "{{count}} trip",
+    "count_other": "{{count}} trips"
+  }
 }

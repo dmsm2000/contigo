@@ -1,0 +1,39 @@
+<ion-content>
+  <div class="ct-page">
+    <header class="top ct-rise" style="--i: 0">
+      <a class="ct-icon-btn back" routerLink="/home" [attr.aria-label]="'nav.home' | transloco">
+        <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
+      </a>
+      <h1 class="ct-page-title">{{ 'trips.title' | transloco }}</h1>
+      @if (all().length) {
+        <button class="ct-icon-btn play" type="button" (click)="playStories()" [attr.aria-label]="'trips.asStories' | transloco">
+          <ion-icon name="play-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
+    </header>
+
+    @if (all().length) {
+      <p class="count ct-rise" style="--i: 1">
+        {{ (all().length === 1 ? 'trips.count_one' : 'trips.count_other') | transloco: { count: all().length } }}
+      </p>
+      <ul class="grid">
+        @for (trip of all(); track trip.id; let i = $index) {
+          <li class="ct-rise" [style.--i]="1 + (i < 12 ? i : 12)">
+            <button class="tile" type="button" (click)="open(trip)">
+              <span class="cover" [style.background]="labels.cover(trip)" aria-hidden="true">{{ labels.hasCover(trip) ? '' : labels.initial(trip.place) }}</span>
+              <span class="shade" aria-hidden="true"></span>
+              <span class="info">
+                <strong>{{ trip.place.name }}</strong>
+                <small>{{ labels.date(trip) }}</small>
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    } @else if (trips.loaded()) {
+      <div class="ct-card ct-empty">
+        <p>{{ 'home.memoriesEmpty' | transloco }}</p>
+      </div>
+    }
+  </div>
+</ion-content>

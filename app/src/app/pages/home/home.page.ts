@@ -19,6 +19,10 @@ import { TripFlowService } from '../../features/trips/trip-flow.service';
 import { TripLabels } from '../../features/trips/trip-labels.service';
 import { StarsComponent } from '../../features/wishlist/stars.component';
 
+/** Quantas histórias cabem no topo, e quantas memórias na lista, antes do "Ver todas". */
+const STORIES_SHOWN = 8;
+const MEMORIES_SHOWN = 4;
+
 @Component({
   selector: 'app-home',
   imports: [IonContent, IonIcon, RouterLink, TranslocoPipe, StarsComponent],
@@ -40,8 +44,11 @@ export class HomePage {
   protected readonly year = new Date().getFullYear();
   /** Os sítios diferentes do ano e os meses em que houve viagem. */
   protected readonly stats = computed(() => yearStats(this.trips.done(), this.year));
-  /** As viagens mais recentes aparecem como "histórias". */
-  protected readonly recent = computed(() => byRecentlyAdded(this.trips.done()).slice(0, 8));
+  /** As viagens mais recentes aparecem como "histórias"; as outras ficam na página "Ver todas". */
+  protected readonly recent = computed(() => byRecentlyAdded(this.trips.done()).slice(0, STORIES_SHOWN));
+  protected readonly hasMore = computed(() => this.trips.done().length > STORIES_SHOWN);
+  /** As memórias que se veem no Início; as outras abrem-se em "Ver tudo". */
+  protected readonly memories = computed(() => this.trips.done().slice(0, MEMORIES_SHOWN));
   /** A próxima janela em que os dois estão livres, se já houver. */
   protected readonly nextWindow = computed(() => {
     const next = this.availability.next();

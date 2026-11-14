@@ -1,0 +1,115 @@
+.top {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .ct-page-title {
+    flex: 1;
+    margin: 8px 0 16px;
+  }
+
+  .play {
+    margin-bottom: 8px;
+    background: var(--ct-acs);
+    color: var(--ct-act);
+  }
+
+  .back {
+    margin-bottom: 8px;
+    margin-left: -8px;
+    text-decoration: none;
+  }
+}
+
+.count {
+  margin: -6px 4px 14px;
+  font-size: 14px;
+  color: var(--ct-mu);
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (min-width: 560px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: none;
+  border-radius: 22px;
+  overflow: hidden;
+  color: #ffffff;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+.cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ct-font-display);
+  font-weight: 600;
+  font-size: 56px;
+}
+
+// Escurece o fundo para o nome se ler sobre qualquer foto.
+.shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 55%);
+}
+
+.info {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+
+  strong {
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    font-size: 12px;
+    opacity: 0.85;
+  }
+}
+
+@media (min-width: 768px) {
+  .back {
+    display: none;
+  }
+}

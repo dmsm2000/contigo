@@ -1,5 +1,7 @@
 {
-  "app": { "tagline": "pão e cebola" },
+  "app": {
+    "tagline": "pão e cebola"
+  },
   "nav": {
     "label": "Navegação principal",
     "home": "Início",
@@ -9,7 +11,8 @@
     "wishlist": "Por ir",
     "us": "Nós",
     "ideas": "Ideias",
-    "add": "Adicionar"
+    "add": "Adicionar",
+    "trips": "Viagens"
   },
   "add": {
     "title": "O que queres guardar?",
@@ -19,7 +22,11 @@
     "place": "Sítio para ir",
     "idea": "Ideia"
   },
-  "common": { "cancel": "Cancelar", "close": "Fechar", "soon": "Isto chega em breve." },
+  "common": {
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "soon": "Isto chega em breve."
+  },
   "trip": {
     "form": {
       "title": "Viagem já feita",
@@ -60,7 +67,11 @@
       "only": "Só {{name}}",
       "onlyMe": "Só eu",
       "onlyOne": "Só um de nós",
-      "wouldReturn": { "yes": "Voltávamos", "maybe": "Talvez voltássemos", "no": "Não voltávamos" },
+      "wouldReturn": {
+        "yes": "Voltávamos",
+        "maybe": "Talvez voltássemos",
+        "no": "Não voltávamos"
+      },
       "cost": "Gastámos {{amount}}",
       "noteLabel": "Nota",
       "delete": "Apagar viagem",
@@ -284,7 +295,8 @@
     "seeAvailability": "Ver no calendário",
     "nextTrip": "A vossa próxima viagem",
     "viewTrip": "Ver viagem",
-    "drawNow": "Sortear"
+    "drawNow": "Sortear",
+    "seeAll": "Ver todas"
   },
   "map": {
     "title": "Mapa",
@@ -375,7 +387,11 @@
     "nameHint": "É o nome que o outro vê nas ideias, nos vetos e nas listas.",
     "saveName": "Guardar nome",
     "nameSaved": "Nome guardado.",
-    "nameErrors": {"empty": "Escreve o teu nome.", "tooLong": "O nome é demasiado longo.", "generic": "Não foi possível guardar. Tenta outra vez."},
+    "nameErrors": {
+      "empty": "Escreve o teu nome.",
+      "tooLong": "O nome é demasiado longo.",
+      "generic": "Não foi possível guardar. Tenta outra vez."
+    },
     "language": "Língua",
     "theme": "Aparência",
     "signOut": "Sair",
@@ -410,5 +426,15 @@
       "generic": "Algo correu mal. Tenta outra vez."
     }
   },
-  "languages": { "pt": "Português", "es": "Español", "en": "English" }
+  "languages": {
+    "pt": "Português",
+    "es": "Español",
+    "en": "English"
+  },
+  "trips": {
+    "title": "Viagens",
+    "asStories": "Ver como histórias",
+    "count_one": "{{count}} viagem",
+    "count_other": "{{count}} viagens"
+  }
 }

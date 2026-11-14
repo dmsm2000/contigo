@@ -68,6 +68,7 @@ export class ShellPage {
   protected readonly sideNav: NavItem[] = [
     { tab: 'home', icon: 'home-outline', label: 'nav.home' },
     { tab: 'map', icon: 'map-outline', label: 'nav.map' },
+    { tab: 'trips', icon: 'images-outline', label: 'nav.trips' },
     { tab: 'wishlist', icon: 'heart-outline', label: 'nav.wishlist' },
     { tab: 'availability', icon: 'calendar-outline', label: 'nav.availability' },
     { tab: 'ideas', icon: 'bulb-outline', label: 'nav.ideas' },

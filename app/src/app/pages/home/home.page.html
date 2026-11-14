@@ -28,6 +28,14 @@
           </button>
         </li>
       }
+      @if (hasMore()) {
+        <li class="ct-rise" [style.--i]="2 + recent().length">
+          <a class="story" routerLink="/trips">
+            <span class="ring ring--dashed"><span class="inner"><ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></span></span>
+            <span class="story-label">{{ 'home.seeAll' | transloco }}</span>
+          </a>
+        </li>
+      }
     </ul>
 
     <section class="hero ct-rise" style="--i: 3">
@@ -116,11 +124,16 @@
     }
 
     <section class="memories ct-rise" style="--i: 7">
-      <h2 class="ct-display section-title">{{ 'home.memories' | transloco }}</h2>
+      <div class="section-head">
+        <h2 class="ct-display section-title">{{ 'home.memories' | transloco }}</h2>
+        @if (hasMore()) {
+          <a class="see-all" routerLink="/trips">{{ 'home.wishlistAll' | transloco }}</a>
+        }
+      </div>
 
       @if (trips.done().length) {
         <ul class="memory-list">
-          @for (trip of trips.done(); track trip.id; let i = $index) {
+          @for (trip of memories(); track trip.id; let i = $index) {
             <li class="ct-rise" [style.--i]="i">
               <button class="memory" type="button" (click)="open(trip)">
                 <span class="tile" [style.background]="labels.cover(trip)" aria-hidden="true">{{ labels.hasCover(trip) ? '' : labels.initial(trip.place) }}</span>

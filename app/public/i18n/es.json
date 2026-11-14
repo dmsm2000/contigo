@@ -1,5 +1,7 @@
 {
-  "app": { "tagline": "pan y cebolla" },
+  "app": {
+    "tagline": "pan y cebolla"
+  },
   "nav": {
     "label": "Navegación principal",
     "home": "Inicio",
@@ -9,7 +11,8 @@
     "wishlist": "Por ir",
     "us": "Nosotros",
     "ideas": "Ideas",
-    "add": "Añadir"
+    "add": "Añadir",
+    "trips": "Viajes"
   },
   "add": {
     "title": "¿Qué quieres guardar?",
@@ -19,7 +22,11 @@
     "place": "Sitio al que ir",
     "idea": "Idea"
   },
-  "common": { "cancel": "Cancelar", "close": "Cerrar", "soon": "Esto llega pronto." },
+  "common": {
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "soon": "Esto llega pronto."
+  },
   "trip": {
     "form": {
       "title": "Viaje ya hecho",
@@ -60,7 +67,11 @@
       "only": "Solo {{name}}",
       "onlyMe": "Solo yo",
       "onlyOne": "Solo uno de nosotros",
-      "wouldReturn": { "yes": "Volveríamos", "maybe": "Quizá volveríamos", "no": "No volveríamos" },
+      "wouldReturn": {
+        "yes": "Volveríamos",
+        "maybe": "Quizá volveríamos",
+        "no": "No volveríamos"
+      },
       "cost": "Gastamos {{amount}}",
       "noteLabel": "Nota",
       "delete": "Borrar viaje",
@@ -284,7 +295,8 @@
     "seeAvailability": "Ver en el calendario",
     "nextTrip": "Vuestro próximo viaje",
     "viewTrip": "Ver viaje",
-    "drawNow": "Sortear"
+    "drawNow": "Sortear",
+    "seeAll": "Ver todas"
   },
   "map": {
     "title": "Mapa",
@@ -375,7 +387,11 @@
     "nameHint": "Es el nombre que ve la otra persona en las ideas, los vetos y las listas.",
     "saveName": "Guardar nombre",
     "nameSaved": "Nombre guardado.",
-    "nameErrors": {"empty": "Escribe tu nombre.", "tooLong": "El nombre es demasiado largo.", "generic": "No se ha podido guardar. Inténtalo otra vez."},
+    "nameErrors": {
+      "empty": "Escribe tu nombre.",
+      "tooLong": "El nombre es demasiado largo.",
+      "generic": "No se ha podido guardar. Inténtalo otra vez."
+    },
     "language": "Idioma",
     "theme": "Apariencia",
     "signOut": "Salir",
@@ -410,5 +426,15 @@
       "generic": "Algo ha ido mal. Inténtalo otra vez."
     }
   },
-  "languages": { "pt": "Português", "es": "Español", "en": "English" }
+  "languages": {
+    "pt": "Português",
+    "es": "Español",
+    "en": "English"
+  },
+  "trips": {
+    "title": "Viajes",
+    "asStories": "Ver como historias",
+    "count_one": "{{count}} viaje",
+    "count_other": "{{count}} viajes"
+  }
 }
