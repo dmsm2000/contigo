@@ -5,11 +5,12 @@ import { addIcons } from 'ionicons';
 import { chevronBackOutline, chevronForwardOutline, closeOutline, createOutline, trashOutline } from 'ionicons/icons';
 import { cleanCaption, MAX_CAPTION_LENGTH, Photo } from '../../core/photos.logic';
 import { PhotosService } from '../../core/photos.service';
+import { PhotoImgComponent } from './photo-img.component';
 
 /** As fotos de uma viagem em ecrã inteiro: passa-se de uma a outra, lê-se e muda-se a legenda e apaga-se. */
 @Component({
   selector: 'app-photo-viewer-modal',
-  imports: [IonContent, IonIcon, TranslocoPipe],
+  imports: [IonContent, IonIcon, TranslocoPipe, PhotoImgComponent],
   templateUrl: './photo-viewer.modal.html',
   styleUrl: './photo-viewer.modal.scss',
 })
@@ -40,12 +41,12 @@ export class PhotoViewerModal implements OnInit {
   constructor() {
     addIcons({ chevronBackOutline, chevronForwardOutline, closeOutline, createOutline, trashOutline });
 
-    // Pede o link da foto que se vê e o das vizinhas, para passar de uma a outra sem esperar.
+    // Põe na cache a foto que se vê e as vizinhas, para passar de uma a outra sem esperar.
     effect(() => {
       const list = this.list();
       const at = Math.min(this.index(), list.length - 1);
       const near = [list[at], list[at + 1], list[at - 1]].filter((photo): photo is Photo => Boolean(photo));
-      untracked(() => void this.photos.ensureFull(near));
+      untracked(() => void this.photos.warm(near));
     });
 
     // Se a última foto for apagada (aqui ou no outro telemóvel), fecha-se.

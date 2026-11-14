@@ -45,6 +45,7 @@ export class PhotosService {
   private channel: RealtimeChannel | null = null;
 
   readonly photos = signal<Photo[]>([]);
+  private readonly warmed = new Set<string>();
   readonly loaded = signal(false);
   readonly loadFailed = signal(false);
 
@@ -126,6 +127,21 @@ export class PhotosService {
   /** Pede o link da foto em ecrã inteiro, e das vizinhas, para passar de uma a outra sem esperar. */
   async ensureFull(photos: readonly Photo[]): Promise<void> {
     await this.sign(photos.map((photo) => photo.path));
+  }
+
+  /** Pede os links e põe as fotos na cache do browser, para quando chegar a vez delas já estarem prontas. */
+  async warm(photos: readonly Photo[]): Promise<void> {
+    if (!photos.length) return;
+    await this.sign(photos.flatMap((photo) => [photo.thumbPath, photo.path]));
+    for (const photo of photos) {
+      for (const url of [this.thumbUrl(photo), this.fullUrl(photo)]) {
+        if (!url || this.warmed.has(url)) continue;
+        this.warmed.add(url);
+        const image = new Image();
+        image.decoding = 'async';
+        image.src = url;
+      }
+    }
   }
 
   /**

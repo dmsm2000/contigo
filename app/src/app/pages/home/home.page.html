@@ -18,6 +18,16 @@
           <span class="story-label">{{ 'home.pastTrip' | transloco }}</span>
         </button>
       </li>
+      @if (!trips.loaded()) {
+        @for (n of [1, 2, 3, 4]; track n) {
+          <li aria-hidden="true">
+            <span class="story">
+              <span class="ring ct-skeleton skel-ring"></span>
+              <span class="ct-skeleton skel-label"></span>
+            </span>
+          </li>
+        }
+      }
       @for (trip of recent(); track trip.id; let i = $index) {
         <li class="ct-rise" [style.--i]="2 + i">
           <button class="story" type="button" (click)="openStory(i)">
@@ -40,7 +50,14 @@
 
     <section class="hero ct-rise" style="--i: 3">
       <span class="dice" aria-hidden="true"><i></i><i></i><i></i></span>
-      @if (draws.active(); as active) {
+      @if (heroLoading()) {
+        <div class="hero-skel" aria-hidden="true">
+          <span class="ct-skeleton s1"></span>
+          <span class="ct-skeleton s2"></span>
+          <span class="ct-skeleton s3"></span>
+          <span class="ct-skeleton s4"></span>
+        </div>
+      } @else if (draws.active(); as active) {
         <p class="eyebrow">{{ 'home.nextTrip' | transloco }}</p>
         <h1 class="ct-display hero-title hero-title--window">{{ active.place.name }}</h1>
         <p class="hero-text">{{ labels.date(active) }}</p>
@@ -72,14 +89,21 @@
       </div>
       <div class="ct-card stat ct-rise" style="--i: 5">
         <p class="stat-label">{{ year }}</p>
-        <p class="ct-display stat-value">
-          {{ (stats().places === 1 ? 'home.places_one' : 'home.places_other') | transloco: { count: stats().places } }}
-        </p>
-        <div class="bars" aria-hidden="true">
-          @for (on of stats().months; track $index) {
-            <span [class.on]="on" [style.--bar]="$index"></span>
-          }
-        </div>
+        @if (trips.loaded()) {
+          <p class="ct-display stat-value">
+            {{ (stats().places === 1 ? 'home.places_one' : 'home.places_other') | transloco: { count: stats().places } }}
+          </p>
+          <div class="bars" aria-hidden="true">
+            @for (on of stats().months; track $index) {
+              <span [class.on]="on" [style.--bar]="$index"></span>
+            }
+          </div>
+        } @else {
+          <div class="stat-skel" aria-hidden="true">
+            <span class="ct-skeleton a"></span>
+            <span class="ct-skeleton b"></span>
+          </div>
+        }
       </div>
     </div>
 
@@ -121,6 +145,12 @@
           </div>
         }
       </section>
+    } @else if (!wishlist.loadFailed()) {
+      <section class="wishes" aria-hidden="true">
+        <h2 class="ct-display section-title">{{ 'home.wishlist' | transloco }}</h2>
+        <div class="memory ct-skeleton"></div>
+        <div class="memory ct-skeleton"></div>
+      </section>
     }
 
     <section class="memories ct-rise" style="--i: 7">
@@ -161,8 +191,8 @@
           <button class="ct-btn" type="button" (click)="addPastTrip()">{{ 'home.registerPastTrip' | transloco }}</button>
         </div>
       } @else {
-        <div class="memory skeleton" aria-hidden="true"></div>
-        <div class="memory skeleton" aria-hidden="true"></div>
+        <div class="memory ct-skeleton" aria-hidden="true"></div>
+        <div class="memory ct-skeleton" aria-hidden="true"></div>
       }
     </section>
   </div>

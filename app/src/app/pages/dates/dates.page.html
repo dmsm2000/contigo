@@ -114,7 +114,10 @@
 
     <section class="windows ct-rise" style="--i: 3">
       <h2 class="ct-display section-title">{{ 'dates.windowsTitle' | transloco }}</h2>
-      @if (windows().length) {
+      @if (!availability.loaded() && !availability.loadFailed()) {
+        <div class="window ct-skeleton skel-window" aria-hidden="true"></div>
+        <div class="window ct-skeleton skel-window" aria-hidden="true"></div>
+      } @else if (windows().length) {
         <ul class="window-list">
           @for (window of windows(); track window.start; let i = $index) {
             <li class="window ct-card ct-rise" [style.--i]="i">

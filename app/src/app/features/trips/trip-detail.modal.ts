@@ -10,12 +10,13 @@ import { Photo } from '../../core/photos.logic';
 import { PhotosService } from '../../core/photos.service';
 import { Trip } from '../../core/trips.logic';
 import { AddPhotosModal } from '../photos/add-photos.modal';
+import { PhotoImgComponent } from '../photos/photo-img.component';
 import { PhotoViewerModal } from '../photos/photo-viewer.modal';
 import { TripLabels } from './trip-labels.service';
 
 @Component({
   selector: 'app-trip-detail-modal',
-  imports: [IonContent, IonIcon, TranslocoPipe],
+  imports: [IonContent, IonIcon, TranslocoPipe, PhotoImgComponent],
   templateUrl: './trip-detail.modal.html',
   styleUrl: './trip-detail.modal.scss',
 })

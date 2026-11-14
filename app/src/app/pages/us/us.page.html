@@ -5,7 +5,11 @@
     <div class="ct-card me ct-rise" style="--i: 1">
       <span class="avatar" aria-hidden="true">{{ initial() }}</span>
       <div class="me-text">
-        <p class="me-name">{{ profile.profile()?.name || ('us.noName' | transloco) }}</p>
+        @if (profile.profile(); as me) {
+          <p class="me-name">{{ me.name || ('us.noName' | transloco) }}</p>
+        } @else {
+          <p class="me-name ct-skeleton skel-name" aria-hidden="true">&nbsp;</p>
+        }
         <p class="me-email">{{ auth.email() }}</p>
       </div>
     </div>

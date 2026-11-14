@@ -8,12 +8,10 @@
     (pointerleave)="pressCancel()"
   >
     <div class="media">
-      @if (imageUrl(); as url) {
-        <img class="image" [src]="url" [alt]="photo()?.caption ?? ('photos.alt' | transloco)" draggable="false" />
+      @if (photo(); as shown) {
+        <app-photo-img [photo]="shown" fit="contain" [alt]="shown.caption ?? ('photos.alt' | transloco)" (settled)="ready.set(true)" />
       } @else if (slide()?.kind === 'card') {
         <div class="card-bg" [style.background]="labels.tile(current.trip.place)"></div>
-      } @else {
-        <span class="spinner" aria-hidden="true"></span>
       }
       <div class="shade" aria-hidden="true"></div>
     </div>

@@ -372,17 +372,72 @@
   }
 }
 
-.skeleton {
+.memory.ct-skeleton {
   height: 80px;
   margin-bottom: 10px;
-  background: linear-gradient(90deg, var(--ct-sf) 25%, var(--ct-ln) 50%, var(--ct-sf) 75%);
-  background-size: 200% 100%;
-  animation: ct-shimmer 1.4s linear infinite;
+  border-radius: 24px;
 }
 
-@keyframes ct-shimmer {
-  to {
-    background-position: -200% 0;
+.skel-ring {
+  border-radius: 50%;
+}
+
+.skel-label {
+  width: 52px;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.stat-skel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+
+  .a {
+    width: 70%;
+    height: 28px;
+    border-radius: 10px;
+  }
+
+  .b {
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+  }
+}
+
+// O cartão grande tem fundo de cor: o brilho é de branco translúcido.
+.hero-skel {
+  --ct-sf: rgba(255, 255, 255, 0.16);
+  --ct-ln: rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+
+  span {
+    display: block;
+    border-radius: 12px;
+  }
+
+  .s1 {
+    width: 40%;
+    height: 14px;
+  }
+  .s2 {
+    width: 70%;
+    height: 34px;
+  }
+  .s3 {
+    width: 55%;
+    height: 14px;
+  }
+  .s4 {
+    width: 150px;
+    height: 48px;
+    margin-top: 6px;
+    border-radius: 24px;
   }
 }
 

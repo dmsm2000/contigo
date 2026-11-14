@@ -203,20 +203,6 @@ ion-content {
   }
 }
 
-.thumb-wait {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, var(--ct-sf) 25%, var(--ct-ln) 50%, var(--ct-sf) 75%);
-  background-size: 200% 100%;
-  animation: ct-shimmer 1.4s linear infinite;
-}
-
-@keyframes ct-shimmer {
-  to {
-    background-position: -200% 0;
-  }
-}
-
 .thumb--add {
   display: flex;
   flex-direction: column;

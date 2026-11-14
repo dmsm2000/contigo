@@ -15,23 +15,7 @@
           </button>
         }
 
-        @let full = photos.fullUrl(photo);
-        @let thumb = photos.thumbUrl(photo);
-        @if (full || thumb) {
-          @for (key of [photo.id]; track key) {
-            <img
-              class="image ct-pop"
-              [class.loading]="!full"
-              [src]="full ?? thumb"
-              [attr.width]="photo.width"
-              [attr.height]="photo.height"
-              [alt]="photo.caption ?? ('photos.alt' | transloco)"
-              draggable="false"
-            />
-          }
-        } @else {
-          <span class="spinner" aria-hidden="true"></span>
-        }
+        <app-photo-img class="image" [photo]="photo" fit="contain" [alt]="photo.caption ?? ('photos.alt' | transloco)" />
 
         @if (list().length > 1) {
           <button class="arrow arrow--next" type="button" (click)="go(1)" [attr.aria-label]="'photos.next' | transloco">

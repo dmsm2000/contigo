@@ -55,11 +55,7 @@
             @for (photo of gallery(); track photo.id; let i = $index) {
               <li>
                 <button class="thumb" type="button" (click)="openPhoto(i)" [attr.aria-label]="('photos.open' | transloco) + ' ' + (i + 1)">
-                  @if (photos.thumbUrl(photo); as url) {
-                    <img [src]="url" [alt]="photo.caption ?? ''" loading="lazy" draggable="false" />
-                  } @else {
-                    <span class="thumb-wait" aria-hidden="true"></span>
-                  }
+                  <app-photo-img [photo]="photo" [useFull]="false" [alt]="photo.caption ?? ''" />
                 </button>
               </li>
             }

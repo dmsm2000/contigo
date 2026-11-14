@@ -8,6 +8,7 @@ import { buildSlides, nextPosition, previousPosition, StoryPosition, tapAction }
 import { StoriesService } from '../../core/stories.service';
 import { Trip } from '../../core/trips.logic';
 import { TripsService } from '../../core/trips.service';
+import { PhotoImgComponent } from '../photos/photo-img.component';
 import { TripFlowService } from '../trips/trip-flow.service';
 import { TripLabels } from '../trips/trip-labels.service';
 
@@ -22,7 +23,7 @@ const HOLD_MS = 220;
  */
 @Component({
   selector: 'app-stories-modal',
-  imports: [IonIcon, TranslocoPipe],
+  imports: [IonIcon, TranslocoPipe, PhotoImgComponent],
   templateUrl: './stories.modal.html',
   styleUrl: './stories.modal.scss',
 })
@@ -66,27 +67,34 @@ export class StoriesModal implements OnInit {
     const slide = this.slide();
     return slide?.kind === 'photo' ? (this.photos.photosOf(this.group()!.trip.id).find((p) => p.id === slide.photoId) ?? null) : null;
   });
-  /** A foto grande (ou a miniatura, enquanto a grande não chega). Sem link, o tempo não corre. */
-  protected readonly imageUrl = computed(() => {
-    const photo = this.photo();
-    return photo ? (this.photos.fullUrl(photo) ?? this.photos.thumbUrl(photo)) : null;
-  });
-  protected readonly waiting = computed(() => this.slide()?.kind === 'photo' && !this.imageUrl());
+  /** A foto grande já chegou? Até lá o tempo não corre (a miniatura desfocada ocupa o lugar). */
+  protected readonly ready = signal(false);
+  protected readonly waiting = computed(() => this.slide()?.kind === 'photo' && !this.ready());
 
   constructor() {
     addIcons({ closeOutline });
 
-    // Pede os links da foto que se vê e da seguinte, para passar sem esperar.
+    // Cada ecrã novo recomeça à espera da sua foto.
+    effect(() => {
+      this.at();
+      untracked(() => this.ready.set(false));
+    });
+
+    // Põe na cache as fotos que se vêem a seguir: as próximas desta viagem e as primeiras da viagem seguinte.
     effect(() => {
       const groups = this.groups();
       const at = this.at();
       const here = groups[at.group];
       if (!here) return;
-      const wanted = here.slides.slice(at.slide, at.slide + 2).flatMap((slide) => (slide.kind === 'photo' ? [slide.photoId] : []));
-      const list = this.photos.photosOf(here.trip.id).filter((photo) => wanted.includes(photo.id));
+      const idsOf = (slides: typeof here.slides, from: number, count: number) =>
+        slides.slice(from, from + count).flatMap((slide) => (slide.kind === 'photo' ? [slide.photoId] : []));
+      const wanted: { tripId: string; ids: string[] }[] = [{ tripId: here.trip.id, ids: idsOf(here.slides, at.slide, 3) }];
+      const next = groups[at.group + 1];
+      if (next) wanted.push({ tripId: next.trip.id, ids: idsOf(next.slides, 0, 2) });
       untracked(() => {
-        void this.photos.ensureThumbs(here.trip.id);
-        void this.photos.ensureFull(list);
+        for (const { tripId, ids } of wanted) {
+          void this.photos.warm(this.photos.photosOf(tripId).filter((photo) => ids.includes(photo.id)));
+        }
       });
     });
 

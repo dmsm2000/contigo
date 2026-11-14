@@ -46,6 +46,10 @@ export class HomePage {
   protected readonly stats = computed(() => yearStats(this.trips.done(), this.year));
   /** As viagens mais recentes aparecem como "histórias"; as outras ficam na página "Ver todas". */
   protected readonly recent = computed(() => byRecentlyAdded(this.trips.done()).slice(0, STORIES_SHOWN));
+  /** O cartão grande espera pelo sorteio e pela disponibilidade, para não mostrar "sem janelas" antes de saber. */
+  protected readonly heroLoading = computed(
+    () => !(this.draws.loaded() && (this.availability.loaded() || this.availability.loadFailed())),
+  );
   protected readonly hasMore = computed(() => this.trips.done().length > STORIES_SHOWN);
   /** As memórias que se veem no Início; as outras abrem-se em "Ver tudo". */
   protected readonly memories = computed(() => this.trips.done().slice(0, MEMORIES_SHOWN));

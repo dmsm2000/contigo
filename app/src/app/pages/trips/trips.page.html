@@ -34,6 +34,12 @@
       <div class="ct-card ct-empty">
         <p>{{ 'home.memoriesEmpty' | transloco }}</p>
       </div>
+    } @else {
+      <ul class="grid" aria-hidden="true">
+        @for (n of [1, 2, 3, 4]; track n) {
+          <li><span class="tile ct-skeleton"></span></li>
+        }
+      </ul>
     }
   </div>
 </ion-content>
