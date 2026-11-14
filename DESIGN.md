@@ -104,3 +104,5 @@ O protótipo usa ilustrações provisórias. Na app entram as vossas fotos verda
 1. **Ecrã inicial:** no protótipo passou a ser o Início (histórias, cartão principal, memórias) e o mapa passou a ser o segundo separador. Na visão o mapa era o ecrã inicial. `[proposta]`
 2. **Separador Nós:** por desenhar (cebola, retrospetiva, ideias, definições).
 3. **Ecrãs em falta:** registo de viagem passada (prioridade do Marco 0), convite e login, lista e detalhe de sítios, ideias.
+
+**Ecrã de abertura (feito):** o `#splash` vive no `index.html` (CSS e logo inline, sem depender do Angular), por isso aparece no primeiro desenho: ícone com um salto, "Conti·GO" com o gradiente e "PÃO E CEBOLA". Segue o tema guardado (ou o do telemóvel). Sai com um fade depois de pelo menos 0,9 s e de se saber se há sessão (`AuthService.ready`, em `main.ts`), para não aparecer o login por engano. Com movimento reduzido não anima. No iOS, o ecrã que o sistema mostra *antes* disto continua a ser só a cor de fundo do manifesto; uma imagem própria (`apple-touch-startup-image`) pede um ficheiro por tamanho de ecrã e ficou de fora.

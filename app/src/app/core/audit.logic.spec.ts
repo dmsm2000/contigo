@@ -1,4 +1,4 @@
-import { describeAudit, relativeTime } from './audit.logic';
+import { describeAudit, latestChange, relativeTime } from './audit.logic';
 
 describe('describeAudit', () => {
   const base = { createdBy: 'a', createdAt: '2026-11-10T10:00:00Z' };
@@ -33,5 +33,22 @@ describe('relativeTime', () => {
     expect(relativeTime('2026-11-13T12:00:00Z', 'pt', now)).toMatch(/ontem/);
     expect(relativeTime('2026-11-07T12:00:00Z', 'pt', now)).toMatch(/1 semana|semana/);
     expect(relativeTime('2025-11-14T12:00:00Z', 'en', now)).toMatch(/last year/);
+  });
+});
+
+describe('latestChange', () => {
+  it('devolve a mais recente e quem a fez', () => {
+    expect(
+      latestChange([
+        { by: 'a', at: '2026-11-10T10:00:00Z' },
+        { by: 'b', at: '2026-11-12T10:00:00Z' },
+        { by: 'a', at: null },
+      ]),
+    ).toEqual({ by: 'b', at: '2026-11-12T10:00:00Z' });
+  });
+
+  it('sem nada devolve nulo', () => {
+    expect(latestChange([])).toBeNull();
+    expect(latestChange([{ by: 'a', at: undefined }])).toBeNull();
   });
 });

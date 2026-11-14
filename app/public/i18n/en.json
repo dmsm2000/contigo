@@ -516,6 +516,7 @@
     "added": "Added by {{name}} · {{when}}",
     "written": "Written by {{name}} · {{when}}",
     "updated": "Updated by {{name}} · {{when}}",
-    "someone": "someone"
+    "someone": "someone",
+    "last": "Information last updated on {{when}} ({{ago}}) by {{name}}."
   }
 }

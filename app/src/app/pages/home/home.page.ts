@@ -25,9 +25,10 @@ import { StarsComponent } from '../../features/wishlist/stars.component';
 const STORIES_SHOWN = 8;
 const MEMORIES_SHOWN = 8;
 
+import { LastUpdateComponent } from '../../features/audit/last-update.component';
 @Component({
   selector: 'app-home',
-  imports: [IonContent, IonIcon, RouterLink, TranslocoPipe, StarsComponent, AvatarComponent],
+  imports: [LastUpdateComponent, IonContent, IonIcon, RouterLink, TranslocoPipe, StarsComponent, AvatarComponent],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
 })

@@ -19,9 +19,10 @@ type NameStatus = { kind: 'idle' } | { kind: 'saved' } | { kind: 'error'; messag
 
 type PasswordStatus = { kind: 'idle' } | { kind: 'saved' } | { kind: 'error'; message: string };
 
+import { LastUpdateComponent } from '../../features/audit/last-update.component';
 @Component({
   selector: 'app-us',
-  imports: [IonContent, IonIcon, FormsModule, RouterLink, TranslocoPipe, AvatarComponent],
+  imports: [LastUpdateComponent, IonContent, IonIcon, FormsModule, RouterLink, TranslocoPipe, AvatarComponent],
   templateUrl: './us.page.html',
   styleUrl: './us.page.scss',
 })

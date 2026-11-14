@@ -51,3 +51,18 @@ export function relativeTime(iso: string, lang: Lang, now: Date = new Date()): s
   }
   return format.format(Math.round(seconds / chosen[1]), chosen[0]);
 }
+
+export interface Change {
+  by: string | null;
+  at: string;
+}
+
+/** A alteração mais recente entre várias listas: cada item conta pela última alteração, ou pela criação se nunca mudou. */
+export function latestChange(items: readonly { by: string | null; at: string | null | undefined }[]): Change | null {
+  let best: Change | null = null;
+  for (const item of items) {
+    if (!item.at) continue;
+    if (!best || new Date(item.at).getTime() > new Date(best.at).getTime()) best = { by: item.by, at: item.at };
+  }
+  return best;
+}
