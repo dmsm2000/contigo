@@ -6,6 +6,7 @@ import { expandVetoes, monthKey, tripDatesFor } from './draw.logic';
 import { ProfileService } from './profile.service';
 import { SupabaseService } from './supabase.service';
 import { SUGGESTIONS } from './suggestions';
+import { isLive } from './trip-plan.logic';
 import { isUpcoming, Trip } from './trips.logic';
 import { TripsService } from './trips.service';
 import { PoolEntry } from './wishlist.logic';
@@ -43,9 +44,12 @@ export class DrawService {
     return partner !== undefined && this.thisMonth().some((veto) => veto.user_id === partner);
   });
 
-  /** A viagem sorteada que ainda não aconteceu, se houver. Enquanto existir, não se sorteia outra. */
+  /** A viagem que está em curso ou por fazer (sorteada, a planear ou preparada), se houver. Enquanto existir, não se sorteia outra. */
   readonly active = computed<Trip | null>(
-    () => this.trips.trips().find((trip) => trip.status === 'drawn' && isUpcoming(trip, todayIso())) ?? null,
+    () =>
+      this.trips
+        .trips()
+        .find((trip) => isLive(trip.status) && (trip.status === 'ongoing' || !trip.datesConfirmed || isUpcoming(trip, todayIso()))) ?? null,
   );
 
   constructor() {

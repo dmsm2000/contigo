@@ -29,6 +29,9 @@ const trip = (id: string, p: Place, startDate: string): Trip => ({
   createdAt: '2026-11-13T18:00:00Z',
   updatedBy: null,
   updatedAt: '2026-11-13T18:00:00Z',
+  budgetCapEur: null,
+  datesConfirmed: true,
+  planNote: null,
   place: p,
 });
 

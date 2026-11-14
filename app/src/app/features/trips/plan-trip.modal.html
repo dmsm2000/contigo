@@ -1,0 +1,62 @@
+<ion-content>
+  <div class="sheet">
+    <header class="head">
+      <h1 class="ct-display title">{{ 'plan.form.title' | transloco }}</h1>
+      <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    <form id="plan-form" (ngSubmit)="save()" novalidate>
+      <section class="block ct-rise" style="--i: 0">
+        <app-place-picker inputId="plan-search" labelKey="plan.form.where" [autofocus]="true" [place]="place()" (placeChange)="setPlace($event)" />
+      </section>
+
+      <section class="block ct-rise" style="--i: 1">
+        <span class="label" id="plan-when">{{ 'plan.form.when' | transloco }}</span>
+        <div class="pills" role="group" aria-labelledby="plan-when">
+          <button class="pill" type="button" [class.on]="!knownDates()" [attr.aria-pressed]="!knownDates()" (click)="knownDates.set(false)">
+            {{ 'plan.form.datesOpen' | transloco }}
+          </button>
+          <button class="pill" type="button" [class.on]="knownDates()" [attr.aria-pressed]="knownDates()" (click)="knownDates.set(true)">
+            {{ 'plan.form.datesKnown' | transloco }}
+          </button>
+        </div>
+        @if (knownDates()) {
+          <div class="row-dates">
+            <label class="date">
+              <span class="date-label">{{ 'plan.form.from' | transloco }}</span>
+              <input name="start" type="date" [min]="today" [(ngModel)]="start" (ngModelChange)="onStart()" />
+            </label>
+            <label class="date">
+              <span class="date-label">{{ 'plan.form.to' | transloco }}</span>
+              <input name="end" type="date" [min]="start || today" [(ngModel)]="end" (ngModelChange)="error.set(null)" />
+            </label>
+          </div>
+        } @else {
+          <p class="hint">{{ 'plan.form.datesOpenHint' | transloco }}</p>
+        }
+      </section>
+
+      <section class="block ct-rise" style="--i: 2">
+        <button class="switch-row" type="button" role="switch" [attr.aria-checked]="withPartner()" (click)="withPartner.set(!withPartner())">
+          <span class="switch-text">
+            <strong>{{ 'trip.form.together' | transloco }}</strong>
+            <small>{{ 'plan.form.togetherHint' | transloco }}</small>
+          </span>
+          <span class="switch" [class.on]="withPartner()" aria-hidden="true"><span></span></span>
+        </button>
+      </section>
+
+      @if (error(); as key) {
+        <p class="error" role="alert">{{ key | transloco }}</p>
+      }
+    </form>
+  </div>
+</ion-content>
+
+<ion-footer class="form-footer">
+  <button class="ct-btn save" type="submit" form="plan-form" [disabled]="saving()">
+    {{ (saving() ? 'trip.form.saving' : 'plan.form.save') | transloco }}
+  </button>
+</ion-footer>

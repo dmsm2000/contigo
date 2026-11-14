@@ -11,6 +11,7 @@ import { PhotoViewerModal } from '../photos/photo-viewer.modal';
 import { StoriesModal } from '../stories/stories.modal';
 import { AddWishModal } from '../wishlist/add-wish.modal';
 import { PastTripModal } from './past-trip.modal';
+import { PlanTripModal } from './plan-trip.modal';
 import { TripDetailModal } from './trip-detail.modal';
 
 /** Abre os ecrãs das viagens e da lista "Por ir", para o menu + e as páginas usarem a mesma coisa. */
@@ -21,6 +22,17 @@ export class TripFlowService {
 
   async openPastTrip(): Promise<void> {
     await this.present(() => this.modals.create({ component: PastTripModal, cssClass: 'ct-modal' }));
+  }
+
+  /** Planear uma viagem à mão. Ao criar, abre logo o plano dela. */
+  async openPlanTrip(): Promise<void> {
+    await this.present(async () => {
+      const modal = await this.modals.create({ component: PlanTripModal, cssClass: 'ct-modal' });
+      void modal.onDidDismiss<{ tripId?: string }>().then(({ data }) => {
+        if (data?.tripId) void this.openDetail(data.tripId);
+      });
+      return modal;
+    });
   }
 
   async openDetail(tripId: string): Promise<void> {

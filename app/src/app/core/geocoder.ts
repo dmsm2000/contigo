@@ -92,6 +92,15 @@ interface MeteoResult {
 /** Os tipos de sítio do GeoNames que servem de destino: povoações, ilhas, montanhas, parques, praias, regiões… */
 const METEO_WANTED = /^(PPL|ISL|MT|PK|PRK|RES|BCH|CAPE|LK|FLLS|VLC|DSRT|RGN|ADM1|CSTL|MNMT|HSTS|TMPL|CLF|FJD|BAY|GLCR|CAVE|SPA)/;
 
+/** A importância de um tipo de sítio do GeoNames: capital, sede de concelho ou distrito, povoação, outros e, no fim, bairros. */
+export function meteoRank(code: string): number {
+  if (code === 'PPLC') return 0;
+  if (/^PPLA/.test(code) || code === 'PPLG') return 1;
+  if (code === 'PPL') return 2;
+  if (/^PPL[XL]$/.test(code) || code === 'PPLH' || code === 'PPLW') return 4;
+  return 3;
+}
+
 /**
  * Converte a resposta do Open-Meteo (nomes do GeoNames em várias línguas). O código do GeoNames fica como "G123".
  * Os resultados vêm primeiro por quão bem o nome bate com o que se escreveu, depois a capital, depois a população.
@@ -101,6 +110,7 @@ export function mapMeteo(json: unknown, typed: string, limit = 8): PlaceCandidat
   if (!Array.isArray(results)) return [];
   const wanted = normalize(typed);
   const candidates: PlaceCandidate[] = [];
+  const codes = new Map<PlaceCandidate, string>();
   const seen = new Set<string>();
   for (const item of results) {
     const name = asText(item?.name);
@@ -112,7 +122,7 @@ export function mapMeteo(json: unknown, typed: string, limit = 8): PlaceCandidat
     const key = `${normalize(name)}|${normalize(admin1 ?? '')}|${countryCode}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    candidates.push({
+    const candidate: PlaceCandidate = {
       osmRef: typeof item.id === 'number' ? `G${item.id}` : null,
       name,
       admin1,
@@ -121,10 +131,14 @@ export function mapMeteo(json: unknown, typed: string, limit = 8): PlaceCandidat
       lng: Math.round(item.longitude * 1e6) / 1e6,
       capital: code === 'PPLC',
       population: typeof item.population === 'number' ? item.population : 0,
-    });
+    };
+    codes.set(candidate, code);
+    candidates.push(candidate);
   }
   const score = (c: PlaceCandidate) => (normalize(c.name) === wanted ? 0 : normalize(c.name).startsWith(wanted) ? 1 : 2);
-  candidates.sort((a, b) => score(a) - score(b) || Number(!!b.capital) - Number(!!a.capital) || (b.population ?? 0) - (a.population ?? 0));
+  // A cidade antes de um bairro com o mesmo nome (a Salamanca de Castela e Leão antes da Salamanca de Madrid).
+  const kind = (c: PlaceCandidate) => meteoRank(codes.get(c) ?? '');
+  candidates.sort((a, b) => score(a) - score(b) || kind(a) - kind(b) || (b.population ?? 0) - (a.population ?? 0));
   return candidates.slice(0, limit);
 }
 

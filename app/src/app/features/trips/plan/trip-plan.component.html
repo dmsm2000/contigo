@@ -1,0 +1,211 @@
+@let t = trip();
+
+<!-- O ciclo: a planear → preparada → em curso → fechada -->
+<section class="stages ct-rise" style="--i: 3" [attr.aria-label]="'plan.stage.label' | transloco">
+  <ol class="steps">
+    @for (step of stages; track step; let i = $index) {
+      <li [class.done]="i < stageIndex()" [class.now]="i === stageIndex()">
+        <span class="dot" aria-hidden="true">
+          @if (i < stageIndex()) {<ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>}
+        </span>
+        <span class="step-name">{{ 'plan.stage.' + step | transloco }}</span>
+      </li>
+    }
+  </ol>
+  @if (next(); as target) {
+    <button class="ct-btn advance" type="button" [disabled]="busy()" (click)="advance()">{{ 'plan.stage.to.' + target | transloco }}</button>
+  }
+  @if (stageIndex() > 0 && stage() !== 'closed') {
+    <button class="back-step" type="button" [disabled]="busy()" (click)="goBack()">{{ 'plan.stage.back' | transloco: { stage: ('plan.stage.' + stages[stageIndex() - 1] | transloco) } }}</button>
+  }
+</section>
+
+<!-- Datas -->
+<section class="part ct-rise" style="--i: 4">
+  <h2>{{ 'plan.dates.title' | transloco }}</h2>
+  @if (t.datesConfirmed) {
+    <div class="card row-card">
+      <span class="grow">
+        <strong>{{ rangeText() }}</strong>
+        <small>{{ (nights() === 1 ? 'plan.nights_one' : 'plan.nights_other') | transloco: { count: nights() } }}</small>
+      </span>
+      <button class="link" type="button" (click)="reopenDates()">{{ 'plan.dates.change' | transloco }}</button>
+    </div>
+  } @else {
+    @if (dates().length) {
+      <ul class="list">
+        @for (option of dates(); track option.id) {
+          <li class="card row-card">
+            <button class="star" type="button" [class.on]="option.preferred" (click)="prefer(option)" [attr.aria-pressed]="option.preferred" [attr.aria-label]="'plan.dates.prefer' | transloco">
+              <ion-icon [name]="option.preferred ? 'star' : 'star-outline'" aria-hidden="true"></ion-icon>
+            </button>
+            <button class="grow tap" type="button" (click)="editDate(option)">
+              <strong>{{ range(option) }}</strong>
+              <small>
+                {{ (optionNights(option) === 1 ? 'plan.nights_one' : 'plan.nights_other') | transloco: { count: optionNights(option) } }}
+                @if (option.preferred) { · {{ 'plan.dates.preferred' | transloco }} }
+                @if (option.note) { · {{ option.note }} }
+              </small>
+            </button>
+            <button class="pick" type="button" (click)="confirmDate(option)">{{ 'plan.dates.choose' | transloco }}</button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="hint">{{ 'plan.dates.empty' | transloco }}</p>
+    }
+    <button class="add" type="button" (click)="addDate()"><ion-icon name="add-outline" aria-hidden="true"></ion-icon>{{ 'plan.dates.add' | transloco }}</button>
+  }
+</section>
+
+<!-- Como chegar -->
+<section class="part ct-rise" style="--i: 5">
+  <h2>{{ 'plan.legs.title' | transloco }}</h2>
+  @if (legs().length) {
+    <ul class="list">
+      @for (leg of legs(); track leg.id) {
+        <li>
+          <button class="card row-card tap" type="button" (click)="editLeg(leg)">
+            <ion-icon class="lead" [name]="modeIcon(leg.mode)" aria-hidden="true"></ion-icon>
+            <span class="grow">
+              <strong>{{ 'plan.legs.from' | transloco: { origin: leg.origin } }}</strong>
+              <small>
+                {{ 'plan.legs.modes.' + leg.mode | transloco }}
+                @if (leg.minutes !== null) { · {{ duration(leg.minutes) }} }
+                @if (leg.priceEur !== null) { · {{ money(leg.priceEur) }} }
+              </small>
+              @if (leg.note) {<small class="note">{{ leg.note }}</small>}
+            </span>
+          </button>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="hint">{{ 'plan.legs.empty' | transloco }}</p>
+  }
+  <button class="add" type="button" (click)="addLeg()"><ion-icon name="add-outline" aria-hidden="true"></ion-icon>{{ 'plan.legs.add' | transloco }}</button>
+</section>
+
+<!-- Alojamento -->
+<section class="part ct-rise" style="--i: 6">
+  <h2>{{ 'plan.stays.title' | transloco }}</h2>
+  @if (stays().length) {
+    <ul class="list">
+      @for (stay of stays(); track stay.id) {
+        <li class="card row-card" [class.chosen]="stay.chosen">
+          <button class="check" type="button" [class.on]="stay.chosen" (click)="chooseStay(stay)" [attr.aria-pressed]="stay.chosen" [attr.aria-label]="'plan.stays.choose' | transloco">
+            <ion-icon [name]="stay.chosen ? 'checkmark-circle' : 'ellipse-outline'" aria-hidden="true"></ion-icon>
+          </button>
+          <button class="grow tap" type="button" (click)="editStay(stay)">
+            <strong>{{ stay.name }}</strong>
+            <small>
+              @if (stay.priceEur !== null) {{{ money(stay.priceEur) }}}
+              @if (stay.rating !== null) { · {{ stay.rating }} }
+              @if (stay.chosen) { · {{ 'plan.stays.chosen' | transloco }} }
+            </small>
+            @if (stay.note) {<small class="note">{{ stay.note }}</small>}
+          </button>
+          @if (stay.link) {
+            <a class="open" [href]="stay.link" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'wish.openLink' | transloco"><ion-icon name="open-outline" aria-hidden="true"></ion-icon></a>
+          }
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="hint">{{ 'plan.stays.empty' | transloco }}</p>
+  }
+  <button class="add" type="button" (click)="addStay()"><ion-icon name="add-outline" aria-hidden="true"></ion-icon>{{ 'plan.stays.add' | transloco }}</button>
+</section>
+
+<!-- Orçamento -->
+<section class="part ct-rise" style="--i: 7">
+  <h2>{{ 'plan.budget.title' | transloco }}</h2>
+  <div class="card budget">
+    <p class="hint first">{{ 'plan.budget.hint' | transloco }}</p>
+    <ul class="lines">
+      @for (category of categories; track category) {
+        <li>
+          <label [for]="'line-' + category">{{ 'expenses.category.' + category | transloco }}</label>
+          <span class="amount-input">
+            <input [id]="'line-' + category" type="text" inputmode="decimal" autocomplete="off" placeholder="0" [value]="lineAmount(category)" (change)="setLine(category, $any($event.target).value)" />
+            <i aria-hidden="true">€</i>
+          </span>
+        </li>
+      }
+    </ul>
+    @if (canFill) {
+      <button class="fill" type="button" (click)="fillBudget()">{{ 'plan.budget.fill' | transloco }}</button>
+    }
+    <div class="totals">
+      <span>{{ 'plan.budget.perPerson' | transloco }}</span><strong>{{ money(totals().perPerson) }}</strong>
+      @if (people() > 1) {
+        <span>{{ 'plan.budget.both' | transloco }}</span><strong>{{ money(totals().total) }}</strong>
+      }
+    </div>
+  </div>
+
+  <div class="card budget cap">
+    <label class="cap-row" for="cap-input">
+      <span class="grow">
+        <strong>{{ 'plan.budget.cap' | transloco }}</strong>
+        <small>{{ 'plan.budget.capHint' | transloco }}</small>
+      </span>
+      <span class="amount-input">
+        <input id="cap-input" type="text" inputmode="decimal" autocomplete="off" placeholder="0" [value]="t.budgetCapEur === null ? '' : t.budgetCapEur" (change)="setCap($any($event.target).value)" />
+        <i aria-hidden="true">€</i>
+      </span>
+    </label>
+    @if (t.budgetCapEur !== null) {
+      <!-- O anel do orçamento: o que já se gastou face ao teto (ou, antes de gastar, a estimativa). -->
+      <div class="ring" [class.over]="spent() > t.budgetCapEur" role="progressbar" [attr.aria-valuenow]="spent()" aria-valuemin="0" [attr.aria-valuemax]="t.budgetCapEur">
+        <span [style.width.%]="ringShare() * 100"></span>
+      </div>
+      <p class="ring-text">
+        {{ 'plan.budget.spentOf' | transloco: { spent: money(spent()), cap: money(t.budgetCapEur) } }}
+        @if (room() !== null) {
+          · <strong [class.low]="room()! < 0">{{ (room()! < 0 ? 'plan.budget.over' : 'plan.budget.left') | transloco: { amount: money(room()! < 0 ? -room()! : room()) } }}</strong>
+        }
+      </p>
+      @if (spent() === 0 && totals().total > 0) {
+        <p class="hint">{{ 'plan.budget.estimateNote' | transloco: { amount: money(totals().total) } }}</p>
+      }
+    }
+  </div>
+</section>
+
+<!-- Lista -->
+<section class="part ct-rise" style="--i: 8">
+  <h2>{{ 'plan.list.title' | transloco }}</h2>
+  @if (checklist().length) {
+    <ul class="list checks">
+      @for (item of checklist(); track item.id) {
+        <li class="card row-card" [class.done]="item.done">
+          <button class="check" type="button" [class.on]="item.done" (click)="toggleItem(item.id, item.done)" [attr.aria-pressed]="item.done" [attr.aria-label]="item.text">
+            <ion-icon [name]="item.done ? 'checkmark-circle' : 'ellipse-outline'" aria-hidden="true"></ion-icon>
+          </button>
+          <span class="grow">
+            <strong>{{ item.text }}</strong>
+            <small>{{ 'plan.list.kinds.' + item.kind | transloco }}</small>
+          </span>
+          <button class="del" type="button" (click)="removeItem(item.id)" [attr.aria-label]="'plan.remove' | transloco"><ion-icon name="trash-outline" aria-hidden="true"></ion-icon></button>
+        </li>
+      }
+    </ul>
+  }
+  <div class="kind-pills" role="group" [attr.aria-label]="'plan.list.kind' | transloco">
+    @for (kind of kinds; track kind) {
+      <button type="button" [class.on]="newKind() === kind" [attr.aria-pressed]="newKind() === kind" (click)="newKind.set(kind)">{{ 'plan.list.kinds.' + kind | transloco }}</button>
+    }
+  </div>
+  <form class="add-line" (ngSubmit)="addItem()">
+    <input name="item" type="text" maxlength="200" autocomplete="off" [placeholder]="'plan.list.placeholder' | transloco" [(ngModel)]="newText" />
+    <button class="ct-btn" type="submit" [disabled]="!newText.trim()">{{ 'plan.list.add' | transloco }}</button>
+  </form>
+</section>
+
+<!-- Notas -->
+<section class="part ct-rise" style="--i: 9">
+  <h2>{{ 'plan.notes.title' | transloco }}</h2>
+  <textarea class="notes" rows="5" maxlength="4000" [placeholder]="'plan.notes.placeholder' | transloco" [value]="t.planNote ?? ''" (blur)="saveNote($any($event.target).value)"></textarea>
+  <p class="hint">{{ 'plan.notes.hint' | transloco }}</p>
+</section>

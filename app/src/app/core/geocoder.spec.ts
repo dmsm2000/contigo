@@ -115,6 +115,19 @@ describe('mapMeteo', () => {
     expect(out[0]).toMatchObject({ osmRef: 'G3117735', capital: true });
   });
 
+  it('a cidade vem antes de um bairro com o mesmo nome, mesmo com menos população', () => {
+    const out = mapMeteo(
+      {
+        results: [
+          result({ id: 2, name: 'Salamanca', admin1: 'Comunidade de Madrid', feature_code: 'PPLX', population: 147707 }),
+          result({ id: 1, name: 'Salamanca', admin1: 'Castela e Leão', feature_code: 'PPLA2', population: 144825 }),
+        ],
+      },
+      'Salamanca',
+    );
+    expect(out.map((place) => place.admin1)).toEqual(['Castela e Leão', 'Comunidade de Madrid']);
+  });
+
   it('o nome exato vem antes de um que só começa assim', () => {
     const out = mapMeteo({ results: [result({ id: 2, name: 'Madridejos', population: 11000 }), result({ id: 3, name: 'Madrid', population: 5 })] }, 'madrid');
     expect(out.map((place) => place.name)).toEqual(['Madrid', 'Madridejos']);

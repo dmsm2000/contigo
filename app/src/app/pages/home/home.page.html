@@ -67,7 +67,10 @@
             @if (draws.active(); as active) {
               <p class="eyebrow">{{ 'home.nextTrip' | transloco }} · {{ date.countdown.key | transloco: date.countdown.params }}</p>
               <h1 class="ct-display hero-title hero-title--window">{{ active.place.name }}</h1>
-              <p class="hero-text">{{ labels.date(active) }}</p>
+              <p class="hero-text">
+                {{ active.datesConfirmed ? labels.date(active) : ('plan.dates.pending' | transloco) }}
+                @if (stageKey(active); as key) { · {{ key | transloco }} }
+              </p>
             } @else if (nextWindow(); as window) {
               <p class="eyebrow">{{ 'home.nextWindow' | transloco }} · {{ date.countdown.key | transloco: date.countdown.params }}</p>
               <h1 class="ct-display hero-title hero-title--window">{{ window.label }}</h1>

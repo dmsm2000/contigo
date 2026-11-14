@@ -3,7 +3,7 @@
 export type Lang = 'pt' | 'es' | 'en';
 export type WouldReturn = 'yes' | 'maybe' | 'no';
 export type DatePrecision = 'month' | 'day';
-export type TripStatus = 'past' | 'drawn' | 'prepared' | 'ongoing' | 'closed';
+export type TripStatus = 'past' | 'drawn' | 'planned' | 'prepared' | 'ongoing' | 'closed';
 
 export interface Place {
   id: string;
@@ -34,6 +34,12 @@ export interface Trip {
   createdAt: string;
   updatedBy: string | null;
   updatedAt: string;
+  /** O teto da viagem em euros (para os dois), se já se decidiu. */
+  budgetCapEur: number | null;
+  /** Falso enquanto as datas estão em avaliação: a data da viagem é então só provisória. */
+  datesConfirmed: boolean;
+  /** Notas gerais do plano. */
+  planNote: string | null;
   place: Place;
 }
 
@@ -65,6 +71,9 @@ export interface TripRow {
   created_at: string;
   updated_by: string | null;
   updated_at: string;
+  budget_cap_eur?: number | string | null;
+  dates_confirmed?: boolean;
+  plan_note?: string | null;
   place: PlaceRow;
 }
 
@@ -101,6 +110,9 @@ export function toTrip(row: TripRow): Trip {
     createdAt: row.created_at,
     updatedBy: row.updated_by,
     updatedAt: row.updated_at,
+    budgetCapEur: row.budget_cap_eur === null || row.budget_cap_eur === undefined ? null : Number(row.budget_cap_eur),
+    datesConfirmed: row.dates_confirmed ?? true,
+    planNote: row.plan_note ?? null,
     place: toPlace(row.place),
   };
 }

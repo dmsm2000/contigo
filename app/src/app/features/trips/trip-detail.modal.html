@@ -4,7 +4,7 @@
       <button class="ct-icon-btn close" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
         <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
       </button>
-      @if (!isDrawn(t)) {
+      @if (!live(t)) {
         <button class="ct-icon-btn edit" type="button" (click)="edit(t)" [attr.aria-label]="'trip.detail.edit' | transloco">
           <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
         </button>
@@ -19,14 +19,18 @@
       @if (labels.where(t.place)) {
         <p class="where ct-rise" style="--i: 1">{{ labels.where(t.place) }}</p>
       }
-      <p class="when ct-rise" style="--i: 2">{{ labels.date(t) }}</p>
+      <p class="when ct-rise" style="--i: 2">{{ live(t) && !t.datesConfirmed ? ('plan.dates.pending' | transloco) : labels.date(t) }}</p>
 
-      @if (isDrawn(t)) {
+      @if (live(t)) {
         <ul class="chips ct-rise" style="--i: 3">
-          <li class="chip chip--accent">{{ 'trip.detail.drawn' | transloco }}</li>
-          @if (drawSource(t); as source) {
-            <li class="chip">{{ (source === 'wishlist' ? 'draw.fromWishlist' : 'draw.surprise') | transloco }}</li>
+          @if (isDrawn(t)) {
+            <li class="chip chip--accent">{{ 'trip.detail.drawn' | transloco }}</li>
+            @if (drawSource(t); as source) {
+              <li class="chip">{{ (source === 'wishlist' ? 'draw.fromWishlist' : 'draw.surprise') | transloco }}</li>
+            }
           }
+          @let live_who = liveWho(t);
+          <li class="chip">{{ live_who.key | transloco: live_who.params }}</li>
         </ul>
       } @else {
         <ul class="chips ct-rise" style="--i: 3">
@@ -46,6 +50,10 @@
           <h2>{{ 'trip.detail.noteLabel' | transloco }}</h2>
           <p>{{ t.note }}</p>
         </section>
+      }
+
+      @if (live(t)) {
+        <app-trip-plan [trip]="t" />
       }
 
       <section class="spend ct-rise" style="--i: 5">

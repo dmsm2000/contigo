@@ -6,13 +6,17 @@ import { addOutline, closeOutline, createOutline, trashOutline } from 'ionicons/
 import { Expense, totalOf } from '../../core/expenses.logic';
 import { ExpensesService } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
+import { AuthService } from '../../core/auth.service';
+import { ProfileService } from '../../core/profile.service';
 import { entrySource } from '../../core/draw.logic';
 import { DrawService } from '../../core/draw.service';
 import { TripsService } from '../../core/trips.service';
 import { Photo } from '../../core/photos.logic';
 import { PhotosService } from '../../core/photos.service';
 import { formatCost, Trip } from '../../core/trips.logic';
+import { isLive } from '../../core/trip-plan.logic';
 import { AuditLineComponent } from '../audit/audit-line.component';
+import { TripPlanComponent } from './plan/trip-plan.component';
 import { ExpenseModal } from '../expenses/expense.modal';
 import { PastTripModal } from './past-trip.modal';
 import { AddPhotosModal } from '../photos/add-photos.modal';
@@ -22,7 +26,7 @@ import { TripLabels } from './trip-labels.service';
 
 @Component({
   selector: 'app-trip-detail-modal',
-  imports: [IonContent, IonIcon, TranslocoPipe, PhotoImgComponent, AuditLineComponent],
+  imports: [IonContent, IonIcon, TranslocoPipe, PhotoImgComponent, AuditLineComponent, TripPlanComponent],
   templateUrl: './trip-detail.modal.html',
   styleUrl: './trip-detail.modal.scss',
 })
@@ -31,6 +35,8 @@ export class TripDetailModal implements OnInit {
   @Input() tripId = '';
 
   private readonly modalCtrl = inject(ModalController);
+  private readonly auth = inject(AuthService);
+  private readonly profile = inject(ProfileService);
   private readonly alerts = inject(AlertController);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
@@ -130,6 +136,19 @@ export class TripDetailModal implements OnInit {
   /** Procura sempre na lista atual, para refletir o que o outro alterar ou apagar. */
   protected get trip(): Trip | undefined {
     return this.trips.find(this.tripId);
+  }
+
+  /** Uma viagem que ainda não acabou (sorteada, a planear, preparada ou em curso): tem plano. */
+  protected live(trip: Trip): boolean {
+    return isLive(trip.status);
+  }
+
+  /** Quem vai, no futuro ("Vão os dois"). */
+  protected liveWho(trip: Trip): { key: string; params?: Record<string, string> } {
+    if (trip.withPartner) return { key: 'plan.who.together' };
+    if (trip.createdBy && trip.createdBy === this.auth.userId()) return { key: 'plan.who.me' };
+    const name = this.profile.nameOf(trip.createdBy);
+    return name ? { key: 'plan.who.only', params: { name } } : { key: 'plan.who.one' };
   }
 
   /** Uma viagem sorteada que ainda não aconteceu: o que se pode fazer com ela é usar o veto. */

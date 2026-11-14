@@ -1,6 +1,7 @@
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
+import { todayIso } from './availability.logic';
 import { PlaceImageService } from './place-image.service';
 import { attachPlaceImage, reuseKnownPlace } from './places.service';
 import { PlaceCandidate } from './geocoder';
@@ -88,6 +89,36 @@ export class TripsService {
     if (error || !data) throw error ?? new Error('Não foi possível guardar a viagem.');
     await this.load();
     return data.id;
+  }
+
+  /** Cria uma viagem a planear (sem sorteio): o sítio, quem vai e as datas, se já se sabem. Devolve o id. */
+  async addPlannedTrip(input: { place: PlaceCandidate; withPartner: boolean; start: string | null; end: string | null }): Promise<string> {
+    const placeId = await this.savePlace(input.place);
+    const known = input.start !== null;
+    const start = input.start ?? todayIso();
+    const { data, error } = await this.supabase
+      .from('trips')
+      .insert({
+        place_id: placeId,
+        status: 'planned',
+        start_date: start,
+        end_date: input.end,
+        date_precision: 'day',
+        with_partner: input.withPartner,
+        dates_confirmed: known,
+      })
+      .select('id')
+      .single<{ id: string }>();
+    if (error || !data) throw error ?? new Error('Não foi possível guardar a viagem.');
+    await this.load();
+    return data.id;
+  }
+
+  /** Muda campos de uma viagem (estado, teto, datas, notas do plano…). */
+  async patch(id: string, changes: Record<string, unknown>): Promise<void> {
+    const { error } = await this.supabase.from('trips').update(changes).eq('id', id);
+    if (error) throw error;
+    await this.load();
   }
 
   /** Corrige uma viagem já feita (sítio, mês, com quem, nota…). O sítio antigo sai se ficar sem viagens. */

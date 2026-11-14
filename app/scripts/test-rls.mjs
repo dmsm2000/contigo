@@ -350,6 +350,38 @@ try {
   const avatarRemoveA = await a.storage.from('avatars').remove([`${created[0]}/1.jpg`]);
   check('A apaga a sua foto', avatarRemoveA.data?.length === 1);
 
+  // O plano de uma viagem: partilhado pelos dois; só quem tem sessão lê e escreve; o autor não se falsifica.
+  const planPlace = await a.from('places').insert({ name: 'Plano Teste' }).select().single();
+  const planTrip = await a.from('trips').insert({ place_id: planPlace.data.id, status: 'planned', start_date: '2026-12-02', end_date: '2026-12-04', date_precision: 'day', dates_confirmed: false }).select().single();
+  check('A cria uma viagem a planear', !planTrip.error, planTrip.error?.message);
+  const stayA = await a.from('trip_stays').insert({ trip_id: planTrip.data.id, name: 'Hotel A', price_eur: 78 }).select().single();
+  check('A junta um alojamento', !stayA.error, stayA.error?.message);
+  const staySeen = await b.from('trip_stays').select('id').eq('trip_id', planTrip.data.id);
+  check('B vê o alojamento de A', staySeen.data?.length === 1);
+  const stayB = await b.from('trip_stays').update({ chosen: true }).eq('id', stayA.data.id).select();
+  check('B escolhe o alojamento (é dos dois)', stayB.data?.length === 1 && stayB.data[0].updated_by === created[1], stayB.error?.message);
+  const stay2 = await a.from('trip_stays').insert({ trip_id: planTrip.data.id, name: 'Hotel B', chosen: true });
+  check('só há um alojamento escolhido por viagem', Boolean(stay2.error));
+  const stayForged = await b.from('trip_stays').insert({ trip_id: planTrip.data.id, name: 'Falso', created_by: created[0] });
+  check('não se juntam alojamentos em nome do outro', Boolean(stayForged.error));
+  const optA = await a.from('trip_date_options').insert({ trip_id: planTrip.data.id, start_date: '2026-12-02', end_date: '2026-12-04', preferred: true });
+  const optBad = await a.from('trip_date_options').insert({ trip_id: planTrip.data.id, start_date: '2026-12-04', end_date: '2026-12-02' });
+  check('as datas têm de estar por ordem', !optA.error && Boolean(optBad.error));
+  const optTwo = await a.from('trip_date_options').insert({ trip_id: planTrip.data.id, start_date: '2026-12-09', end_date: '2026-12-11', preferred: true });
+  check('só há uma opção de datas preferida', Boolean(optTwo.error));
+  const lineA = await a.from('trip_budget_lines').upsert({ trip_id: planTrip.data.id, category: 'food', amount_eur: 80 }, { onConflict: 'trip_id,category' });
+  const lineAgain = await b.from('trip_budget_lines').upsert({ trip_id: planTrip.data.id, category: 'food', amount_eur: 90 }, { onConflict: 'trip_id,category' });
+  check('a estimativa de uma categoria muda em vez de repetir', !lineA.error && !lineAgain.error && (await a.from('trip_budget_lines').select('id').eq('trip_id', planTrip.data.id)).data?.length === 1);
+  const legBad = await a.from('trip_legs').insert({ trip_id: planTrip.data.id, origin: 'Porto', mode: 'teletransporte' });
+  check('o meio de transporte tem de ser um dos conhecidos', Boolean(legBad.error));
+  const planAnon = await anon.from('trip_stays').select('id');
+  check('sem sessão: não lê o plano', !planAnon.error && planAnon.data.length === 0);
+  const stateBad = await a.from('trips').update({ status: 'voando' }).eq('id', planTrip.data.id);
+  check('o estado da viagem tem de ser um dos conhecidos', Boolean(stateBad.error));
+  await a.from('trips').delete().eq('id', planTrip.data.id);
+  check('apagar a viagem apaga o plano', (await a.from('trip_stays').select('id').eq('trip_id', planTrip.data.id)).data?.length === 0);
+  await a.from('places').delete().eq('id', planPlace.data.id);
+
   // Imagens dos sítios: partilhadas pelos dois, públicas para ler, só ficheiros com o id de um sítio no nome.
   const placeFile = `${crypto.randomUUID()}.jpg`;
   const imgA = await a.storage.from('place-images').upload(placeFile, jpeg, { contentType: 'image/jpeg', upsert: true });

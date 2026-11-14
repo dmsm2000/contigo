@@ -16,6 +16,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import {
   add,
+  airplaneOutline,
   bulbOutline,
   calendarOutline,
   cameraOutline,
@@ -80,6 +81,7 @@ export class ShellPage {
   constructor() {
     addIcons({
       add,
+      airplaneOutline,
       bulbOutline,
       calendarOutline,
       cameraOutline,
@@ -99,6 +101,7 @@ export class ShellPage {
     const sheet = await this.actionSheets.create({
       header: t('add.title'),
       buttons: [
+        { text: t('add.planTrip'), icon: 'airplane-outline', handler: () => void this.flow.openPlanTrip() },
         { text: t('add.pastTrip'), icon: 'images-outline', handler: () => void this.flow.openPastTrip() },
         { text: t('add.expense'), icon: 'cash-outline', handler: () => void this.addExpense() },
         { text: t('add.photo'), icon: 'camera-outline', handler: () => void this.addPhotos() },

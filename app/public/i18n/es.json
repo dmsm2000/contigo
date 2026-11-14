@@ -21,7 +21,8 @@
     "expense": "Gasto",
     "pastTrip": "Viaje ya hecho",
     "place": "Sitio al que ir",
-    "idea": "Idea"
+    "idea": "Idea",
+    "planTrip": "Planear un viaje"
   },
   "common": {
     "cancel": "Cancelar",
@@ -589,5 +590,162 @@
     "imagesSearching": "Buscando…",
     "imagesRunning": "Buscando… {{done}} de {{total}} · {{found}} encontradas",
     "imagesDone": "Hecho: {{found}} imágenes encontradas en {{total}} lugares. Los que quedaron sin imagen no tienen una foto buena en Wikipedia."
+  },
+  "plan": {
+    "form": {
+      "title": "Planear un viaje",
+      "where": "¿A dónde?",
+      "when": "¿Cuándo?",
+      "datesOpen": "Aún no lo sé",
+      "datesKnown": "Ya sé las fechas",
+      "datesOpenHint": "Puedes añadir varias opciones de fechas en el plan y elegir después.",
+      "from": "Desde",
+      "to": "Hasta",
+      "togetherHint": "Apágalo si va solo uno de vosotros.",
+      "save": "Crear viaje",
+      "errors": {
+        "place": "Elige el lugar.",
+        "start": "Elige el día de salida.",
+        "save": "No se pudo crear el viaje. Inténtalo de nuevo."
+      }
+    },
+    "stage": {
+      "label": "En qué punto está el viaje",
+      "planning": "Planeando",
+      "prepared": "Preparado",
+      "ongoing": "En curso",
+      "closed": "Cerrado",
+      "to": {
+        "prepared": "Dar por preparado",
+        "ongoing": "Empezar el viaje",
+        "closed": "Cerrar el viaje"
+      },
+      "back": "Volver a «{{stage}}»",
+      "missingTitle": "Aún falta decidir",
+      "missing": {
+        "dates": "Las fechas aún están en evaluación.",
+        "stay": "Aún no habéis elegido el alojamiento.",
+        "budget": "Aún no hay una estimación del presupuesto."
+      },
+      "missingBack": "Ver el plan",
+      "missingGo": "Dar por preparado"
+    },
+    "nights_one": "{{count}} noche",
+    "nights_other": "{{count}} noches",
+    "remove": "Borrar",
+    "save": "Guardar",
+    "note": "Nota",
+    "errors": {
+      "save": "No se pudo guardar. Inténtalo de nuevo.",
+      "amount": "Escribe un valor en euros (por ejemplo 78 o 12,50)."
+    },
+    "dates": {
+      "title": "Fechas",
+      "change": "Cambiar",
+      "prefer": "Marcar como preferida",
+      "preferred": "la preferida",
+      "choose": "Elegir",
+      "empty": "Aún no hay fechas. Añade las opciones que estáis evaluando y elige cuando decidáis.",
+      "add": "Añadir una opción de fechas",
+      "addTitle": "Opción de fechas",
+      "editTitle": "Cambiar las fechas",
+      "notePlaceholder": "P. ej.: evitar el puente",
+      "errors": {
+        "start": "Elige el día de salida."
+      },
+      "pending": "Fechas por decidir",
+      "pendingShort": "fechas por decidir"
+    },
+    "legs": {
+      "title": "Cómo llegar",
+      "from": "Desde {{origin}}",
+      "modes": {
+        "car": "Coche",
+        "train": "Tren",
+        "bus": "Autobús",
+        "flight": "Avión",
+        "other": "Otro"
+      },
+      "empty": "Aún no hay trayectos. Añade uno por cada origen (Oporto, Madrid…).",
+      "add": "Añadir un trayecto",
+      "addTitle": "Cómo llegar",
+      "editTitle": "Cambiar el trayecto",
+      "origin": "Desde dónde",
+      "originPlaceholder": "Oporto, Madrid…",
+      "mode": "Cómo",
+      "duration": "Duración",
+      "price": "Precio (€)",
+      "priceHint": "El precio es por persona (en coche, peajes y carga).",
+      "notePlaceholder": "P. ej.: coche eléctrico; cargador rápido a 3 km",
+      "errors": {
+        "origin": "Escribe desde dónde se sale.",
+        "duration": "Escribe la duración, por ejemplo 3h30 o 45."
+      }
+    },
+    "stays": {
+      "title": "Alojamiento",
+      "choose": "Elegir este alojamiento",
+      "chosen": "elegido",
+      "empty": "Aún no hay alojamientos. Añade opciones y elige una.",
+      "add": "Añadir un alojamiento",
+      "addTitle": "Alojamiento",
+      "editTitle": "Cambiar el alojamiento",
+      "name": "Nombre",
+      "namePlaceholder": "P. ej.: Hotel Condal",
+      "price": "Precio total (€)",
+      "rating": "Nota (0–10)",
+      "priceHint": "El precio es el de toda la estancia, para los dos.",
+      "notePlaceholder": "Parking, carga eléctrica, cancelación gratuita…",
+      "errors": {
+        "name": "Escribe el nombre.",
+        "rating": "La nota es de 0 a 10."
+      }
+    },
+    "budget": {
+      "title": "Presupuesto",
+      "hint": "La estimación es por persona, por categoría.",
+      "fill": "Rellenar con lo que ya sé",
+      "perPerson": "Por persona",
+      "both": "Los dos",
+      "cap": "Tope del viaje",
+      "capHint": "Lo máximo que queréis gastar, para los dos.",
+      "spentOf": "Gastado: {{spent}} de {{cap}}",
+      "over": "{{amount}} por encima del tope",
+      "left": "{{amount}} de margen",
+      "estimateNote": "Aún sin gastos: el margen cuenta con la estimación de {{amount}}."
+    },
+    "list": {
+      "title": "Qué hacer",
+      "kinds": {
+        "see": "Ver",
+        "do": "Hacer",
+        "eat": "Comer",
+        "todo": "Gestionar"
+      },
+      "kind": "Tipo",
+      "placeholder": "P. ej.: mercado de Navidad en la Plaza de Anaya",
+      "add": "Añadir"
+    },
+    "notes": {
+      "title": "Notas del plan",
+      "placeholder": "El programa, los consejos, lo que falta decidir…",
+      "hint": "Se guarda solo al salir del campo."
+    },
+    "close": {
+      "title": "Cerrar el viaje",
+      "spent": "Habéis gastado {{amount}} en el viaje.",
+      "within": "Dentro del tope de {{cap}}: sobraron {{diff}}.",
+      "over": "Pasasteis el tope de {{cap}} en {{diff}}.",
+      "cebolaHint": "El sobrante (o la falta) ya cuenta para la cebolla, que se calcula con los gastos de cada mes.",
+      "note": "Una nota final",
+      "save": "Cerrar el viaje",
+      "done": "Viaje cerrado. Ya está en los recuerdos."
+    },
+    "who": {
+      "together": "Van los dos",
+      "me": "Vas solo tú",
+      "only": "Va solo {{name}}",
+      "one": "Va solo uno de vosotros"
+    }
   }
 }

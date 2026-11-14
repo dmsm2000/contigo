@@ -19,7 +19,7 @@
       <button class="next ct-rise" style="--i: 1" type="button" (click)="open(trip)">
         <span class="next-label"><ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>{{ 'trips.next' | transloco }}</span>
         <strong class="ct-display">{{ trip.place.name }}</strong>
-        <span class="next-meta">{{ labels.date(trip) }}</span>
+        <span class="next-meta">{{ trip.datesConfirmed ? labels.date(trip) : ('plan.dates.pending' | transloco) }}</span>
       </button>
     }
 

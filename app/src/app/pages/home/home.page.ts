@@ -79,8 +79,15 @@ export class HomePage {
       : null;
   });
   /** A data a que o cartão grande conta: a viagem sorteada ou o início da próxima janela livre. */
+  /** O passo da viagem que vem aí, para o cartão ("Preparada", "Em curso"); a sorteada não leva etiqueta. */
+  protected stageKey(trip: { status: string }): string | null {
+    return trip.status === 'planned' ? 'plan.stage.planning' : trip.status === 'prepared' ? 'plan.stage.prepared' : trip.status === 'ongoing' ? 'plan.stage.ongoing' : null;
+  }
+
   protected readonly heroDate = computed(() => {
     const active = this.draws.active();
+    // Uma viagem com as datas ainda em avaliação não tem dia para contar.
+    if (active && !active.datesConfirmed) return { leaf: { month: '·', day: '?' }, countdown: { key: 'plan.dates.pendingShort', params: {} } };
     const start = active ? active.startDate : this.availability.next()?.start;
     if (!start) return null;
     const days = daysUntil(start, todayIso());
