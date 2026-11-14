@@ -3,6 +3,7 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular';
 import { LanguageService } from './core/language.service';
 import { ProfileService } from './core/profile.service';
 import { ThemeService } from './core/theme.service';
+import { UpdateService } from './core/update.service';
 
 @Component({
   selector: 'app-root',
@@ -21,5 +22,7 @@ export class App {
     inject(ThemeService);
     inject(LanguageService);
     inject(ProfileService);
+    // Procura versões novas ao abrir e sempre que a app volta ao primeiro plano.
+    inject(UpdateService);
   }
 }
