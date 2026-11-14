@@ -20,12 +20,16 @@ export interface Profile {
   avatar_path: string | null;
   /** Onde mora, se já escolheu. */
   home: HomeKey | null;
+  /** A última vez que abriu a app (escrita pela base de dados). */
+  last_seen_at: string | null;
 }
 
 const BUCKET = 'avatars';
 const URL_TTL_SECONDS = 12 * 60 * 60;
 
-const COLUMNS = 'id, name, language, theme, monthly_allowance, avatar_path, home';
+const COLUMNS = 'id, name, language, theme, monthly_allowance, avatar_path, home, last_seen_at';
+/** Não se regista o acesso mais vezes do que isto (5 minutos): abrir e fechar a app não enche a base de dados. */
+const SEEN_EVERY_MS = 5 * 60 * 1000;
 
 /** O perfil de quem está a usar a app. A língua e o tema seguem a pessoa entre dispositivos. */
 @Injectable({ providedIn: 'root' })
@@ -64,6 +68,28 @@ export class ProfileService {
         this.avatarUrls.set(new Map());
       }
     });
+    // Voltar à app (do ecrã bloqueado, de outra app) conta como entrar outra vez.
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') void this.markSeen();
+      });
+    }
+  }
+
+  private lastSeenSent = 0;
+
+  /** Regista que estou na app (no máximo de 5 em 5 minutos). A hora é a do servidor. */
+  async markSeen(force = false): Promise<void> {
+    if (!this.auth.userId()) return;
+    if (!force && Date.now() - this.lastSeenSent < SEEN_EVERY_MS) return;
+    this.lastSeenSent = Date.now();
+    await this.supabase.rpc('touch_last_seen');
+  }
+
+  /** Volta a ler os perfis (por exemplo, para ver quando o outro entrou pela última vez). */
+  async refreshPeople(): Promise<void> {
+    const { data } = await this.supabase.from('profiles').select(COLUMNS).returns<Profile[]>();
+    if (data) this.people.set(data);
   }
 
   /** O nome de uma pessoa, ou um texto vazio se ainda não tem nome. */
@@ -213,6 +239,7 @@ export class ProfileService {
     if (!data) return;
     this.people.set(data);
     void this.loadAllowanceHistory();
+    void this.markSeen(true);
     const mine = data.find((person) => person.id === userId);
     if (!mine) return;
     this.profile.set(mine);

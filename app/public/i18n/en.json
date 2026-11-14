@@ -625,12 +625,15 @@
       "back": "Back to “{{stage}}”",
       "missingTitle": "Still to decide",
       "missing": {
-        "dates": "The dates are still being weighed up.",
-        "stay": "You haven't chosen the stay yet.",
-        "budget": "There's no budget estimate yet."
+        "dates": "to confirm the dates",
+        "stay": "to choose the stay",
+        "transport": "to choose how you get there",
+        "approval": "{{names}}'s approval"
       },
       "missingBack": "See the plan",
-      "missingGo": "Mark as ready"
+      "missingGo": "Mark as ready",
+      "blocked": "To mark it ready you still need:",
+      "notReady": "Decisions or approvals are still missing."
     },
     "nights_one": "{{count}} night",
     "nights_other": "{{count}} nights",
@@ -682,7 +685,8 @@
       "errors": {
         "origin": "Enter where you set off from.",
         "duration": "Enter the duration, for example 3h30 or 45."
-      }
+      },
+      "choose": "Choose this journey"
     },
     "stays": {
       "title": "Stay",
@@ -748,6 +752,20 @@
       "me": "Just you",
       "only": "Just {{name}}",
       "one": "Just one of you"
+    },
+    "decisions": {
+      "title": "Decisions",
+      "dates": "Dates",
+      "datesPending": "Still being weighed up",
+      "stay": "Stay",
+      "stayPending": "To be chosen",
+      "transport": "Getting there",
+      "transportPending": "One still to pick for each origin",
+      "approvals": "Both of you approve",
+      "approve": "I approve these decisions",
+      "withdraw": "Withdraw my approval",
+      "needFirst": "You can approve once the dates, the stay and how you get there are set.",
+      "resetHint": "If the dates, the stay or how you get there change, the approvals go back to zero."
     }
   }
 }

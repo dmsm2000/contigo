@@ -625,12 +625,15 @@
       "back": "Voltar a «{{stage}}»",
       "missingTitle": "Ainda falta decidir",
       "missing": {
-        "dates": "As datas ainda estão em avaliação.",
-        "stay": "Ainda não escolheram o alojamento.",
-        "budget": "Ainda não há uma estimativa do orçamento."
+        "dates": "confirmar as datas",
+        "stay": "escolher o alojamento",
+        "transport": "escolher como chegam",
+        "approval": "a aprovação de {{names}}"
       },
       "missingBack": "Ver o plano",
-      "missingGo": "Dar como preparada"
+      "missingGo": "Dar como preparada",
+      "blocked": "Para dar como preparada falta:",
+      "notReady": "Ainda faltam decisões ou aprovações."
     },
     "nights_one": "{{count}} noite",
     "nights_other": "{{count}} noites",
@@ -682,7 +685,8 @@
       "errors": {
         "origin": "Escreve de onde se parte.",
         "duration": "Escreve a duração, por exemplo 3h30 ou 45."
-      }
+      },
+      "choose": "Escolher esta deslocação"
     },
     "stays": {
       "title": "Alojamento",
@@ -748,6 +752,20 @@
       "me": "Vais só tu",
       "only": "Vai só {{name}}",
       "one": "Vai só um de vocês"
+    },
+    "decisions": {
+      "title": "Decisões",
+      "dates": "Datas",
+      "datesPending": "Ainda em avaliação",
+      "stay": "Alojamento",
+      "stayPending": "Por escolher",
+      "transport": "Como chegam",
+      "transportPending": "Falta escolher uma por origem",
+      "approvals": "Aprovação dos dois",
+      "approve": "Aprovo estas decisões",
+      "withdraw": "Retirar a minha aprovação",
+      "needFirst": "Só se aprova depois de definirem as datas, o alojamento e como chegam.",
+      "resetHint": "Se mudarem as datas, o alojamento ou como chegam, as aprovações voltam a zero."
     }
   }
 }

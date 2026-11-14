@@ -23,7 +23,9 @@ import {
 import { todayIso } from '../../../core/availability.logic';
 import { EXPENSE_CATEGORIES, ExpenseCategory, parseAmount, totalOf } from '../../../core/expenses.logic';
 import { ExpensesService } from '../../../core/expenses.service';
+import { AuthService } from '../../../core/auth.service';
 import { LanguageService } from '../../../core/language.service';
+import { ProfileService } from '../../../core/profile.service';
 import {
   budgetTotals,
   CHECKLIST_KINDS,
@@ -34,10 +36,10 @@ import {
   headroom,
   Leg,
   LegMode,
-  missingForPrepared,
   nextStage,
   nightsBetween,
   openFirst,
+  planReadiness,
   Stage,
   stageOf,
   STAGES,
@@ -50,6 +52,7 @@ import {
 import { TripPlanService } from '../../../core/trip-plan.service';
 import { formatCost, Trip } from '../../../core/trips.logic';
 import { TripsService } from '../../../core/trips.service';
+import { AvatarComponent } from '../../profile/avatar.component';
 import { CloseTripModal } from './close-trip.modal';
 import { DateOptionModal, LegModal, StayModal } from './plan-forms';
 
@@ -60,7 +63,7 @@ import { DateOptionModal, LegModal, StayModal } from './plan-forms';
 @Component({
   selector: 'app-trip-plan',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonIcon, FormsModule, TranslocoPipe],
+  imports: [IonIcon, FormsModule, TranslocoPipe, AvatarComponent],
   templateUrl: './trip-plan.component.html',
   styleUrl: './trip-plan.component.scss',
 })
@@ -73,6 +76,8 @@ export class TripPlanComponent {
   private readonly tripsService = inject(TripsService);
   private readonly expenses = inject(ExpensesService);
   protected readonly plan = inject(TripPlanService);
+  private readonly auth = inject(AuthService);
+  private readonly profile = inject(ProfileService);
 
   readonly trip = input.required<Trip>();
 
@@ -88,6 +93,27 @@ export class TripPlanComponent {
   protected readonly next = computed(() => nextStage(this.stage()));
   protected readonly people = computed(() => travellers(this.trip()));
 
+  /** Quem tem de aprovar: os dois (se vão os dois) ou só quem vai. */
+  protected readonly travellerIds = computed(() => {
+    const trip = this.trip();
+    if (trip.withPartner) return this.profile.people().map((person) => person.id);
+    return [trip.createdBy ?? this.auth.userId() ?? ''].filter(Boolean);
+  });
+  /** O que falta para dar a viagem como preparada: as 3 decisões e a aprovação de todos. */
+  protected readonly readiness = computed(() =>
+    planReadiness({
+      datesConfirmed: this.trip().datesConfirmed,
+      stays: this.plan.staysOf(this.trip().id),
+      legs: this.plan.legsOf(this.trip().id),
+      approvals: this.plan.approvalsOf(this.trip().id),
+      travellerIds: this.travellerIds(),
+    }),
+  );
+  protected readonly myId = computed(() => this.auth.userId());
+  protected readonly iApproved = computed(() => this.readiness().approvedBy.includes(this.myId() ?? ''));
+  /** Só se aprova quando as 3 decisões estão tomadas. */
+  protected readonly canApprove = computed(() => this.readiness().dates && this.readiness().stay && this.readiness().transport);
+  protected readonly chosenLegs = computed(() => this.plan.legsOf(this.trip().id).filter((leg) => leg.chosen));
   protected readonly dates = computed(() => this.plan.datesOf(this.trip().id));
   protected readonly stays = computed(() => sortStays(this.plan.staysOf(this.trip().id)));
   protected readonly chosenStay = computed(() => this.stays().find((stay) => stay.chosen) ?? null);
@@ -153,23 +179,8 @@ export class TripPlanComponent {
     const target = this.next();
     if (!target) return;
     if (target === 'closed') return this.openClose();
-    if (target === 'prepared') {
-      const missing = missingForPrepared({ datesConfirmed: this.trip().datesConfirmed, hasStay: this.chosenStay() !== null, hasBudget: this.lines().length > 0 });
-      if (missing.length) {
-        const t = (key: string) => this.transloco.translate(key);
-        const alert = await this.alerts.create({
-          header: t('plan.stage.missingTitle'),
-          message: missing.map((item) => `• ${t('plan.stage.missing.' + item)}`).join('\n'),
-          cssClass: 'ct-alert-lines',
-          buttons: [
-            { text: t('plan.stage.missingBack'), role: 'cancel' },
-            { text: t('plan.stage.missingGo'), handler: () => void this.moveTo('prepared') },
-          ],
-        });
-        await alert.present();
-        return;
-      }
-    }
+    // Só passa a preparada com as 3 decisões tomadas e os dois a aprovar (a base de dados também o exige).
+    if (target === 'prepared' && !this.readiness().ready) return this.toast('plan.stage.notReady');
     await this.moveTo(target);
   }
 
@@ -183,8 +194,8 @@ export class TripPlanComponent {
     this.busy.set(true);
     try {
       await this.tripsService.patch(this.trip().id, { status: statusForStage(stage, this.trip().status) });
-    } catch {
-      await this.toast('plan.errors.save');
+    } catch (error) {
+      await this.toast((error as { message?: string })?.message?.includes('plan_not_ready') ? 'plan.stage.notReady' : 'plan.errors.save');
     }
     this.busy.set(false);
   }
@@ -220,6 +231,34 @@ export class TripPlanComponent {
 
   protected async addLeg(): Promise<void> {
     await this.open(LegModal, { tripId: this.trip().id });
+  }
+
+  protected async chooseLeg(leg: Leg): Promise<void> {
+    await this.attempt(() => this.plan.chooseLeg(this.trip().id, leg, !leg.chosen));
+  }
+
+  protected personName(userId: string): string {
+    if (userId === this.myId()) return this.transloco.translate('wish.you');
+    return this.profile.nameOf(userId) || this.transloco.translate('wish.theOther');
+  }
+
+  /** O que falta, escrito ("as datas, o alojamento e a aprovação da Lucía"). */
+  protected missingText(): string {
+    const t = (key: string, params?: Record<string, string>) => this.transloco.translate(key, params);
+    const readiness = this.readiness();
+    return readiness.missing
+      .map((item) =>
+        item === 'approval' ? t('plan.stage.missing.approval', { names: readiness.waitingFor.map((id) => this.personName(id)).join(' + ') }) : t('plan.stage.missing.' + item),
+      )
+      .join(' · ');
+  }
+
+  protected async approve(): Promise<void> {
+    await this.attempt(() => this.plan.approve(this.trip().id));
+  }
+
+  protected async withdraw(): Promise<void> {
+    await this.attempt(() => this.plan.withdraw(this.trip().id));
   }
 
   protected async editLeg(leg: Leg): Promise<void> {

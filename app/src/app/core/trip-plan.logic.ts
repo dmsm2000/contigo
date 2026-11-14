@@ -139,6 +139,8 @@ export interface Leg {
   minutes: number | null;
   priceEur: number | null;
   note: string | null;
+  /** A deslocação escolhida desta origem (as outras da mesma origem são alternativas). */
+  chosen: boolean;
 }
 
 export interface LegRow {
@@ -149,6 +151,7 @@ export interface LegRow {
   minutes: number | null;
   price_eur: number | string | null;
   note: string | null;
+  chosen: boolean;
 }
 
 export function toLeg(row: LegRow): Leg {
@@ -160,6 +163,7 @@ export function toLeg(row: LegRow): Leg {
     minutes: row.minutes,
     priceEur: row.price_eur === null ? null : Number(row.price_eur),
     note: row.note,
+    chosen: row.chosen,
   };
 }
 
@@ -275,19 +279,68 @@ export function openFirst(items: readonly ChecklistItem[]): ChecklistItem[] {
 
 // ---------------------------------------------------------------- ciclo
 
-export interface PlanReadiness {
-  datesConfirmed: boolean;
-  hasStay: boolean;
-  hasBudget: boolean;
+export interface PlanApproval {
+  tripId: string;
+  userId: string;
 }
 
-/** O que ainda falta para dar a viagem como preparada (avisa, mas não impede). */
-export function missingForPrepared(readiness: PlanReadiness): ('dates' | 'stay' | 'budget')[] {
-  const missing: ('dates' | 'stay' | 'budget')[] = [];
-  if (!readiness.datesConfirmed) missing.push('dates');
-  if (!readiness.hasStay) missing.push('stay');
-  if (!readiness.hasBudget) missing.push('budget');
-  return missing;
+export interface PlanApprovalRow {
+  trip_id: string;
+  user_id: string;
+}
+
+export function toPlanApproval(row: PlanApprovalRow): PlanApproval {
+  return { tripId: row.trip_id, userId: row.user_id };
+}
+
+/** As origens que têm deslocações: cada uma precisa de uma escolhida. */
+function originsOf(legs: readonly Pick<Leg, 'origin'>[]): string[] {
+  return [...new Set(legs.map((leg) => leg.origin.trim().toLowerCase()))];
+}
+
+/** A deslocação está decidida quando há pelo menos uma escolhida e cada origem tem a sua. */
+export function transportDecided(legs: readonly Pick<Leg, 'origin' | 'chosen'>[]): boolean {
+  if (!legs.some((leg) => leg.chosen)) return false;
+  return originsOf(legs).every((origin) => legs.some((leg) => leg.chosen && leg.origin.trim().toLowerCase() === origin));
+}
+
+export type Requirement = 'dates' | 'stay' | 'transport' | 'approval';
+
+export interface PlanReadiness {
+  dates: boolean;
+  stay: boolean;
+  transport: boolean;
+  /** Quem já aprovou e quem falta, entre as pessoas que vão. */
+  approvedBy: string[];
+  waitingFor: string[];
+  /** As 3 decisões estão tomadas e todos aprovaram. */
+  ready: boolean;
+  /** O que ainda impede, pela ordem em que se resolve (a aprovação só conta depois das 3 decisões). */
+  missing: Requirement[];
+}
+
+/**
+ * Uma viagem só passa a "preparada" com as 3 decisões tomadas (datas confirmadas, alojamento escolhido, deslocação
+ * escolhida) e a aprovação dos dois. O resto do plano pode ficar vazio. A base de dados aplica a mesma regra.
+ */
+export function planReadiness(input: {
+  datesConfirmed: boolean;
+  stays: readonly Pick<Stay, 'chosen'>[];
+  legs: readonly Pick<Leg, 'origin' | 'chosen'>[];
+  approvals: readonly Pick<PlanApproval, 'userId'>[];
+  travellerIds: readonly string[];
+}): PlanReadiness {
+  const dates = input.datesConfirmed;
+  const stay = input.stays.some((item) => item.chosen);
+  const transport = transportDecided(input.legs);
+  const approvedBy = input.travellerIds.filter((id) => input.approvals.some((approval) => approval.userId === id));
+  const waitingFor = input.travellerIds.filter((id) => !approvedBy.includes(id));
+  const missing: Requirement[] = [];
+  if (!dates) missing.push('dates');
+  if (!stay) missing.push('stay');
+  if (!transport) missing.push('transport');
+  if (waitingFor.length) missing.push('approval');
+  return { dates, stay, transport, approvedBy, waitingFor, ready: missing.length === 0, missing };
 }
 
 /** O passo seguinte do ciclo, ou nulo se já está fechada. */

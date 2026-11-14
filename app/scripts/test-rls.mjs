@@ -382,6 +382,43 @@ try {
   check('apagar a viagem apaga o plano', (await a.from('trip_stays').select('id').eq('trip_id', planTrip.data.id)).data?.length === 0);
   await a.from('places').delete().eq('id', planPlace.data.id);
 
+  // Passar a "preparada": só com datas, alojamento e deslocação escolhidos e a aprovação de quem vai.
+  const gPlace = await a.from('places').insert({ name: 'Regra Teste' }).select().single();
+  const gTripBoth = await a.from('trips').insert({ place_id: gPlace.data.id, status: 'planned', start_date: '2026-12-02', date_precision: 'day', dates_confirmed: false }).select().single();
+  const blockedBoth = await a.from('trips').update({ status: 'prepared' }).eq('id', gTripBoth.data.id);
+  check('uma viagem de dois não passa a preparada sem as decisões', Boolean(blockedBoth.error) && /plan_not_ready/.test(blockedBoth.error.message), blockedBoth.error?.message);
+  const gTrip = await a.from('trips').insert({ place_id: gPlace.data.id, status: 'planned', start_date: '2026-12-02', date_precision: 'day', dates_confirmed: false, with_partner: false }).select().single();
+  const gStay = await a.from('trip_stays').insert({ trip_id: gTrip.data.id, name: 'Hotel Regra', price_eur: 80 }).select().single();
+  const gLegPorto = await a.from('trip_legs').insert({ trip_id: gTrip.data.id, origin: 'Porto', mode: 'car', chosen: true }).select().single();
+  const gLegMadrid = await a.from('trip_legs').insert({ trip_id: gTrip.data.id, origin: 'Madrid', mode: 'train' }).select().single();
+  const gLegPorto2 = await a.from('trip_legs').insert({ trip_id: gTrip.data.id, origin: 'porto', mode: 'bus', chosen: true });
+  check('só há uma deslocação escolhida por origem', Boolean(gLegPorto2.error));
+  const tryPrepare = async () => a.from('trips').update({ status: 'prepared' }).eq('id', gTrip.data.id);
+  const miss1 = await tryPrepare();
+  check('sem datas, alojamento, Madrid sem deslocação nem aprovação: bloqueia', /dates,stay,transport,approval/.test(miss1.error?.message ?? ''), miss1.error?.message);
+  await a.from('trips').update({ dates_confirmed: true }).eq('id', gTrip.data.id);
+  await a.from('trip_stays').update({ chosen: true }).eq('id', gStay.data.id);
+  await a.from('trip_legs').update({ chosen: true }).eq('id', gLegMadrid.data.id);
+  const miss2 = await tryPrepare();
+  check('com as 3 decisões mas sem aprovação: bloqueia', /plan_not_ready: approval/.test(miss2.error?.message ?? ''), miss2.error?.message);
+  const approvalForged = await b.from('trip_plan_approvals').insert({ trip_id: gTrip.data.id, user_id: created[0] });
+  check('ninguém aprova em nome do outro', Boolean(approvalForged.error));
+  const approveA = await a.from('trip_plan_approvals').insert({ trip_id: gTrip.data.id });
+  check('A aprova', !approveA.error, approveA.error?.message);
+  const seenB = await b.from('trip_plan_approvals').select('user_id').eq('trip_id', gTrip.data.id);
+  check('B vê a aprovação de A', seenB.data?.length === 1);
+  const dropB = await b.from('trip_plan_approvals').delete().eq('trip_id', gTrip.data.id).select();
+  check('B não retira a aprovação de A', !dropB.error && dropB.data?.length === 0);
+  await a.from('trip_stays').update({ price_eur: 90 }).eq('id', gStay.data.id);
+  const afterChange = await a.from('trip_plan_approvals').select('user_id').eq('trip_id', gTrip.data.id);
+  check('mudar o alojamento escolhido apaga as aprovações', afterChange.data?.length === 0);
+  await a.from('trip_plan_approvals').insert({ trip_id: gTrip.data.id });
+  const prepared = await tryPrepare();
+  check('com tudo decidido e aprovado, passa a preparada', !prepared.error, prepared.error?.message);
+  await a.from('trips').delete().eq('id', gTripBoth.data.id);
+  await a.from('trips').delete().eq('id', gTrip.data.id);
+  await a.from('places').delete().eq('id', gPlace.data.id);
+
   // Imagens dos sítios: partilhadas pelos dois, públicas para ler, só ficheiros com o id de um sítio no nome.
   const placeFile = `${crypto.randomUUID()}.jpg`;
   const imgA = await a.storage.from('place-images').upload(placeFile, jpeg, { contentType: 'image/jpeg', upsert: true });

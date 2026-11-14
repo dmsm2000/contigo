@@ -6,7 +6,8 @@ import {
   headroom,
   isLive,
   isPlanning,
-  missingForPrepared,
+  planReadiness,
+  transportDecided,
   nextStage,
   nightsBetween,
   openFirst,
@@ -113,8 +114,21 @@ describe('lista e preparação', () => {
     expect(openFirst(items).map((i) => i.id)).toEqual(['b', 'a']);
   });
 
-  it('diz o que falta para a viagem estar preparada', () => {
-    expect(missingForPrepared({ datesConfirmed: false, hasStay: false, hasBudget: true })).toEqual(['dates', 'stay']);
-    expect(missingForPrepared({ datesConfirmed: true, hasStay: true, hasBudget: true })).toEqual([]);
+  it('a deslocação só está decidida com uma escolhida em cada origem', () => {
+    const leg = (origin: string, chosen: boolean) => ({ origin, chosen });
+    expect(transportDecided([])).toBe(false);
+    expect(transportDecided([leg('Porto', false), leg('Porto', false)])).toBe(false);
+    expect(transportDecided([leg('Porto', true), leg('Porto', false)])).toBe(true);
+    expect(transportDecided([leg('Porto', true), leg('Madrid', false)])).toBe(false);
+    expect(transportDecided([leg('Porto', true), leg('porto ', false), leg('Madrid', true)])).toBe(true);
+  });
+
+  it('só está pronta com as 3 decisões e a aprovação dos dois', () => {
+    const base = { datesConfirmed: true, stays: [{ chosen: true }], legs: [{ origin: 'Porto', chosen: true }], approvals: [{ userId: 'a' }, { userId: 'b' }], travellerIds: ['a', 'b'] };
+    expect(planReadiness(base)).toMatchObject({ ready: true, missing: [], waitingFor: [] });
+    expect(planReadiness({ ...base, approvals: [{ userId: 'a' }] })).toMatchObject({ ready: false, missing: ['approval'], approvedBy: ['a'], waitingFor: ['b'] });
+    expect(planReadiness({ ...base, datesConfirmed: false, stays: [{ chosen: false }], legs: [] }).missing).toEqual(['dates', 'stay', 'transport']);
+    // Vai só uma pessoa: basta a aprovação dela.
+    expect(planReadiness({ ...base, approvals: [{ userId: 'a' }], travellerIds: ['a'] }).ready).toBe(true);
   });
 });

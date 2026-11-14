@@ -14,17 +14,20 @@ import {
   Leg,
   LegMode,
   LegRow,
+  PlanApproval,
+  PlanApprovalRow,
   Stay,
   StayRow,
   toBudgetLine,
   toChecklistItem,
   toDateOption,
   toLeg,
+  toPlanApproval,
   toStay,
 } from './trip-plan.logic';
 import { TripsService } from './trips.service';
 
-const TABLES = ['trip_date_options', 'trip_stays', 'trip_legs', 'trip_budget_lines', 'trip_checklist'] as const;
+const TABLES = ['trip_date_options', 'trip_stays', 'trip_legs', 'trip_budget_lines', 'trip_checklist', 'trip_plan_approvals'] as const;
 
 /**
  * O plano de cada viagem: datas em avaliação, alojamento, como chegar, orçamento e lista. Carrega tudo de uma vez
@@ -42,6 +45,7 @@ export class TripPlanService {
   private readonly legs = signal<Leg[]>([]);
   private readonly budget = signal<BudgetLine[]>([]);
   private readonly checklist = signal<ChecklistItem[]>([]);
+  private readonly approvals = signal<PlanApproval[]>([]);
   readonly loaded = signal(false);
 
   constructor() {
@@ -53,7 +57,7 @@ export class TripPlanService {
           this.listen();
         } else {
           this.stopListening();
-          for (const list of [this.dates, this.stays, this.legs, this.budget, this.checklist]) (list as ReturnType<typeof signal<unknown[]>>).set([]);
+          for (const list of [this.dates, this.stays, this.legs, this.budget, this.checklist, this.approvals]) (list as ReturnType<typeof signal<unknown[]>>).set([]);
           this.loaded.set(false);
         }
       });
@@ -75,21 +79,26 @@ export class TripPlanService {
   checklistOf(tripId: string): ChecklistItem[] {
     return this.checklist().filter((item) => item.tripId === tripId);
   }
+  approvalsOf(tripId: string): PlanApproval[] {
+    return this.approvals().filter((item) => item.tripId === tripId);
+  }
 
   async load(): Promise<void> {
-    const [dates, stays, legs, budget, checklist] = await Promise.all([
+    const [dates, stays, legs, budget, checklist, approvals] = await Promise.all([
       this.supabase.from('trip_date_options').select('*').returns<DateOptionRow[]>(),
       this.supabase.from('trip_stays').select('*').order('created_at').returns<StayRow[]>(),
       this.supabase.from('trip_legs').select('*').order('created_at').returns<LegRow[]>(),
       this.supabase.from('trip_budget_lines').select('*').returns<BudgetLineRow[]>(),
       this.supabase.from('trip_checklist').select('*').order('created_at').returns<ChecklistRow[]>(),
+      this.supabase.from('trip_plan_approvals').select('*').returns<PlanApprovalRow[]>(),
     ]);
-    if (dates.error || stays.error || legs.error || budget.error || checklist.error) return;
+    if (dates.error || stays.error || legs.error || budget.error || checklist.error || approvals.error) return;
     this.dates.set((dates.data ?? []).map(toDateOption));
     this.stays.set((stays.data ?? []).map(toStay));
     this.legs.set((legs.data ?? []).map(toLeg));
     this.budget.set((budget.data ?? []).map(toBudgetLine));
     this.checklist.set((checklist.data ?? []).map(toChecklistItem));
+    this.approvals.set((approvals.data ?? []).map(toPlanApproval));
     this.loaded.set(true);
   }
 
@@ -147,7 +156,35 @@ export class TripPlanService {
   async saveLeg(tripId: string, input: { id?: string; origin: string; mode: LegMode; minutes: number | null; priceEur: number | null; note: string | null }): Promise<void> {
     const row = { origin: input.origin, mode: input.mode, minutes: input.minutes, price_eur: input.priceEur, note: input.note };
     if (input.id) await this.run(this.supabase.from('trip_legs').update(row).eq('id', input.id));
-    else await this.run(this.supabase.from('trip_legs').insert({ trip_id: tripId, ...row }));
+    else {
+      // A primeira deslocação de uma origem fica escolhida (é a única); as outras entram como alternativas.
+      const origin = input.origin.trim().toLowerCase();
+      const first = !this.legsOf(tripId).some((leg) => leg.origin.trim().toLowerCase() === origin);
+      await this.run(this.supabase.from('trip_legs').insert({ trip_id: tripId, ...row, chosen: first }));
+    }
+  }
+
+  /** Escolhe a deslocação de uma origem (só uma por origem); voltar a tocar na escolhida tira-lhe a escolha. */
+  async chooseLeg(tripId: string, leg: Pick<Leg, 'id' | 'origin'>, chosen: boolean): Promise<void> {
+    const sameOrigin = this.legsOf(tripId).filter((item) => item.origin.trim().toLowerCase() === leg.origin.trim().toLowerCase());
+    for (const other of sameOrigin.filter((item) => item.chosen && item.id !== leg.id)) {
+      await this.run(this.supabase.from('trip_legs').update({ chosen: false }).eq('id', other.id));
+    }
+    await this.run(this.supabase.from('trip_legs').update({ chosen }).eq('id', leg.id));
+  }
+
+  // ------------------------------------------------------------ aprovações
+
+  /** Aprovo as 3 decisões (datas, alojamento e deslocação). */
+  async approve(tripId: string): Promise<void> {
+    await this.run(this.supabase.from('trip_plan_approvals').insert({ trip_id: tripId }));
+  }
+
+  /** Retiro a minha aprovação. */
+  async withdraw(tripId: string): Promise<void> {
+    const userId = this.auth.userId();
+    if (!userId) return;
+    await this.run(this.supabase.from('trip_plan_approvals').delete().eq('trip_id', tripId).eq('user_id', userId));
   }
 
   async removeLeg(id: string): Promise<void> {

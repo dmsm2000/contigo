@@ -13,12 +13,83 @@
     }
   </ol>
   @if (next(); as target) {
-    <button class="ct-btn advance" type="button" [disabled]="busy()" (click)="advance()">{{ 'plan.stage.to.' + target | transloco }}</button>
+    <button class="ct-btn advance" type="button" [disabled]="busy() || (target === 'prepared' && !readiness().ready)" (click)="advance()">{{ 'plan.stage.to.' + target | transloco }}</button>
+    @if (target === 'prepared' && !readiness().ready) {
+      <p class="blocked" role="status">{{ 'plan.stage.blocked' | transloco }} {{ missingText() }}</p>
+    }
   }
   @if (stageIndex() > 0 && stage() !== 'closed') {
     <button class="back-step" type="button" [disabled]="busy()" (click)="goBack()">{{ 'plan.stage.back' | transloco: { stage: ('plan.stage.' + stages[stageIndex() - 1] | transloco) } }}</button>
   }
 </section>
+
+<!-- As 3 decisões e a aprovação dos dois: sem isto a viagem não passa a preparada. -->
+@if (stage() === 'planning') {
+  <section class="part ct-rise" style="--i: 4">
+    <h2>{{ 'plan.decisions.title' | transloco }}</h2>
+    <div class="card decisions">
+      <ul class="checklist-rows">
+        <li [class.ok]="readiness().dates">
+          <ion-icon [name]="readiness().dates ? 'checkmark-circle' : 'ellipse-outline'" aria-hidden="true"></ion-icon>
+          <span class="grow">
+            <strong>{{ 'plan.decisions.dates' | transloco }}</strong>
+            <small>{{ readiness().dates ? rangeText() : ('plan.decisions.datesPending' | transloco) }}</small>
+          </span>
+        </li>
+        <li [class.ok]="readiness().stay">
+          <ion-icon [name]="readiness().stay ? 'checkmark-circle' : 'ellipse-outline'" aria-hidden="true"></ion-icon>
+          <span class="grow">
+            <strong>{{ 'plan.decisions.stay' | transloco }}</strong>
+            <small>
+              @if (chosenStay(); as stay) {
+                {{ stay.name }}@if (stay.priceEur !== null) { · {{ money(stay.priceEur) }} }
+              } @else {
+                {{ 'plan.decisions.stayPending' | transloco }}
+              }
+            </small>
+          </span>
+        </li>
+        <li [class.ok]="readiness().transport">
+          <ion-icon [name]="readiness().transport ? 'checkmark-circle' : 'ellipse-outline'" aria-hidden="true"></ion-icon>
+          <span class="grow">
+            <strong>{{ 'plan.decisions.transport' | transloco }}</strong>
+            <small>
+              @if (readiness().transport) {
+                @for (leg of chosenLegs(); track leg.id; let last = $last) {
+                  {{ leg.origin }}: {{ 'plan.legs.modes.' + leg.mode | transloco }}@if (leg.minutes !== null) { {{ duration(leg.minutes) }} }@if (!last) { · }
+                }
+              } @else {
+                {{ 'plan.decisions.transportPending' | transloco }}
+              }
+            </small>
+          </span>
+        </li>
+      </ul>
+
+      <div class="approvals">
+        <span class="approvals-label">{{ 'plan.decisions.approvals' | transloco }}</span>
+        <ul class="people">
+          @for (id of travellerIds(); track id) {
+            <li [class.yes]="readiness().approvedBy.includes(id)">
+              <app-avatar [userId]="id" [size]="34" />
+              <span class="tick" aria-hidden="true"><ion-icon name="checkmark-circle"></ion-icon></span>
+              <span class="who">{{ personName(id) }}</span>
+            </li>
+          }
+        </ul>
+        @if (iApproved()) {
+          <button class="ghost" type="button" (click)="withdraw()">{{ 'plan.decisions.withdraw' | transloco }}</button>
+        } @else {
+          <button class="ct-btn approve" type="button" [disabled]="!canApprove()" (click)="approve()">{{ 'plan.decisions.approve' | transloco }}</button>
+          @if (!canApprove()) {
+            <p class="hint">{{ 'plan.decisions.needFirst' | transloco }}</p>
+          }
+        }
+        <p class="hint">{{ 'plan.decisions.resetHint' | transloco }}</p>
+      </div>
+    </div>
+  </section>
+}
 
 <!-- Datas -->
 <section class="part ct-rise" style="--i: 4">
@@ -64,18 +135,19 @@
   @if (legs().length) {
     <ul class="list">
       @for (leg of legs(); track leg.id) {
-        <li>
-          <button class="card row-card tap" type="button" (click)="editLeg(leg)">
-            <ion-icon class="lead" [name]="modeIcon(leg.mode)" aria-hidden="true"></ion-icon>
-            <span class="grow">
-              <strong>{{ 'plan.legs.from' | transloco: { origin: leg.origin } }}</strong>
-              <small>
-                {{ 'plan.legs.modes.' + leg.mode | transloco }}
-                @if (leg.minutes !== null) { · {{ duration(leg.minutes) }} }
-                @if (leg.priceEur !== null) { · {{ money(leg.priceEur) }} }
-              </small>
-              @if (leg.note) {<small class="note">{{ leg.note }}</small>}
-            </span>
+        <li class="card row-card" [class.chosen]="leg.chosen">
+          <button class="check" type="button" [class.on]="leg.chosen" (click)="chooseLeg(leg)" [attr.aria-pressed]="leg.chosen" [attr.aria-label]="'plan.legs.choose' | transloco">
+            <ion-icon [name]="leg.chosen ? 'checkmark-circle' : 'ellipse-outline'" aria-hidden="true"></ion-icon>
+          </button>
+          <button class="grow tap" type="button" (click)="editLeg(leg)">
+            <strong>{{ 'plan.legs.from' | transloco: { origin: leg.origin } }}</strong>
+            <small>
+              <ion-icon class="mode" [name]="modeIcon(leg.mode)" aria-hidden="true"></ion-icon>
+              {{ 'plan.legs.modes.' + leg.mode | transloco }}
+              @if (leg.minutes !== null) { · {{ duration(leg.minutes) }} }
+              @if (leg.priceEur !== null) { · {{ money(leg.priceEur) }} }
+            </small>
+            @if (leg.note) {<small class="note">{{ leg.note }}</small>}
           </button>
         </li>
       }
