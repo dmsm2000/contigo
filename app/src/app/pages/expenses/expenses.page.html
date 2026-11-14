@@ -101,7 +101,8 @@
           </ul>
         </section>
       } @else {
-        <div class="ct-card ct-empty ct-rise" style="--i: 3">
+        <div class="ct-card ct-empty empty ct-rise" style="--i: 3">
+          <ion-icon name="receipt-outline" aria-hidden="true"></ion-icon>
           <p>{{ 'expenses.empty' | transloco }}</p>
           <button class="ct-btn" type="button" (click)="add()">{{ 'expenses.add' | transloco }}</button>
         </div>

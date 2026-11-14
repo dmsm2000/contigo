@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { AlertController, IonContent, IonIcon, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { add, chevronBackOutline, trashOutline } from 'ionicons/icons';
+import { add, chevronBackOutline, receiptOutline, trashOutline } from 'ionicons/icons';
 import { Expense, MAX_EXPENSE, parseAmount, totalOf } from '../../core/expenses.logic';
 import { ExpensesService } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
@@ -57,7 +57,7 @@ export class ExpensesPage {
   });
 
   constructor() {
-    addIcons({ add, chevronBackOutline, trashOutline });
+    addIcons({ add, chevronBackOutline, receiptOutline, trashOutline });
   }
 
   protected money(amount: number): string {

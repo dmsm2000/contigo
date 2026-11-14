@@ -284,3 +284,8 @@
   height: 68px;
   border-radius: 20px;
 }
+
+// Sem despesas: fica a respirar por baixo da dotação, como as outras secções.
+.empty {
+  margin-top: 12px;
+}
