@@ -23,12 +23,25 @@
 
 .hours {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  // minmax(0, 1fr): no iPhone o campo de horas tem uma largura própria e, com 1fr, empurrava um campo para cima do outro.
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
 }
 
 .hour {
   display: block;
+  min-width: 0;
+}
+
+input[type='time'] {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  text-align: left;
+  // Sem isto, o iPhone cola o texto ao topo do campo.
+  line-height: 52px;
 }
 
 .hour-label {
@@ -53,7 +66,7 @@
 
 .danger {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 30px;
   color: #d64545;
 }
 
