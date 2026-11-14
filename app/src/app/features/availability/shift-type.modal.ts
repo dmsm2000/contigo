@@ -1,11 +1,11 @@
-import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, ElementRef, inject, Input, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AlertController, IonContent, IonIcon, ModalController } from '@ionic/angular';
+import { AlertController, IonContent, IonFooter, IonIcon, ModalController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline, trashOutline } from 'ionicons/icons';
 import { AvailabilityService } from '../../core/availability.service';
-import { normalizeClock, SHIFT_TONES, ShiftKind, ShiftTone, ShiftType } from '../../core/availability.logic';
+import { normalizeClock, shortClock, SHIFT_TONES, ShiftKind, ShiftTone, ShiftType } from '../../core/availability.logic';
 
 interface Preset {
   key: 'free' | 'vacation' | 'unavailable';
@@ -15,11 +15,11 @@ interface Preset {
 /** Criar ou mudar um tipo de turno ("Manhã 7h–15h", "Folga", "Sai às 15h"…). Fica guardado para usar noutros dias. */
 @Component({
   selector: 'app-shift-type-modal',
-  imports: [IonContent, IonIcon, FormsModule, TranslocoPipe],
+  imports: [IonContent, IonFooter, IonIcon, FormsModule, TranslocoPipe],
   templateUrl: './shift-type.modal.html',
   styleUrl: './shift-type.modal.scss',
 })
-export class ShiftTypeModal implements OnInit {
+export class ShiftTypeModal implements OnInit, AfterViewInit {
   private readonly modalCtrl = inject(ModalController);
   private readonly alerts = inject(AlertController);
   private readonly transloco = inject(TranslocoService);
@@ -28,6 +28,7 @@ export class ShiftTypeModal implements OnInit {
   /** O tipo a mudar; sem ele, cria-se um novo. */
   @Input() type: ShiftType | null = null;
 
+  private readonly field = viewChild<ElementRef<HTMLInputElement>>('field');
   protected name = '';
   protected startsAt = '';
   protected endsAt = '';
@@ -56,6 +57,21 @@ export class ShiftTypeModal implements OnInit {
     this.tone.set(type.tone);
     this.startsAt = type.startsAt ?? '';
     this.endsAt = type.endsAt ?? '';
+  }
+
+  ngAfterViewInit(): void {
+    // Um tipo novo começa pelo nome: o teclado abre quando a animação de entrada acaba.
+    if (!this.type) setTimeout(() => this.field()?.nativeElement.focus(), 450);
+  }
+
+  /** A cor com que o tipo vai aparecer: a dos turnos de "não posso", ou o verde dos de "posso viajar". */
+  protected readonly previewTone = computed(() => `tone-${this.kind() === 'free' ? 'free' : this.tone()}`);
+
+  /** O horário como vai aparecer ("7:00–15:00"), se estiver completo. */
+  protected previewTime(): string {
+    const from = this.startsAt ? normalizeClock(this.startsAt) : null;
+    const to = this.endsAt ? normalizeClock(this.endsAt) : null;
+    return from && to ? `${shortClock(from)}–${shortClock(to)}` : '';
   }
 
   protected close(): void {

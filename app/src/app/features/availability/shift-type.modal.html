@@ -7,7 +7,18 @@
       </button>
     </header>
 
-    <form (ngSubmit)="save()" novalidate>
+    <form id="shift-form" (ngSubmit)="save()" novalidate>
+      <!-- Como vai aparecer nos dias: muda enquanto se escreve. -->
+      <div class="preview ct-rise" style="--i: 0" aria-live="polite">
+        <span class="preview-label">{{ 'shift.form.preview' | transloco }}</span>
+        <span class="preview-chip" [class]="'preview-chip ' + previewTone()">
+          <span class="preview-name">{{ name.trim() || ('shift.form.previewEmpty' | transloco) }}</span>
+          @if (previewTime(); as time) {
+            <span class="preview-time">{{ time }}</span>
+          }
+        </span>
+      </div>
+
       @if (!type) {
         <section class="block ct-rise" style="--i: 0">
           <span class="label" id="preset-label">{{ 'shift.form.quick' | transloco }}</span>
@@ -24,6 +35,7 @@
       <section class="block ct-rise" style="--i: 1">
         <label class="label" for="shift-name">{{ 'shift.form.name' | transloco }}</label>
         <input
+          #field
           id="shift-name"
           name="name"
           type="text"
@@ -93,9 +105,6 @@
         <p class="error" role="alert">{{ key | transloco }}</p>
       }
 
-      <button class="ct-btn save" type="submit" [disabled]="saving()">
-        {{ (saving() ? 'trip.form.saving' : 'shift.form.save') | transloco }}
-      </button>
 
       @if (type) {
         <button class="ct-btn ct-btn--ghost danger" type="button" (click)="confirmDelete()">
@@ -106,3 +115,9 @@
     </form>
   </div>
 </ion-content>
+
+<ion-footer class="form-footer">
+  <button class="ct-btn save" type="submit" form="shift-form" [disabled]="saving()">
+    {{ (saving() ? 'trip.form.saving' : 'shift.form.save') | transloco }}
+  </button>
+</ion-footer>

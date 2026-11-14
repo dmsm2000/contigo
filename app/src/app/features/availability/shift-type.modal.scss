@@ -60,3 +60,42 @@
 :host-context(.ion-palette-dark) .danger {
   color: #ff8a8a;
 }
+
+// A pré-visualização: o tipo tal como vai aparecer nos dias.
+.preview {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--ct-sf);
+}
+
+.preview-label {
+  font-size: 13px;
+  color: var(--ct-mu);
+}
+
+.preview-chip {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 6px 16px;
+  border-radius: 18px;
+  background: var(--tone-bg);
+  color: var(--tone-tx);
+}
+
+.preview-name {
+  font-size: 15px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-time {
+  font-size: 12px;
+  opacity: 0.85;
+}

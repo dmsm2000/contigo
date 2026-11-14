@@ -13,6 +13,8 @@ export interface Place {
   lat: number | null;
   lng: number | null;
   osmRef: string | null;
+  /** O ficheiro da imagem do sítio no bucket "place-images" (se já foi buscar uma). */
+  imagePath: string | null;
 }
 
 export interface Trip {
@@ -44,6 +46,7 @@ export interface PlaceRow {
   lat: number | null;
   lng: number | null;
   osm_ref: string | null;
+  image_path?: string | null;
 }
 
 export interface TripRow {
@@ -76,6 +79,7 @@ export function toPlace(row: PlaceRow): Place {
     lat: row.lat,
     lng: row.lng,
     osmRef: row.osm_ref,
+    imagePath: row.image_path ?? null,
   };
 }
 

@@ -13,6 +13,8 @@ export interface PlaceCandidate {
   /** Só para ordenar e mostrar os resultados: não se guarda. */
   capital?: boolean;
   population?: number;
+  /** A imagem encontrada para o sítio (endereço do Wikimedia). Só para guardar; não faz parte do sítio. */
+  imageUrl?: string | null;
 }
 
 // A pesquisa devolve de tudo (paragens de comboio, ruas, lojas). Só interessa o que é destino de uma visita.

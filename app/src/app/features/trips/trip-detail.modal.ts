@@ -106,7 +106,7 @@ export class TripDetailModal implements OnInit {
 
   protected hasCover(trip: Trip): boolean {
     const cover = this.photos.coverOf(trip.id);
-    return cover !== null && (this.photos.fullUrl(cover) ?? this.photos.thumbUrl(cover)) !== null;
+    return (cover !== null && (this.photos.fullUrl(cover) ?? this.photos.thumbUrl(cover)) !== null) || this.labels.hasPlaceImage(trip.place);
   }
 
   protected async openPhoto(index: number): Promise<void> {

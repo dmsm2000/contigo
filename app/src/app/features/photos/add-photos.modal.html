@@ -14,6 +14,9 @@
           <option [value]="option.id" [selected]="option.id === chosenTrip()">{{ option.label }}</option>
         }
       </select>
+      @if (!options().length) {
+        <p class="hint">{{ 'photos.noTrips' | transloco }}</p>
+      }
     </section>
 
     <input
@@ -27,65 +30,60 @@
       (change)="onFiles($event)"
     />
 
-    <button class="choose ct-rise" style="--i: 1" type="button" [disabled]="!chosenTrip()" (click)="choose()">
-      <ion-icon name="images-outline" aria-hidden="true"></ion-icon>
-      <strong>{{ 'photos.choose' | transloco }}</strong>
-      <small>{{ 'photos.chooseHint' | transloco }}</small>
-    </button>
-
-    @if (started()) {
-      <section class="queue ct-rise" style="--i: 2">
+    @if (!started()) {
+      <button class="choose ct-rise" style="--i: 1" type="button" [disabled]="!chosenTrip()" (click)="choose()">
+        <ion-icon name="images-outline" aria-hidden="true"></ion-icon>
+        <strong>{{ 'photos.choose' | transloco }}</strong>
+        <small>{{ 'photos.chooseHint' | transloco }}</small>
+      </button>
+    } @else {
+      <section class="queue ct-rise" style="--i: 1">
         <div class="progress" role="progressbar" [attr.aria-valuenow]="progress()" aria-valuemin="0" aria-valuemax="100">
           <span [style.width.%]="progress()"></span>
         </div>
-        <p class="progress-text">
-          {{ 'photos.progress' | transloco: { done: doneCount(), total: items().length } }}
-        </p>
+        <p class="progress-text">{{ 'photos.progress' | transloco: { done: doneCount(), total: items().length } }}</p>
 
-        <ul class="list">
+        <!-- As fotos como miniaturas (sem nomes de ficheiro): cada uma mostra o seu estado por cima. -->
+        <ul class="tiles">
           @for (item of items(); track item.id) {
-            <li class="row" [class.is-error]="item.status === 'error'">
-              <img class="preview" [src]="item.preview" alt="" />
-              <span class="row-text">
-                <strong>{{ item.file.name }}</strong>
-                <small>
-                  @switch (item.status) {
-                    @case ('waiting') {
-                      {{ 'photos.status.waiting' | transloco }}
-                    }
-                    @case ('working') {
-                      {{ 'photos.status.working' | transloco }}
-                    }
-                    @case ('done') {
-                      {{ 'photos.status.done' | transloco }}
-                    }
-                    @case ('error') {
-                      {{ (item.reason ?? 'photos.errors.upload') | transloco }}
-                    }
-                  }
-                </small>
-              </span>
+            <li class="photo" [class.is-error]="item.status === 'error'" [class.is-done]="item.status === 'done'">
+              <img [src]="item.preview" alt="" />
               @switch (item.status) {
                 @case ('done') {
-                  <ion-icon class="state state--done" name="checkmark-circle" aria-hidden="true"></ion-icon>
+                  <span class="badge badge--done"><ion-icon name="checkmark" aria-hidden="true"></ion-icon></span>
                 }
                 @case ('working') {
-                  <span class="spinner" aria-hidden="true"></span>
+                  <span class="badge"><span class="spinner" aria-hidden="true"></span></span>
                 }
                 @case ('error') {
                   <button class="retry" type="button" (click)="retry(item)" [attr.aria-label]="'photos.retry' | transloco">
                     <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+                    <small>{{ (item.reason ?? 'photos.errors.upload') | transloco }}</small>
                   </button>
                 }
               }
             </li>
           }
+          @if (!working()) {
+            <li>
+              <button class="more" type="button" (click)="choose()" [attr.aria-label]="'photos.choose' | transloco">
+                <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+              </button>
+            </li>
+          }
         </ul>
-
-        @if (!working()) {
-          <button class="ct-btn done" type="button" (click)="close()">{{ 'photos.finish' | transloco }}</button>
-        }
       </section>
     }
   </div>
 </ion-content>
+
+<!-- Depois de escolher fotos, o botão fica fora da área que desliza: a enviar, espera; no fim, conclui. -->
+@if (started()) {
+  <ion-footer class="form-footer">
+    @if (working()) {
+      <button class="ct-btn save" type="button" disabled>{{ 'photos.progress' | transloco: { done: doneCount(), total: items().length } }}</button>
+    } @else {
+      <button class="ct-btn save" type="button" (click)="close()">{{ 'photos.finish' | transloco }}</button>
+    }
+  </ion-footer>
+}

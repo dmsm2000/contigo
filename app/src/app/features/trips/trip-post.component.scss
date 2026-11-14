@@ -100,16 +100,18 @@
 
 .no-photos {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 50%;
   bottom: 16px;
-  display: flex;
+  transform: translateX(-50%);
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 6px;
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.5);
   font-size: 13px;
   font-weight: 600;
-  opacity: 0.9;
+  white-space: nowrap;
 }
 
 .counter {

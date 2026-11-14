@@ -7,10 +7,11 @@
       </button>
     </header>
 
-    <form (ngSubmit)="save()" novalidate>
+    <form id="idea-form" (ngSubmit)="save()" novalidate>
       <section class="block ct-rise" style="--i: 0">
         <label class="label" for="idea-body">{{ 'ideas.form.label' | transloco }}</label>
         <textarea
+          #field
           id="idea-body"
           name="body"
           rows="6"
@@ -26,9 +27,12 @@
         <p class="error" role="alert">{{ key | transloco }}</p>
       }
 
-      <button class="ct-btn save" type="submit" [disabled]="saving()">
-        {{ (saving() ? 'trip.form.saving' : 'ideas.form.save') | transloco }}
-      </button>
     </form>
   </div>
 </ion-content>
+
+<ion-footer class="form-footer">
+  <button class="ct-btn save" type="submit" form="idea-form" [disabled]="saving()">
+    {{ (saving() ? 'trip.form.saving' : 'ideas.form.save') | transloco }}
+  </button>
+</ion-footer>

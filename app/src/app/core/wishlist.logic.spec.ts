@@ -19,7 +19,7 @@ import {
 } from './wishlist.logic';
 
 const item = (id: string, name: string, total: number): WishlistItem => ({
-  place: { id, name, admin1: null, countryCode: 'PT', lat: 41, lng: -8, osmRef: null },
+  place: { id, name, admin1: null, countryCode: 'PT', lat: 41, lng: -8, osmRef: null, imagePath: null },
   note: null,
   link: null,
   minStay: null,

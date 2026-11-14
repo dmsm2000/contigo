@@ -207,7 +207,7 @@
             @for (item of topWishes(); track item.place.id) {
               <li>
                 <a class="card card--wish" routerLink="/wishlist">
-                  <span class="cover" [style.background]="labels.tile(item.place)" aria-hidden="true">{{ labels.initial(item.place) }}</span>
+                  <span class="cover" [style.background]="labels.tile(item.place)" aria-hidden="true">{{ labels.hasPlaceImage(item.place) ? '' : labels.initial(item.place) }}</span>
                   <span class="shade" aria-hidden="true"></span>
                   <span class="info">
                     <strong>{{ item.place.name }}</strong>

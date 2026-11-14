@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { AlertController, IonContent, IonIcon, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
@@ -11,14 +10,16 @@ import { initialOf, placeSubtitle, tileColors } from '../../core/trips.logic';
 import { nearestOrigin, WishlistItem } from '../../core/wishlist.logic';
 import { Stars, WishlistService } from '../../core/wishlist.service';
 import { TripFlowService } from '../../features/trips/trip-flow.service';
+import { TripLabels } from '../../features/trips/trip-labels.service';
 import { StarsComponent } from '../../features/wishlist/stars.component';
 
 /** Quantas sugestões se mostram antes de "ver mais". */
 const SUGGESTIONS_SHOWN = 6;
 
+import { BackDirective } from '../../shared/back.directive';
 @Component({
   selector: 'app-wishlist',
-  imports: [IonContent, IonIcon, RouterLink, TranslocoPipe, StarsComponent],
+  imports: [BackDirective, IonContent, IonIcon, TranslocoPipe, StarsComponent],
   templateUrl: './wishlist.page.html',
   styleUrl: './wishlist.page.scss',
 })
@@ -30,6 +31,7 @@ export class WishlistPage {
   private readonly language = inject(LanguageService).language;
   protected readonly wishlist = inject(WishlistService);
   protected readonly profile = inject(ProfileService);
+  protected readonly labels = inject(TripLabels);
 
   protected readonly showAll = signal(false);
 

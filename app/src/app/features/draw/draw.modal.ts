@@ -1,5 +1,5 @@
 import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
-import { AlertController, IonContent, IonIcon, ModalController, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, IonFooter, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline, closeOutline, diceOutline, heartOutline, sparklesOutline } from 'ionicons/icons';
@@ -8,6 +8,9 @@ import { AvailabilityService } from '../../core/availability.service';
 import { drawPool, reelDelays, reelFrames, summarizePool } from '../../core/draw.logic';
 import { DrawService } from '../../core/draw.service';
 import { LanguageService } from '../../core/language.service';
+import { PlaceImageService, placeImageUrl } from '../../core/place-image.service';
+import { attachPlaceImage } from '../../core/places.service';
+import { SupabaseService } from '../../core/supabase.service';
 import { ProfileService } from '../../core/profile.service';
 import { SUGGESTIONS } from '../../core/suggestions';
 import { formatTripDate, initialOf, placeSubtitle, tileColors, Trip } from '../../core/trips.logic';
@@ -41,7 +44,7 @@ const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve,
 /** O sorteio do mês: escolhe a janela, sorteia com a cerimónia da roleta e guarda a viagem sorteada. */
 @Component({
   selector: 'app-draw-modal',
-  imports: [IonContent, IonIcon, TranslocoPipe],
+  imports: [IonContent, IonFooter, IonIcon, TranslocoPipe],
   templateUrl: './draw.modal.html',
   styleUrl: './draw.modal.scss',
 })
@@ -55,6 +58,10 @@ export class DrawModal implements OnDestroy {
   private readonly profile = inject(ProfileService);
   protected readonly wishlist = inject(WishlistService);
   protected readonly draws = inject(DrawService);
+  private readonly images = inject(PlaceImageService);
+  private readonly supabase = inject(SupabaseService).client;
+  /** A imagem encontrada para o sítio sorteado (ainda por guardar), enquanto a viagem não a tem. */
+  private readonly foundImage = signal<string | null>(null);
 
   private destroyed = false;
 
@@ -117,6 +124,7 @@ export class DrawModal implements OnDestroy {
       distance: lat !== null && lng !== null ? nearestOrigin([lng, lat]) : null,
       initial: initialOf(outcome.entry.name),
       tile: this.tile(outcome.entry.name),
+      image: placeImageUrl(place?.imagePath) ?? this.foundImage(),
       placeId: outcome.trip?.placeId ?? null,
     };
   });
@@ -167,14 +175,30 @@ export class DrawModal implements OnDestroy {
     const window = this.window();
     // Guarda-se enquanto a roleta gira: se falhar, o resultado fica na mesma e pode tentar-se outra vez.
     const saving = this.draws.saveDraw(entry, window).catch(() => null);
+    // Também se procura uma imagem do sítio sorteado, ao mesmo tempo (sem a esperar mais do que 2,5 s).
+    this.foundImage.set(null);
+    const lookup = Promise.race([this.images.find(this.entryPlace(entry), this.language()).catch(() => null), sleep(2500).then(() => null)]);
     await this.spin(pool.map((candidate) => candidate.name), entry.name);
     const trip = await saving;
+    const found = await lookup;
     if (this.destroyed) return;
+    if (found && trip && !trip.place.imagePath) {
+      this.foundImage.set(found);
+      void attachPlaceImage(this.supabase, this.images, trip.placeId, found);
+    }
 
     this.outcome.set({ entry, window, trip });
     this.phase.set('result');
     this.busy.set(false);
     this.celebrate();
+  }
+
+  /** O nome e as coordenadas do sítio sorteado (da lista "Por ir" ou da sugestão), para lhe procurar a imagem. */
+  private entryPlace(entry: PoolEntry): { name: string; lat: number | null; lng: number | null } {
+    const suggestion = SUGGESTIONS.find((item) => `suggestion:${item.id}` === entry.id);
+    if (suggestion) return suggestion;
+    const wish = this.wishlist.items().find((item) => `wish:${item.place.id}` === entry.id);
+    return wish ? wish.place : { name: entry.name, lat: null, lng: null };
   }
 
   protected async retrySave(): Promise<void> {

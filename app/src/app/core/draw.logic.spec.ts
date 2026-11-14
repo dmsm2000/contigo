@@ -4,7 +4,7 @@ import { drawPool, entrySource, expandVetoes, monthKey, nextMonthStart, reelDela
 import { WishlistItem } from './wishlist.logic';
 
 const item = (id: string, name: string, total: number, minStay: WishlistItem['minStay'] = null): WishlistItem => ({
-  place: { id, name, admin1: null, countryCode: 'PT', lat: 41, lng: -8, osmRef: null },
+  place: { id, name, admin1: null, countryCode: 'PT', lat: 41, lng: -8, osmRef: null, imagePath: null },
   note: null,
   link: null,
   minStay,

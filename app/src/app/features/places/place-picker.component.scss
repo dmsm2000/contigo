@@ -172,3 +172,21 @@
   font: 600 14px var(--ion-font-family);
   cursor: pointer;
 }
+
+.tile {
+  background-size: cover;
+}
+
+.tile--busy {
+  animation: ct-pulse-soft 1.2s ease-in-out infinite;
+}
+
+@keyframes ct-pulse-soft {
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.img-note {
+  color: var(--ct-ac);
+}

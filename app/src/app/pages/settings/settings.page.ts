@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
@@ -10,6 +10,7 @@ import { MAX_EXPENSE, parseAmount } from '../../core/expenses.logic';
 import { Language, LANGUAGES, LanguageService } from '../../core/language.service';
 import { cleanName, MAX_NAME_LENGTH } from '../../core/profile.logic';
 import { HomeKey, ProfileService } from '../../core/profile.service';
+import { PlaceImageBackfillService } from '../../core/place-image-backfill.service';
 import { SettingsService, STORY_SECONDS, StorySeconds } from '../../core/settings.service';
 import { ThemePreference, ThemeService } from '../../core/theme.service';
 import { LastUpdateComponent } from '../../features/audit/last-update.component';
@@ -19,9 +20,10 @@ export const MIN_PASSWORD_LENGTH = 8;
 type Status = { kind: 'idle' } | { kind: 'saved' } | { kind: 'error'; message: string };
 
 /** As definições da app: o que se escolhe uma vez e raramente se volta a mexer. */
+import { BackDirective } from '../../shared/back.directive';
 @Component({
   selector: 'app-settings',
-  imports: [LastUpdateComponent, IonContent, IonIcon, FormsModule, RouterLink, TranslocoPipe],
+  imports: [BackDirective, LastUpdateComponent, IonContent, IonIcon, FormsModule, TranslocoPipe],
   templateUrl: './settings.page.html',
   styleUrl: './settings.page.scss',
 })
@@ -32,6 +34,7 @@ export class SettingsPage {
   protected readonly language = inject(LanguageService);
   protected readonly theme = inject(ThemeService);
   protected readonly settings = inject(SettingsService);
+  protected readonly backfill = inject(PlaceImageBackfillService);
 
   protected readonly languages = LANGUAGES;
   protected readonly themes: readonly ThemePreference[] = ['system', 'light', 'dark'];
@@ -59,6 +62,7 @@ export class SettingsPage {
 
   constructor() {
     addIcons({ chevronBackOutline, logOutOutline });
+    void this.backfill.count();
 
     // Mostra o que já está guardado, enquanto a pessoa não começar a escrever.
     effect(() => {
@@ -72,6 +76,10 @@ export class SettingsPage {
 
   protected money(amount: number): string {
     return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(amount);
+  }
+
+  protected findImages(): void {
+    void this.backfill.run();
   }
 
   protected setLanguage(language: Language): void {

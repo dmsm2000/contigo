@@ -18,9 +18,10 @@ import { AuditLineComponent } from '../../features/audit/audit-line.component';
 import { AvatarComponent } from '../../features/profile/avatar.component';
 
 /** Quanto se gastou, por viagem e por categoria, e a cebola: o que sobra das dotações. */
+import { BackDirective } from '../../shared/back.directive';
 @Component({
   selector: 'app-expenses',
-  imports: [IonContent, IonIcon, RouterLink, TranslocoPipe, AuditLineComponent, AvatarComponent],
+  imports: [BackDirective, IonContent, IonIcon, RouterLink, TranslocoPipe, AuditLineComponent, AvatarComponent],
   templateUrl: './expenses.page.html',
   styleUrl: './expenses.page.scss',
 })

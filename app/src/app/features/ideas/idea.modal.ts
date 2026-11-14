@@ -1,6 +1,6 @@
-import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, Input, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonIcon, ModalController, ToastController } from '@ionic/angular';
+import { IonContent, IonFooter, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline } from 'ionicons/icons';
@@ -10,11 +10,11 @@ import { IdeasService } from '../../core/ideas.service';
 /** Escrever uma ideia nova ou mudar uma que já escreveste. */
 @Component({
   selector: 'app-idea-modal',
-  imports: [IonContent, IonIcon, FormsModule, TranslocoPipe],
+  imports: [IonContent, IonFooter, IonIcon, FormsModule, TranslocoPipe],
   templateUrl: './idea.modal.html',
   styleUrl: './idea.modal.scss',
 })
-export class IdeaModal implements OnInit {
+export class IdeaModal implements OnInit, AfterViewInit {
   private readonly modalCtrl = inject(ModalController);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
@@ -23,6 +23,7 @@ export class IdeaModal implements OnInit {
   /** A ideia a mudar; sem ela, escreve-se uma nova. */
   @Input() idea: Idea | null = null;
 
+  private readonly field = viewChild<ElementRef<HTMLTextAreaElement>>('field');
   protected body = '';
   protected readonly maxLength = MAX_IDEA_LENGTH;
   protected readonly length = signal(0);
@@ -38,6 +39,16 @@ export class IdeaModal implements OnInit {
       this.body = this.idea.body;
       this.length.set(this.body.length);
     }
+  }
+
+  ngAfterViewInit(): void {
+    // Escreve-se logo: o teclado abre quando a animação de entrada acaba, com o cursor no fim do texto.
+    setTimeout(() => {
+      const el = this.field()?.nativeElement;
+      if (!el) return;
+      el.focus();
+      el.setSelectionRange(el.value.length, el.value.length);
+    }, 450);
   }
 
   protected close(): void {

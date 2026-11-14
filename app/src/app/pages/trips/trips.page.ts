@@ -1,5 +1,4 @@
 import { Component, computed, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
@@ -14,9 +13,10 @@ import { TripFlowService } from '../../features/trips/trip-flow.service';
 import { TripLabels } from '../../features/trips/trip-labels.service';
 
 /** Todas as viagens feitas numa grelha, as mais recentes primeiro. */
+import { BackDirective } from '../../shared/back.directive';
 @Component({
   selector: 'app-trips',
-  imports: [IonContent, IonIcon, RouterLink, TranslocoPipe, TripPostComponent],
+  imports: [BackDirective, IonContent, IonIcon, TranslocoPipe, TripPostComponent],
   templateUrl: './trips.page.html',
   styleUrl: './trips.page.scss',
 })

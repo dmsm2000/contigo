@@ -3,6 +3,7 @@ import { AuthService } from '../../core/auth.service';
 import { LanguageService } from '../../core/language.service';
 import { totalOf } from '../../core/expenses.logic';
 import { ExpensesService } from '../../core/expenses.service';
+import { placeImageUrl } from '../../core/place-image.service';
 import { PhotosService } from '../../core/photos.service';
 import { ProfileService } from '../../core/profile.service';
 import { formatCost, formatTripDate, initialOf, Place, placeSubtitle, tileColors, Trip } from '../../core/trips.logic';
@@ -55,8 +56,13 @@ export class TripLabels {
   }
 
   /** Se a viagem já tem uma foto para servir de capa (e o link da miniatura já chegou). */
-  hasCover(trip: Pick<Trip, 'id'>): boolean {
-    return this.photos.coverThumbUrl(trip.id) !== null;
+  hasCover(trip: Pick<Trip, 'id' | 'place'>): boolean {
+    return this.photos.coverThumbUrl(trip.id) !== null || this.hasPlaceImage(trip.place);
+  }
+
+  /** Se o sítio tem imagem guardada (então a "capa" já tem uma foto e não precisa da inicial). */
+  hasPlaceImage(place: Pick<Place, 'imagePath'>): boolean {
+    return !!place.imagePath;
   }
 
   /** O fundo da "capa" de uma viagem: a primeira foto, ou as cores do sítio enquanto não há fotos. */
@@ -67,6 +73,8 @@ export class TripLabels {
 
   /** O fundo da "capa" de um sítio: só as cores, para quando não há viagem (por exemplo, a wishlist). */
   tile(place: Place): string {
+    const image = placeImageUrl(place.imagePath);
+    if (image) return `center / cover no-repeat url("${image}")`;
     const { from, to } = tileColors(place.name);
     return `linear-gradient(135deg, ${from}, ${to})`;
   }

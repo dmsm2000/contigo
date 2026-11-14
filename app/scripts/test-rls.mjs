@@ -349,6 +349,22 @@ try {
   check('B não muda a casa de A', !homeForged.error && homeForged.data?.length === 0);
   const avatarRemoveA = await a.storage.from('avatars').remove([`${created[0]}/1.jpg`]);
   check('A apaga a sua foto', avatarRemoveA.data?.length === 1);
+
+  // Imagens dos sítios: partilhadas pelos dois, públicas para ler, só ficheiros com o id de um sítio no nome.
+  const placeFile = `${crypto.randomUUID()}.jpg`;
+  const imgA = await a.storage.from('place-images').upload(placeFile, jpeg, { contentType: 'image/jpeg', upsert: true });
+  check('A guarda a imagem de um sítio', !imgA.error, imgA.error?.message);
+  const imgB = await b.storage.from('place-images').upload(placeFile, jpeg, { contentType: 'image/jpeg', upsert: true });
+  check('B também pode trocar a imagem de um sítio (os sítios são dos dois)', !imgB.error, imgB.error?.message);
+  const imgAnonUp = await anon.storage.from('place-images').upload(`${crypto.randomUUID()}.jpg`, jpeg, { contentType: 'image/jpeg' });
+  check('sem sessão: não se guardam imagens de sítios', Boolean(imgAnonUp.error));
+  const imgBadName = await a.storage.from('place-images').upload('qualquer-coisa.jpg', jpeg, { contentType: 'image/jpeg' });
+  check('o nome da imagem tem de ser o id de um sítio', Boolean(imgBadName.error));
+  const imgPng = await a.storage.from('place-images').upload(`${crypto.randomUUID()}.jpg`, new Blob(['x'], { type: 'image/png' }), { contentType: 'image/png' });
+  check('só se aceita JPEG nas imagens dos sítios', Boolean(imgPng.error));
+  const imgPublic = await fetch(a.storage.from('place-images').getPublicUrl(placeFile).data.publicUrl);
+  check('qualquer um lê a imagem do sítio pelo endereço público', imgPublic.ok);
+  await a.storage.from('place-images').remove([placeFile]);
 } finally {
   for (const id of created) await admin.auth.admin.deleteUser(id);
 }

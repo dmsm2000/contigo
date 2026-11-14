@@ -69,7 +69,9 @@
       "sendingPhotos": "Sending photos {{done}}/{{total}}…",
       "saveEdit": "Save changes",
       "photosFailed": "Trip saved, but {{count}} photo(s) didn't go through. Add them from the trip.",
-      "capital": "Capital"
+      "capital": "Capital",
+      "findingImage": "Looking for an image…",
+      "imageFound": "Image found (Wikipedia)"
     },
     "detail": {
       "together": "We went together",
@@ -400,7 +402,9 @@
         "times": "Fill in both times, or neither.",
         "save": "Couldn't save. Try again.",
         "delete": "Couldn't delete. Try again."
-      }
+      },
+      "preview": "How it will look",
+      "previewEmpty": "Your type"
     },
     "delete": "Delete type",
     "deleteTitle": "Delete this type?",
@@ -576,6 +580,14 @@
     "storyHint": "How long each photo or note stays on screen in the Home stories. Only applies on this phone.",
     "look": "Language and theme",
     "profile": "Profile",
-    "account": "Account"
+    "account": "Account",
+    "places": "Places",
+    "placeImages": "Place images",
+    "imagesMissing": "{{count}} place(s) still without an image. The app looks one up on Wikipedia for each.",
+    "imagesAll": "Every place already has an image (or none was found).",
+    "imagesFind": "Find images",
+    "imagesSearching": "Searching…",
+    "imagesRunning": "Searching… {{done}} of {{total}} · {{found}} found",
+    "imagesDone": "Done: {{found}} images found across {{total}} places. The rest have no good photo on Wikipedia."
   }
 }

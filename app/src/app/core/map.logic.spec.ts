@@ -10,6 +10,7 @@ const place = (id: string, name: string, coords: [number, number] | null): Place
   lng: coords ? coords[0] : null,
   lat: coords ? coords[1] : null,
   osmRef: null,
+  imagePath: null,
 });
 
 const trip = (id: string, p: Place, startDate: string): Trip => ({

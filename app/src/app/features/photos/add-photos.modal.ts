@@ -1,15 +1,9 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonIcon, ModalController, ToastController } from '@ionic/angular';
+import { IonContent, IonFooter, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import {
-  alertCircleOutline,
-  checkmarkCircle,
-  closeOutline,
-  imagesOutline,
-  refreshOutline,
-} from 'ionicons/icons';
+import { addOutline, checkmark, closeOutline, imagesOutline, refreshOutline } from 'ionicons/icons';
 import { LanguageService } from '../../core/language.service';
 import { chunk } from '../../core/photos.logic';
 import { PhotoError, PhotosService } from '../../core/photos.service';
@@ -33,7 +27,7 @@ const PARALLEL = 2;
 /** Juntar fotos a uma viagem: escolhem-se, comprimem-se no telemóvel e enviam-se. */
 @Component({
   selector: 'app-add-photos-modal',
-  imports: [IonContent, IonIcon, FormsModule, TranslocoPipe],
+  imports: [IonContent, IonFooter, IonIcon, FormsModule, TranslocoPipe],
   templateUrl: './add-photos.modal.html',
   styleUrl: './add-photos.modal.scss',
 })
@@ -69,7 +63,7 @@ export class AddPhotosModal implements OnInit, OnDestroy {
   });
 
   constructor() {
-    addIcons({ alertCircleOutline, checkmarkCircle, closeOutline, imagesOutline, refreshOutline });
+    addIcons({ addOutline, checkmark, closeOutline, imagesOutline, refreshOutline });
   }
 
   ngOnInit(): void {

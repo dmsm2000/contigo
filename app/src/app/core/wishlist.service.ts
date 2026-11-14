@@ -2,7 +2,8 @@ import { computed, effect, inject, Injectable, signal, untracked } from '@angula
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
 import { PlaceCandidate } from './geocoder';
-import { reuseKnownPlace } from './places.service';
+import { PlaceImageService } from './place-image.service';
+import { attachPlaceImage, reuseKnownPlace } from './places.service';
 import { SupabaseService } from './supabase.service';
 import { MinStay, Suggestion, SUGGESTIONS } from './suggestions';
 import { TripsService } from './trips.service';
@@ -23,6 +24,7 @@ const SURPRISES_KEY = 'contigo.surprises';
 /** A lista de sítios por ir. Atualiza-se sozinha quando o outro mexe nela. */
 @Injectable({ providedIn: 'root' })
 export class WishlistService {
+  private readonly placeImages = inject(PlaceImageService);
   private readonly supabase = inject(SupabaseService).client;
   private readonly auth = inject(AuthService);
   private readonly trips = inject(TripsService);
@@ -106,6 +108,7 @@ export class WishlistService {
       : this.supabase.from('places').insert(row);
     const { data, error } = await query.select('id').single<{ id: string }>();
     if (error || !data) throw error ?? new Error('Não foi possível guardar o sítio.');
+    await attachPlaceImage(this.supabase, this.placeImages, data.id, place.imageUrl);
     await this.writeStars(data.id, input.stars);
     await this.load();
   }

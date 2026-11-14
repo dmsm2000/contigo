@@ -7,7 +7,7 @@
       </button>
     </header>
 
-    <form (ngSubmit)="save()" novalidate>
+    <form id="wish-form" (ngSubmit)="save()" novalidate>
       <section class="block ct-rise" style="--i: 0">
         <app-place-picker
           inputId="wish-search"
@@ -83,9 +83,12 @@
         <p class="error" role="alert">{{ key | transloco }}</p>
       }
 
-      <button class="ct-btn save" type="submit" [disabled]="saving()">
-        {{ (saving() ? 'trip.form.saving' : 'wish.form.save') | transloco }}
-      </button>
     </form>
   </div>
 </ion-content>
+
+<ion-footer class="form-footer">
+  <button class="ct-btn save" type="submit" form="wish-form" [disabled]="saving()">
+    {{ (saving() ? 'trip.form.saving' : 'wish.form.save') | transloco }}
+  </button>
+</ion-footer>

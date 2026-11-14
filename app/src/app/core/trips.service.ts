@@ -1,7 +1,8 @@
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
-import { reuseKnownPlace } from './places.service';
+import { PlaceImageService } from './place-image.service';
+import { attachPlaceImage, reuseKnownPlace } from './places.service';
 import { PlaceCandidate } from './geocoder';
 import { PhotosService } from './photos.service';
 import { SupabaseService } from './supabase.service';
@@ -22,6 +23,7 @@ const TRIP_SELECT = '*, place:places(*)';
 /** As viagens dos dois. Atualizam-se sozinhas quando o outro regista ou apaga alguma. */
 @Injectable({ providedIn: 'root' })
 export class TripsService {
+  private readonly placeImages = inject(PlaceImageService);
   private readonly supabase = inject(SupabaseService).client;
   private readonly auth = inject(AuthService);
   private readonly photos = inject(PhotosService);
@@ -134,6 +136,7 @@ export class TripsService {
       : this.supabase.from('places').insert(row);
     const { data, error } = await query.select('id').single<{ id: string }>();
     if (error || !data) throw error ?? new Error('Não foi possível guardar o sítio.');
+    await attachPlaceImage(this.supabase, this.placeImages, data.id, place.imageUrl);
     return data.id;
   }
 

@@ -332,3 +332,13 @@
   margin-top: 12px;
   background: var(--ct-sf);
 }
+
+// Com imagem do sítio, o cartão abre com ela em faixa (em vez do quadrado com a inicial).
+.wish.has-image {
+  overflow: hidden;
+}
+
+.banner {
+  height: 132px;
+  margin: -14px -14px 14px;
+}

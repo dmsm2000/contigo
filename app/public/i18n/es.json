@@ -69,7 +69,9 @@
       "sendingPhotos": "Enviando fotos {{done}}/{{total}}…",
       "saveEdit": "Guardar cambios",
       "photosFailed": "Viaje guardado, pero {{count}} foto(s) no se enviaron. Añádelas en el viaje.",
-      "capital": "Capital"
+      "capital": "Capital",
+      "findingImage": "Buscando una imagen…",
+      "imageFound": "Imagen encontrada (Wikipedia)"
     },
     "detail": {
       "together": "Fuimos los dos",
@@ -400,7 +402,9 @@
         "times": "Rellena las dos horas, o ninguna.",
         "save": "No se ha podido guardar. Inténtalo otra vez.",
         "delete": "No se ha podido borrar. Inténtalo otra vez."
-      }
+      },
+      "preview": "Cómo se verá",
+      "previewEmpty": "Tu tipo"
     },
     "delete": "Borrar tipo",
     "deleteTitle": "¿Borrar este tipo?",
@@ -576,6 +580,14 @@
     "storyHint": "Cuánto tiempo se ve cada foto o nota en las historias del Inicio. Solo vale en este móvil.",
     "look": "Idioma y tema",
     "profile": "Perfil",
-    "account": "Cuenta"
+    "account": "Cuenta",
+    "places": "Lugares",
+    "placeImages": "Imágenes de los lugares",
+    "imagesMissing": "{{count}} lugar(es) aún sin imagen. La app busca una en Wikipedia para cada uno.",
+    "imagesAll": "Todos los lugares ya tienen imagen (o no se encontró ninguna).",
+    "imagesFind": "Buscar imágenes",
+    "imagesSearching": "Buscando…",
+    "imagesRunning": "Buscando… {{done}} de {{total}} · {{found}} encontradas",
+    "imagesDone": "Hecho: {{found}} imágenes encontradas en {{total}} lugares. Los que quedaron sin imagen no tienen una foto buena en Wikipedia."
   }
 }

@@ -2,11 +2,16 @@
 
 @if (place(); as chosen) {
   <div class="chosen">
-    <span class="tile" [style.background]="tile(chosen)" aria-hidden="true">{{ initial(chosen) }}</span>
+    <span class="tile" [class.tile--busy]="findingImage()" [style.background]="tile(chosen)" aria-hidden="true">{{ chosen.imageUrl ? '' : initial(chosen) }}</span>
     <span class="chosen-text">
       <strong>{{ chosen.name }}</strong>
       @if (subtitle(chosen)) {
         <small>{{ subtitle(chosen) }}</small>
+      }
+      @if (findingImage()) {
+        <small class="img-note">{{ 'trip.form.findingImage' | transloco }}</small>
+      } @else if (chosen.imageUrl) {
+        <small class="img-note">{{ 'trip.form.imageFound' | transloco }}</small>
       }
     </span>
     <button class="link" type="button" (click)="change()">{{ 'trip.form.change' | transloco }}</button>

@@ -69,7 +69,9 @@
       "sendingPhotos": "A enviar fotos {{done}}/{{total}}…",
       "saveEdit": "Guardar alterações",
       "photosFailed": "Viagem guardada, mas {{count}} foto(s) não seguiram. Junta-as na viagem.",
-      "capital": "Capital"
+      "capital": "Capital",
+      "findingImage": "A procurar uma imagem…",
+      "imageFound": "Imagem encontrada (Wikipédia)"
     },
     "detail": {
       "together": "Fomos os dois",
@@ -400,7 +402,9 @@
         "times": "Preenche as duas horas, ou nenhuma.",
         "save": "Não foi possível guardar. Tenta outra vez.",
         "delete": "Não foi possível apagar. Tenta outra vez."
-      }
+      },
+      "preview": "Como vai aparecer",
+      "previewEmpty": "O teu tipo"
     },
     "delete": "Apagar tipo",
     "deleteTitle": "Apagar este tipo?",
@@ -576,6 +580,14 @@
     "storyHint": "Quanto tempo cada foto ou nota fica à vista nas histórias do Início. Vale só neste telemóvel.",
     "look": "Idioma e tema",
     "profile": "Perfil",
-    "account": "Conta"
+    "account": "Conta",
+    "places": "Sítios",
+    "placeImages": "Imagens dos sítios",
+    "imagesMissing": "{{count}} sítio(s) ainda sem imagem. A app procura uma na Wikipédia para cada um.",
+    "imagesAll": "Todos os sítios já têm imagem (ou não se encontrou nenhuma).",
+    "imagesFind": "Procurar imagens",
+    "imagesSearching": "A procurar…",
+    "imagesRunning": "A procurar… {{done}} de {{total}} · {{found}} encontradas",
+    "imagesDone": "Feito: {{found}} imagens encontradas em {{total}} sítios. Os que ficaram sem imagem não têm foto boa na Wikipédia."
   }
 }

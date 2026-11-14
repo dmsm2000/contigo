@@ -4,6 +4,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { locationOutline, searchOutline, starOutline } from 'ionicons/icons';
 import { GeocoderService, PlaceCandidate } from '../../core/geocoder';
+import { PlaceImageService } from '../../core/place-image.service';
 import { LanguageService } from '../../core/language.service';
 import { initialOf, placeSubtitle, tileColors } from '../../core/trips.logic';
 
@@ -19,6 +20,8 @@ import { initialOf, placeSubtitle, tileColors } from '../../core/trips.logic';
 })
 export class PlacePickerComponent implements AfterViewInit, OnDestroy {
   private readonly geocoder = inject(GeocoderService);
+  private readonly images = inject(PlaceImageService);
+  private imageRequest: AbortController | undefined;
   private readonly language = inject(LanguageService).language;
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -41,6 +44,8 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
   protected readonly searchFailed = signal(false);
   /** A lista aberta por baixo do campo: fecha ao escolher, com Esc e quando o foco sai do seletor. */
   protected readonly open = signal(false);
+  /** A procurar a imagem do sítio escolhido. */
+  protected readonly findingImage = signal(false);
   /** O que foi escrito, se der para guardar só com o nome. */
   protected readonly typed = computed(() => {
     const name = this.query().trim();
@@ -59,6 +64,7 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     clearTimeout(this.searchTimer);
     this.searchRequest?.abort();
+    this.imageRequest?.abort();
   }
 
   protected onFocusOut(event: FocusEvent): void {
@@ -113,9 +119,25 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
 
   protected choose(candidate: PlaceCandidate): void {
     this.place.set(candidate);
+    void this.findImage(candidate);
     this.open.set(false);
     this.results.set([]);
     this.query.set('');
+  }
+
+  /** Vai buscar uma imagem do sítio escolhido; quando chega, junta-a ao sítio (e mostra-se logo na pré-visualização). */
+  private async findImage(candidate: PlaceCandidate): Promise<void> {
+    this.imageRequest?.abort();
+    if (candidate.imageUrl !== undefined) return;
+    const request = new AbortController();
+    this.imageRequest = request;
+    this.findingImage.set(true);
+    const url = await this.images.find(candidate, this.language(), request.signal);
+    if (request.signal.aborted) return;
+    this.findingImage.set(false);
+    // O sítio pode ter mudado entretanto: só se junta a imagem se ainda for este.
+    const current = this.place();
+    if (current && current.name === candidate.name && current.osmRef === candidate.osmRef) this.place.set({ ...current, imageUrl: url });
   }
 
   protected chooseTyped(name: string): void {
@@ -123,6 +145,8 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
   }
 
   protected change(): void {
+    this.imageRequest?.abort();
+    this.findingImage.set(false);
     this.place.set(null);
     setTimeout(() => this.searchInput()?.nativeElement.focus(), 50);
   }
@@ -132,6 +156,7 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
   }
 
   protected tile(place: PlaceCandidate): string {
+    if (place.imageUrl) return `center / cover no-repeat url("${place.imageUrl}")`;
     const { from, to } = tileColors(place.name);
     return `linear-gradient(135deg, ${from}, ${to})`;
   }

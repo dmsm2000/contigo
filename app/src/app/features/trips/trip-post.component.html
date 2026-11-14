@@ -23,7 +23,9 @@
       }
     } @else {
       <button class="slide slide--empty" type="button" (click)="open.emit()" [style.background]="labels.cover(t)" [attr.aria-label]="t.place.name">
-        <span class="initial" aria-hidden="true">{{ labels.initial(t.place) }}</span>
+        @if (!labels.hasPlaceImage(t.place)) {
+          <span class="initial" aria-hidden="true">{{ labels.initial(t.place) }}</span>
+        }
         <span class="no-photos"><ion-icon name="images-outline" aria-hidden="true"></ion-icon>{{ 'trips.noPhotos' | transloco }}</span>
       </button>
     }

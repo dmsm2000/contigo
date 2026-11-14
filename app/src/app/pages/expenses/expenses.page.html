@@ -1,9 +1,9 @@
 <ion-content>
   <div class="ct-page">
     <header class="top ct-rise" style="--i: 0">
-      <a class="ct-icon-btn back" routerLink="/home" [attr.aria-label]="'nav.home' | transloco">
+      <button class="ct-icon-btn back" type="button" appBack="/home" [attr.aria-label]="'nav.home' | transloco">
         <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
-      </a>
+      </button>
       <h1 class="ct-page-title">{{ 'expenses.title' | transloco }}</h1>
       <button class="ct-icon-btn add" type="button" (click)="add()" [attr.aria-label]="'expenses.add' | transloco">
         <ion-icon name="add" aria-hidden="true"></ion-icon>

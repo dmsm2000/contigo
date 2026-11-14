@@ -1,9 +1,9 @@
 <ion-content>
   <div class="ct-page">
     <header class="top ct-rise" style="--i: 0">
-      <a class="ct-icon-btn back" routerLink="/home" [attr.aria-label]="'nav.home' | transloco">
+      <button class="ct-icon-btn back" type="button" appBack="/home" [attr.aria-label]="'nav.home' | transloco">
         <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
-      </a>
+      </button>
       <h1 class="ct-page-title">{{ 'wish.title' | transloco }}</h1>
       <button class="ct-icon-btn add" type="button" (click)="add()" [attr.aria-label]="'wish.add' | transloco">
         <ion-icon name="add" aria-hidden="true"></ion-icon>
@@ -13,9 +13,14 @@
     @if (wishlist.sorted().length) {
       <ul class="list">
         @for (item of wishlist.sorted(); track item.place.id; let i = $index) {
-          <li class="wish ct-card ct-rise" [style.--i]="i + 1">
+          <li class="wish ct-card ct-rise" [class.has-image]="labels.hasPlaceImage(item.place)" [style.--i]="i + 1">
+            @if (labels.hasPlaceImage(item.place)) {
+              <div class="banner" [style.background]="labels.tile(item.place)" role="img" [attr.aria-label]="item.place.name"></div>
+            }
             <div class="wish-head">
-              <span class="tile" [style.background]="tile(item.place.name)" aria-hidden="true">{{ initial(item.place.name) }}</span>
+              @if (!labels.hasPlaceImage(item.place)) {
+                <span class="tile" [style.background]="labels.tile(item.place)" aria-hidden="true">{{ initial(item.place.name) }}</span>
+              }
               <div class="wish-title">
                 <h2>{{ item.place.name }}</h2>
                 @if (subtitle(item)) {

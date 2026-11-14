@@ -102,10 +102,6 @@
           <p class="error ct-rise" role="status" style="--i: 3">{{ 'draw.emptyPool' | transloco }}</p>
         }
 
-        <button class="ct-btn roll ct-rise" style="--i: 3" type="button" [disabled]="!pool().length || busy()" (click)="roll()">
-          <ion-icon name="dice-outline" aria-hidden="true"></ion-icon>
-          {{ 'draw.roll' | transloco }}
-        </button>
       }
     </div>
   } @else if (phase() === 'rolling') {
@@ -132,7 +128,11 @@
         </div>
 
         <p class="eyebrow ct-rise" style="--i: 0">{{ 'draw.result' | transloco }}</p>
-        <span class="result-tile ct-pop" [style.background]="place.tile" aria-hidden="true">{{ place.initial }}</span>
+        @if (place.image; as photo) {
+          <span class="result-photo ct-pop" [style.background]="'center / cover no-repeat url(&quot;' + photo + '&quot;)'" role="img" [attr.aria-label]="place.name"></span>
+        } @else {
+          <span class="result-tile ct-pop" [style.background]="place.tile" aria-hidden="true">{{ place.initial }}</span>
+        }
         <h2 class="result-name ct-display ct-rise" style="--i: 1" role="status">{{ place.name }}</h2>
         @if (place.where) {
           <p class="result-where ct-rise" style="--i: 2">{{ place.where }}</p>
@@ -177,3 +177,13 @@
     }
   }
 </ion-content>
+
+<!-- O botão de sortear fica fora da área que desliza, sempre à vista. -->
+@if (phase() === 'setup' && !draws.active()) {
+  <ion-footer class="form-footer">
+    <button class="ct-btn roll" type="button" [disabled]="!pool().length || busy()" (click)="roll()">
+      <ion-icon name="dice-outline" aria-hidden="true"></ion-icon>
+      {{ 'draw.roll' | transloco }}
+    </button>
+  </ion-footer>
+}

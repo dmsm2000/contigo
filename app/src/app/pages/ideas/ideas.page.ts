@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { AlertController, IonContent, IonIcon, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
@@ -9,9 +8,10 @@ import { IdeasService } from '../../core/ideas.service';
 import { AuditLineComponent } from '../../features/audit/audit-line.component';
 import { TripFlowService } from '../../features/trips/trip-flow.service';
 
+import { BackDirective } from '../../shared/back.directive';
 @Component({
   selector: 'app-ideas',
-  imports: [IonContent, IonIcon, RouterLink, TranslocoPipe, AuditLineComponent],
+  imports: [BackDirective, IonContent, IonIcon, TranslocoPipe, AuditLineComponent],
   templateUrl: './ideas.page.html',
   styleUrl: './ideas.page.scss',
 })

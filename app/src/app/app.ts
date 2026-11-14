@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular';
 import { LanguageService } from './core/language.service';
+import { NavigationHistory } from './core/navigation-history.service';
 import { ProfileService } from './core/profile.service';
 import { ThemeService } from './core/theme.service';
 import { UpdateService } from './core/update.service';
@@ -24,5 +25,7 @@ export class App {
     inject(ProfileService);
     // Procura versões novas ao abrir e sempre que a app volta ao primeiro plano.
     inject(UpdateService);
+    // Conta as navegações desde o início, para a seta de voltar saber se há de onde voltar.
+    inject(NavigationHistory);
   }
 }

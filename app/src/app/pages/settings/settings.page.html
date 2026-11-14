@@ -1,9 +1,9 @@
 <ion-content>
   <div class="ct-page">
     <header class="top ct-rise" style="--i: 0">
-      <a class="ct-icon-btn back" routerLink="/us" [attr.aria-label]="'nav.us' | transloco">
+      <button class="ct-icon-btn back" type="button" appBack="/us" [attr.aria-label]="'nav.us' | transloco">
         <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
-      </a>
+      </button>
       <h1 class="ct-page-title">{{ 'settings.title' | transloco }}</h1>
     </header>
 
@@ -43,6 +43,24 @@
         }
       </div>
       <p class="row-hint">{{ 'settings.storyHint' | transloco }}</p>
+    </section>
+
+    <!-- Sítios -->
+    <h2 class="group-title ct-rise" style="--i: 3">{{ 'settings.places' | transloco }}</h2>
+    <section class="setting ct-rise" style="--i: 3">
+      <h3 class="setting-title">{{ 'settings.placeImages' | transloco }}</h3>
+      <div class="ct-card password-form">
+        @if (backfill.progress(); as state) {
+          <p class="hint" role="status">{{ (backfill.running() ? 'settings.imagesRunning' : 'settings.imagesDone') | transloco: { done: state.done, total: state.total, found: state.found } }}</p>
+        } @else if (backfill.missing() === 0) {
+          <p class="hint">{{ 'settings.imagesAll' | transloco }}</p>
+        } @else if (backfill.missing() !== null) {
+          <p class="hint">{{ 'settings.imagesMissing' | transloco: { count: backfill.missing() } }}</p>
+        }
+        <button class="ct-btn save" type="button" (click)="findImages()" [disabled]="backfill.running() || backfill.missing() === 0">
+          {{ (backfill.running() ? 'settings.imagesSearching' : 'settings.imagesFind') | transloco }}
+        </button>
+      </div>
     </section>
 
     <!-- Aparência -->

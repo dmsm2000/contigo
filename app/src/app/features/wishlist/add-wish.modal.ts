@@ -1,10 +1,12 @@
 import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonIcon, ModalController, ToastController } from '@ionic/angular';
+import { IonContent, IonFooter, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline } from 'ionicons/icons';
 import { PlaceCandidate } from '../../core/geocoder';
+import { LanguageService } from '../../core/language.service';
+import { PlaceImageService } from '../../core/place-image.service';
 import { MinStay, Suggestion } from '../../core/suggestions';
 import { MIN_STAYS, nearestOrigin, normalizeLink } from '../../core/wishlist.logic';
 import { Stars, WishlistService } from '../../core/wishlist.service';
@@ -14,7 +16,7 @@ import { StarsComponent } from './stars.component';
 /** Juntar um sítio à lista "Por ir". Pode vir já preenchido com uma sugestão. */
 @Component({
   selector: 'app-add-wish-modal',
-  imports: [IonContent, IonIcon, FormsModule, TranslocoPipe, PlacePickerComponent, StarsComponent],
+  imports: [IonContent, IonFooter, IonIcon, FormsModule, TranslocoPipe, PlacePickerComponent, StarsComponent],
   templateUrl: './add-wish.modal.html',
   styleUrl: './add-wish.modal.scss',
 })
@@ -23,6 +25,8 @@ export class AddWishModal implements OnInit {
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
   private readonly wishlist = inject(WishlistService);
+  private readonly images = inject(PlaceImageService);
+  private readonly language = inject(LanguageService).language;
 
   /** Quando se vem de uma sugestão, o sítio já está escolhido. */
   @Input() suggestion: Suggestion | null = null;
@@ -59,6 +63,11 @@ export class AddWishModal implements OnInit {
       lng: suggestion.lng,
     });
     this.minStay.set(suggestion.minStay);
+    // Uma sugestão também ganha a sua imagem.
+    void this.images.find(suggestion, this.language()).then((url) => {
+      const current = this.place();
+      if (current && current.name === suggestion.name) this.place.set({ ...current, imageUrl: url });
+    });
   }
 
   protected close(): void {
