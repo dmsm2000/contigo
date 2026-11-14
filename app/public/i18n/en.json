@@ -265,7 +265,6 @@
     "dark": "Dark"
   },
   "home": {
-    "draw": "Draw",
     "pastTrip": "Past trip",
     "nextWindow": "Next free window",
     "noWindowTitle": "No windows yet",
@@ -308,7 +307,7 @@
     "previous": "Previous month",
     "next": "Next month",
     "legendPartner": "The dot shows {{name}}'s day",
-    "legendShared": "the ring marks days you're both free",
+    "legendShared": "The ring marks days you're both free",
     "panelLabel": "Mark days",
     "days_one": "{{count}} day",
     "days_other": "{{count}} days",
@@ -319,11 +318,8 @@
     "startTitle": "Start with a day type",
     "startText": "Create your types, like “Morning 7am–3pm” or “Day off”, then tap days on the calendar to mark them.",
     "windowsTitle": "Shared windows",
-    "window": {
-      "day": "One day",
-      "weekend": "A weekend",
-      "long": "Several days"
-    },
+    "windowLength_one": "one free day",
+    "windowLength_other": "{{count}} days in a row",
     "windowsEmpty": "No days free for both of you yet. Mark the days you can travel.",
     "windowsNoPartner": "There's only one account for now. When the other person marks their days, the windows show up here.",
     "typesTitle": "My day types",

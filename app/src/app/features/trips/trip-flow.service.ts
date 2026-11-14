@@ -6,6 +6,7 @@ import { DrawModal } from '../draw/draw.modal';
 import { IdeaModal } from '../ideas/idea.modal';
 import { AddPhotosModal } from '../photos/add-photos.modal';
 import { PhotoViewerModal } from '../photos/photo-viewer.modal';
+import { StoriesModal } from '../stories/stories.modal';
 import { AddWishModal } from '../wishlist/add-wish.modal';
 import { PastTripModal } from './past-trip.modal';
 import { TripDetailModal } from './trip-detail.modal';
@@ -35,6 +36,13 @@ export class TripFlowService {
   async openPhotos(tripId: string, startAt: number): Promise<void> {
     await this.present(() =>
       this.modals.create({ component: PhotoViewerModal, componentProps: { tripId, startAt }, cssClass: 'ct-modal' }),
+    );
+  }
+
+  /** As viagens como histórias em ecrã inteiro, a começar na `startAt`. */
+  async openStories(tripIds: string[], startAt: number): Promise<void> {
+    await this.present(() =>
+      this.modals.create({ component: StoriesModal, componentProps: { tripIds, startAt }, cssClass: 'ct-modal' }),
     );
   }
 

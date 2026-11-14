@@ -91,4 +91,5 @@ O site fica em `https://<utilizador>.github.io/<nome-do-repositório>/` (a app �
 
 - Abre o site, entra com uma das contas e confirma que o mapa aparece (se o mapa disser que não consegue, o worker `maplibre/maplibre-gl-worker.mjs` não está a ser servido como JavaScript: `curl -I https://<utilizador>.github.io/<repositório>/maplibre/maplibre-gl-worker.mjs`).
 - No telemóvel, abre o site e usa "Adicionar ao ecrã principal" para instalar a PWA. A PWA abre sempre na raiz do site, que é onde o service worker se regista.
+- O iPhone guarda o estilo da barra de estado no momento em que se instala. Se mudar `apple-mobile-web-app-status-bar-style` em `src/index.html`, tira a app do ecrã principal e volta a instalá-la.
 - Para atualizar o site basta um novo `git push`; a PWA instalada atualiza-se sozinha na vez seguinte em que for aberta.

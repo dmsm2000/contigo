@@ -34,7 +34,7 @@
 
 .weekdays {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   padding: 4px 0;
   text-align: center;
   font-size: 12px;
@@ -52,22 +52,27 @@
 
 .week {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  // minmax(0, 1fr): as colunas encolhem num ecrã estreito em vez de empurrarem o domingo para fora.
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
 }
 
 .cell {
   position: relative;
   aspect-ratio: 1 / 1;
-  min-height: 44px;
+  min-width: 0;
   border: 2px solid transparent;
   border-radius: 14px;
   background: var(--tone-bg, transparent);
   color: var(--tone-tx, var(--ct-tx));
   font: 600 15px var(--ion-font-family);
+  // O número em cima e o ponto do outro por baixo, sem se tocarem.
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 3px;
+  padding: 0;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
@@ -93,12 +98,20 @@
     cursor: default;
   }
 
+  // Hoje: o número dentro de uma bolha da cor de marca (o fundo do dia continua a ser o do turno).
   &.today .num {
-    // Hoje: um sublinhado a cor de marca, que não rouba a cor do turno.
-    text-decoration: underline;
-    text-decoration-color: var(--ct-ac);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 4px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    background: var(--ct-ac);
+    color: #ffffff;
+  }
+
+  &.selected.today .num {
+    background: #ffffff;
+    color: var(--ct-ac);
   }
 
   // Dias livres para os dois: um aro com a cor de marca.
@@ -114,28 +127,49 @@
   }
 }
 
-// O dia do outro: um ponto no canto, com a cor do tipo.
+.num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+// O dia do outro: um ponto por baixo do número, com a cor do tipo.
 .dot {
-  position: absolute;
-  right: 7px;
-  bottom: 7px;
-  width: 8px;
-  height: 8px;
+  flex: none;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--tone-tx, var(--ct-mu));
+
+  &.none {
+    visibility: hidden;
+  }
+}
+
+.cell.selected .dot {
+  background: #ffffff;
 }
 
 .legend {
+  list-style: none;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 6px;
+  flex-direction: column;
+  gap: 6px;
   margin: 12px 6px 0;
+  padding: 0;
   font-size: 12px;
   color: var(--ct-mu);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 }
 
 .legend-dot {
+  flex: none;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -143,6 +177,8 @@
 }
 
 .legend-ring {
+  flex: none;
+  box-sizing: border-box;
   width: 12px;
   height: 12px;
   border-radius: 5px;
@@ -362,4 +398,21 @@
 .add-type {
   width: 100%;
   margin-top: 10px;
+}
+
+// Ecrãs muito estreitos (320 px): menos margens para os 7 dias caberem com folga.
+@media (max-width: 359px) {
+  .calendar {
+    padding: 10px 6px 12px;
+  }
+
+  .grid,
+  .week {
+    gap: 2px;
+  }
+
+  .cell {
+    border-radius: 11px;
+    font-size: 14px;
+  }
 }

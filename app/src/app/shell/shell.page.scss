@@ -146,7 +146,9 @@ ion-split-pane {
 ion-tab-bar {
   --background: var(--ct-nav);
   --border: 1px solid var(--ct-ln);
-  height: calc(64px + env(safe-area-inset-bottom));
+  // O Ionic força box-sizing: content-box na barra: a altura é só a da zona dos botões e a margem de segurança
+  // do iPhone soma-se por baixo. Com calc(64px + margem) a margem contava duas vezes e o + ficava dentro da barra.
+  height: 64px;
   padding-bottom: env(safe-area-inset-bottom);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);

@@ -92,11 +92,6 @@
   font-size: 28px;
 }
 
-.inner--draw {
-  background: var(--ct-acs);
-  color: var(--ct-ac);
-}
-
 .story-label {
   max-width: 76px;
   overflow: hidden;
@@ -111,6 +106,7 @@
   background: var(--ct-grad);
 }
 
+.ring--seen,
 .ring:not(.ring--grad):not(.ring--dashed):not(.ring--new) {
   background: var(--ct-ring);
 }

@@ -52,6 +52,10 @@ Tudo aqui é `[proposta]` até dizermos que sim. O objetivo é a solução mais 
 - O modo escuro segue o sistema por defeito e pode ser forçado nas definições, ficando guardado no perfil.
 - As letras (Fredoka e Inter) vão dentro da app, em vez de virem da internet, para funcionar sem rede.
 - A barra de baixo é a barra de separadores do Ionic com um botão central feito à medida. O sorteio e o dia de viagem abrem em ecrã inteiro, sem barra.
+- Com a barra de baixo não há menu lateral: o deslizar do lado esquerdo está desligado (`swipeGesture` do `ion-menu`), e o menu só existe no computador, fixo.
+- A barra de baixo tem 64 px mais a margem segura do iPhone. Como o Ionic a põe em `content-box`, a altura não inclui essa margem (senão contava-a duas vezes e o **+** deixava de sair para fora da barra).
+- **Barra de estado do iPhone (app instalada):** `apple-mobile-web-app-status-bar-style` é `black-translucent`. A página desenha por baixo das horas e uma faixa da cor do tema (`.ct-status-band`, dentro do `ion-app`) cobre essa zona, por baixo dos menus e modais do Ionic. Com `default` ou `black` a barra ficava branca no tema escuro. O iOS guarda este valor quando se instala a app: para uma mudança aqui chegar ao telemóvel, é preciso tirar a app do ecrã principal e voltar a pô-la.
+- **Mapa:** o mapa enquadra sempre os pins e as duas casas. Os nomes por baixo dos pins escondem-se quando tapariam outro pin ou outro nome (`visibleLabels` em `map.logic.ts`; primeiro as casas, depois os visitados, depois os por ir) e recalculam-se ao mexer no mapa. Pins a menos de 44 px uns dos outros juntam-se num círculo com o número (`clusterPoints`); tocar nele aproxima o mapa até se separarem. Para juntar coisas ao mapa usa-se o **+** da barra, não há um botão próprio no mapa.
 
 ## 3. Offline e sincronização
 

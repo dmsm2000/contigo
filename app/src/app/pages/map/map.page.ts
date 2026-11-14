@@ -5,7 +5,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { add, closeOutline, heartOutline, locationSharp, scanOutline } from 'ionicons/icons';
 import { LngLatBounds, Map as MapLibreMap, Marker, setWorkerUrl } from 'maplibre-gl';
-import { boundsOf, curve, LngLat, MapPin, pinsFromTrips } from '../../core/map.logic';
+import { boundsOf, Box, clusterPoints, curve, LabelCandidate, LngLat, MapPin, pinsFromTrips, visibleLabels } from '../../core/map.logic';
 import { ThemeService } from '../../core/theme.service';
 import { LanguageService } from '../../core/language.service';
 import { placeSubtitle } from '../../core/trips.logic';
@@ -49,7 +49,11 @@ export class MapPage implements AfterViewInit, OnDestroy {
   /** Os pins por ir, com o que os desenhou: só se refazem quando mudam. */
   private readonly wishMarkers = new Map<string, { marker: Marker; signature: string }>();
   private homeMarkers: Marker[] = [];
+  /** Os grupos de pins que, com o mapa afastado, ficariam uns por cima dos outros. */
+  private clusterMarkers: { marker: Marker; signature: string }[] = [];
+  private clusterSignature = '';
   private fitted = false;
+  private labelFrame = 0;
 
   protected readonly summary = computed(() => pinsFromTrips(this.trips.done()));
   protected readonly visited = computed(() => this.summary().pins.length + this.summary().withoutLocation);
@@ -116,6 +120,7 @@ export class MapPage implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    cancelAnimationFrame(this.labelFrame);
     this.resizeObserver?.disconnect();
     this.map?.remove();
   }
@@ -185,10 +190,103 @@ export class MapPage implements AfterViewInit, OnDestroy {
     });
     // Tocar no mapa (fora dos pins) fecha o cartão do sítio por ir.
     map.on('click', () => this.zone.run(() => this.selectedWish.set(null)));
+    // Ao mexer no mapa, os nomes que se taparem escondem-se (e voltam ao aproximar).
+    map.on('move', () => this.scheduleDeclutter());
 
     // Em computador, o painel lateral muda o tamanho do mapa.
-    this.resizeObserver = new ResizeObserver(() => map.resize());
+    this.resizeObserver = new ResizeObserver(() => {
+      map.resize();
+      this.scheduleDeclutter();
+    });
     this.resizeObserver.observe(this.container().nativeElement);
+  }
+
+  /** Uma vez por frame, no máximo: o mapa dispara 'move' muitas vezes seguidas. */
+  private scheduleDeclutter(): void {
+    if (this.labelFrame) return;
+    this.labelFrame = requestAnimationFrame(() => {
+      this.labelFrame = 0;
+      this.recluster();
+      this.declutter();
+    });
+  }
+
+  /** Esconde os nomes que taparem um pin ou outro nome mais importante (casas > visitados > por ir). */
+  private declutter(): void {
+    const groups: { element: HTMLElement; priority: number }[] = [
+      ...this.homeMarkers.map((marker) => ({ element: marker.getElement(), priority: 0 })),
+      ...[...this.pinMarkers.values()].map((marker) => ({ element: marker.getElement(), priority: 1 })),
+      ...[...this.wishMarkers.values()].map((entry) => ({ element: entry.marker.getElement(), priority: 2 })),
+    ];
+    const toBox = (rect: DOMRect): Box => ({ left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom });
+    const pins: Box[] = [];
+    const labels: (LabelCandidate & { element: HTMLElement })[] = [];
+    groups.push(...this.clusterMarkers.map((entry) => ({ element: entry.marker.getElement(), priority: 1 })));
+    groups.forEach(({ element, priority }, index) => {
+      if (element.style.display === 'none') return;
+      const pin = element.querySelector<HTMLElement>('.ct-pin, .ct-home-pin__dot');
+      const label = element.querySelector<HTMLElement>('.ct-pin__label, .ct-home-pin__label');
+      if (pin) pins.push(toBox(pin.getBoundingClientRect()));
+      if (label) labels.push({ id: String(index), priority, box: toBox(label.getBoundingClientRect()), element: label });
+    });
+    const visible = visibleLabels(pins, labels);
+    for (const label of labels) label.element.classList.toggle('is-hidden', !visible.has(label.id));
+  }
+
+  /**
+   * Com o mapa afastado, os pins que ficam a menos de ~44 px uns dos outros juntam-se num círculo com o número
+   * de sítios; tocar nele aproxima o mapa até se verem separados. Os pins soltos ficam como estão.
+   */
+  private recluster(): void {
+    const map = this.map;
+    if (!map) return;
+    const items = [
+      ...[...this.pinMarkers].map(([id, marker]) => ({ id: `v:${id}`, marker })),
+      ...[...this.wishMarkers].map(([id, entry]) => ({ id: `w:${id}`, marker: entry.marker })),
+    ];
+    const points = items.map(({ id, marker }) => {
+      const at = map.project(marker.getLngLat());
+      return { id, x: at.x, y: at.y };
+    });
+    const groups = clusterPoints(points, 44);
+    const signature = groups.map((group) => group.join(',')).join('|');
+    if (signature === this.clusterSignature) return;
+    this.clusterSignature = signature;
+
+    for (const entry of this.clusterMarkers) entry.marker.remove();
+    this.clusterMarkers = [];
+    const byId = new Map(items.map((item) => [item.id, item.marker]));
+    for (const marker of byId.values()) marker.getElement().style.display = '';
+
+    for (const group of groups) {
+      if (group.length < 2) continue;
+      const markers = group.map((id) => byId.get(id)!);
+      for (const marker of markers) marker.getElement().style.display = 'none';
+      const lngLats = markers.map((marker) => marker.getLngLat());
+      const centre: LngLat = [
+        lngLats.reduce((sum, at) => sum + at.lng, 0) / lngLats.length,
+        lngLats.reduce((sum, at) => sum + at.lat, 0) / lngLats.length,
+      ];
+      const element = document.createElement('div');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'ct-pin ct-pin--cluster';
+      button.textContent = String(group.length);
+      button.setAttribute('aria-label', `${group.length}`);
+      element.append(button);
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const box = boundsOf(lngLats.map((at): LngLat => [at.lng, at.lat]));
+        if (!box) return;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        map.fitBounds(new LngLatBounds(box[0], box[1]), {
+          padding: 90,
+          maxZoom: Math.min(map.getZoom() + 3, 14),
+          duration: reduceMotion ? 0 : 600,
+        });
+      });
+      this.clusterMarkers.push({ marker: new Marker({ element, anchor: 'center' }).setLngLat(centre).addTo(map), signature: '' });
+    }
   }
 
   private applyStyle(dark: boolean): void {
@@ -229,6 +327,7 @@ export class MapPage implements AfterViewInit, OnDestroy {
         `<span class="ct-home-pin__label">${home.name}</span>`;
       return new Marker({ element, anchor: 'center' }).setLngLat(home.at).addTo(map);
     });
+    this.scheduleDeclutter();
   }
 
   private syncPins(pins: readonly MapPin[]): void {
@@ -247,6 +346,8 @@ export class MapPage implements AfterViewInit, OnDestroy {
       this.pinMarkers.get(pin.placeId)?.remove();
       this.pinMarkers.set(pin.placeId, this.createPin(pin, map));
     }
+    this.clusterSignature = '';
+    this.scheduleDeclutter();
   }
 
   private createPin(pin: MapPin, map: MapLibreMap): Marker {
@@ -295,6 +396,8 @@ export class MapPage implements AfterViewInit, OnDestroy {
       existing?.marker.remove();
       this.wishMarkers.set(pin.placeId, { marker: this.createWishPin(pin, map), signature });
     }
+    this.clusterSignature = '';
+    this.scheduleDeclutter();
   }
 
   /** Um sítio por ir: o mesmo pin, mas só com o contorno, para se ver logo que ainda não fomos. */
@@ -319,18 +422,19 @@ export class MapPage implements AfterViewInit, OnDestroy {
     return new Marker({ element, anchor: 'center' }).setLngLat([pin.lng, pin.lat]).addTo(map);
   }
 
-  /** Enquadra os pins; sem pins, enquadra o Porto e Madrid. */
+  /** Enquadra os pins e as duas casas (o Porto e Madrid ficam sempre à vista, com o nome inteiro). */
   private fit(animate: boolean): void {
     const map = this.map;
     if (!map) return;
     const pins = [...this.visiblePins(), ...this.visibleWishPins()];
-    const points: LngLat[] = pins.length ? pins.map((pin) => [pin.lng, pin.lat]) : HOMES.map((home) => home.at);
+    const points: LngLat[] = [...pins.map((pin): LngLat => [pin.lng, pin.lat]), ...HOMES.map((home) => home.at)];
     const box = boundsOf(points);
     if (!box) return;
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     map.fitBounds(new LngLatBounds(box[0], box[1]), {
-      padding: { top: 90, bottom: 80, left: 50, right: 50 },
+      // Dos lados, espaço para metade do nome por baixo de um pin.
+      padding: { top: 90, bottom: 80, left: 64, right: 64 },
       maxZoom: pins.length ? 9.5 : 6.5,
       duration: animate && !reduceMotion ? 900 : 0,
     });

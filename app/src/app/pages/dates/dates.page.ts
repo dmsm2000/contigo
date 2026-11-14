@@ -4,6 +4,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { add, chevronBackOutline, chevronForwardOutline, closeOutline, createOutline } from 'ionicons/icons';
 import {
+  formatWeekdays,
   formatWindow,
   monthGrid,
   monthTitle,
@@ -13,7 +14,6 @@ import {
   shortClock,
   todayIso,
   weekdayNames,
-  windowKind,
 } from '../../core/availability.logic';
 import { AvailabilityService } from '../../core/availability.service';
 import { LanguageService } from '../../core/language.service';
@@ -105,7 +105,7 @@ export class DatesPage {
     this.availability.windows().slice(0, WINDOWS_SHOWN).map((window) => ({
       ...window,
       label: formatWindow(window, this.language()),
-      kind: windowKind(window.days),
+      weekdays: formatWeekdays(window, this.language()),
     })),
   );
 

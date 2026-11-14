@@ -10,6 +10,8 @@ import { ThemeService } from './core/theme.service';
   template: `
     <ion-app>
       <ion-router-outlet></ion-router-outlet>
+      <!-- Por trás das horas e da bateria na app instalada (ver .ct-status-band em styles.scss). -->
+      <div class="ct-status-band" aria-hidden="true"></div>
     </ion-app>
   `,
 })

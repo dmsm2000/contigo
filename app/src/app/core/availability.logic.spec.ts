@@ -4,6 +4,7 @@ import {
   commonWindows,
   DayMark,
   fitsWindow,
+  formatWeekdays,
   formatWindow,
   freeDays,
   markedDays,
@@ -228,12 +229,20 @@ describe('nextWindow', () => {
 });
 
 describe('textos de datas', () => {
-  it('escreve uma janela de um dia e de vários', () => {
-    expect(formatWindow({ start: '2026-11-14', end: '2026-11-14' }, 'pt')).not.toContain('–');
-    const several = formatWindow({ start: '2026-11-14', end: '2026-11-16' }, 'pt');
-    expect(several).toContain('14');
-    expect(several).toContain('16');
-    expect(several).toContain('–');
+  // O Intl usa espaços finos à volta do travessão; para comparar, passam a espaços normais.
+  const plain = (text: string) => text.replace(/[\u2009\u202f\u00a0]/g, ' ');
+
+  it('escreve uma janela de um dia e de vários, com o mês por extenso', () => {
+    expect(plain(formatWindow({ start: '2026-11-14', end: '2026-11-14' }, 'pt'))).toBe('14 de novembro');
+    expect(plain(formatWindow({ start: '2026-11-14', end: '2026-11-16' }, 'pt'))).toBe('14–16 de novembro');
+    expect(plain(formatWindow({ start: '2026-11-30', end: '2026-12-02' }, 'pt'))).toBe('30 de novembro – 2 de dezembro');
+  });
+
+  it('diz os dias da semana de uma janela', () => {
+    expect(formatWeekdays({ start: '2026-11-17', end: '2026-11-17' }, 'pt')).toBe('terça-feira');
+    expect(formatWeekdays({ start: '2026-11-21', end: '2026-11-22' }, 'pt')).toBe('sábado e domingo');
+    expect(formatWeekdays({ start: '2026-11-21', end: '2026-11-22' }, 'es')).toBe('sábado y domingo');
+    expect(plain(formatWeekdays({ start: '2026-11-21', end: '2026-11-23' }, 'pt'))).toBe('sábado – segunda-feira');
   });
 
   it('dá o título do mês com o ano', () => {

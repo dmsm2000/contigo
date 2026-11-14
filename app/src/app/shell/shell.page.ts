@@ -26,7 +26,6 @@ import {
   mapOutline,
   moonOutline,
   peopleOutline,
-  walletOutline,
 } from 'ionicons/icons';
 import { ProfileService } from '../core/profile.service';
 import { TripsService } from '../core/trips.service';
@@ -88,19 +87,16 @@ export class ShellPage {
       mapOutline,
       moonOutline,
       peopleOutline,
-      walletOutline,
     });
   }
 
   protected async openAdd(): Promise<void> {
     const t = (key: string) => this.transloco.translate(key);
-    const soon = () => void this.showSoon();
     const sheet = await this.actionSheets.create({
       header: t('add.title'),
       buttons: [
         { text: t('add.pastTrip'), icon: 'images-outline', handler: () => void this.flow.openPastTrip() },
         { text: t('add.photo'), icon: 'camera-outline', handler: () => void this.addPhotos() },
-        { text: t('add.expense'), icon: 'wallet-outline', handler: soon },
         { text: t('add.place'), icon: 'location-outline', handler: () => void this.flow.openAddWish() },
         { text: t('add.idea'), icon: 'bulb-outline', handler: () => void this.flow.openIdea() },
         { text: t('common.cancel'), role: 'cancel' },
@@ -122,14 +118,5 @@ export class ShellPage {
 
   protected toggleTheme(): void {
     void this.profile.setTheme(this.theme.isDark() ? 'light' : 'dark');
-  }
-
-  private async showSoon(): Promise<void> {
-    const toast = await this.toasts.create({
-      message: this.transloco.translate('common.soon'),
-      duration: 1800,
-      position: 'top',
-    });
-    await toast.present();
   }
 }

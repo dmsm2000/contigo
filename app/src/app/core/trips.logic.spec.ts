@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  byRecentlyAdded,
   isDone,
   isUpcoming,
   lastDayOf,
@@ -197,5 +198,17 @@ describe('viagens feitas e por fazer', () => {
     const trip = { startDate: '2026-12-01', endDate: null, datePrecision: 'month' } as const;
     expect(isUpcoming(trip, '2026-12-31')).toBe(true);
     expect(isUpcoming(trip, '2027-01-01')).toBe(false);
+  });
+});
+
+describe('byRecentlyAdded', () => {
+  it('põe primeiro o que foi registado há menos tempo, sem mexer na lista original', () => {
+    const list = [
+      { id: 'a', createdAt: '2026-11-01T10:00:00Z' },
+      { id: 'c', createdAt: '2026-11-13T09:00:00Z' },
+      { id: 'b', createdAt: '2026-11-05T12:00:00Z' },
+    ];
+    expect(byRecentlyAdded(list).map((trip) => trip.id)).toEqual(['c', 'b', 'a']);
+    expect(list.map((trip) => trip.id)).toEqual(['a', 'c', 'b']);
   });
 });

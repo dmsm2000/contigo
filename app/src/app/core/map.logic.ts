@@ -106,3 +106,57 @@ export function curve(from: LngLat, to: LngLat, steps = 32, bend = 0.18): LngLat
   }
   return points;
 }
+
+/** Um retângulo no ecrã, em píxeis. */
+export interface Box {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+export interface LabelCandidate {
+  id: string;
+  /** Menor é mais importante: as casas primeiro, depois os sítios visitados, depois os por ir. */
+  priority: number;
+  box: Box;
+}
+
+const overlaps = (a: Box, b: Box, gap: number) =>
+  a.left < b.right + gap && b.left < a.right + gap && a.top < b.bottom + gap && b.top < a.bottom + gap;
+
+/**
+ * Que nomes se mostram no mapa sem se taparem: nenhum nome cobre um pin nem outro nome já mostrado.
+ * Escolhe pela prioridade e, dentro da mesma, pela ordem em que vêm. Ao aproximar o mapa, cabem mais.
+ */
+export function visibleLabels(pins: readonly Box[], labels: readonly LabelCandidate[], gap = 3): Set<string> {
+  const taken: Box[] = [...pins];
+  const visible = new Set<string>();
+  const ordered = labels.map((label, index) => ({ label, index })).sort((a, b) => a.label.priority - b.label.priority || a.index - b.index);
+  for (const { label } of ordered) {
+    if (taken.some((box) => overlaps(label.box, box, gap))) continue;
+    taken.push(label.box);
+    visible.add(label.id);
+  }
+  return visible;
+}
+
+export interface ScreenPoint {
+  id: string;
+  x: number;
+  y: number;
+}
+
+/**
+ * Junta os pontos que ficam a menos de `radius` píxeis uns dos outros no ecrã. Cada ponto entra no primeiro
+ * grupo que tenha um membro perto; um ponto sozinho dá um grupo de um. Ao aproximar o mapa, os grupos desfazem-se.
+ */
+export function clusterPoints(points: readonly ScreenPoint[], radius: number): string[][] {
+  const groups: ScreenPoint[][] = [];
+  for (const point of points) {
+    const group = groups.find((members) => members.some((member) => Math.hypot(member.x - point.x, member.y - point.y) < radius));
+    if (group) group.push(point);
+    else groups.push([point]);
+  }
+  return groups.map((members) => members.map((member) => member.id));
+}

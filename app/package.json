@@ -10,6 +10,7 @@
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:users": "node scripts/create-local-users.mjs",
+    "supabase:demo": "node scripts/seed-demo.mjs",
     "test:rls": "node scripts/test-rls.mjs",
     "env:production": "node scripts/write-production-env.mjs",
     "check:registry": "node scripts/check-registry.mjs"

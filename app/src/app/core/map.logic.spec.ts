@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boundsOf, curve, LngLat, pinsFromTrips } from './map.logic';
+import { boundsOf, Box, clusterPoints, curve, LngLat, pinsFromTrips, visibleLabels } from './map.logic';
 import { Place, Trip } from './trips.logic';
 
 const place = (id: string, name: string, coords: [number, number] | null): Place => ({
@@ -122,5 +122,76 @@ describe('curve', () => {
   it('curva para norte também quando se vai de Madrid para o Porto', () => {
     const line = curve(madrid, porto, 20);
     expect(line[10][1]).toBeGreaterThan((porto[1] + madrid[1]) / 2);
+  });
+});
+
+describe('visibleLabels', () => {
+  const box = (left: number, top: number, width: number, height = 20): Box => ({ left, top, right: left + width, bottom: top + height });
+
+  it('mostra os nomes que não se tocam', () => {
+    const visible = visibleLabels([], [
+      { id: 'a', priority: 1, box: box(0, 0, 80) },
+      { id: 'b', priority: 1, box: box(200, 0, 80) },
+    ]);
+    expect([...visible].sort()).toEqual(['a', 'b']);
+  });
+
+  it('quando dois nomes se tapam, fica o mais importante', () => {
+    const visible = visibleLabels([], [
+      { id: 'por-ir', priority: 2, box: box(0, 0, 120) },
+      { id: 'casa', priority: 0, box: box(60, 5, 80) },
+    ]);
+    expect([...visible]).toEqual(['casa']);
+  });
+
+  it('com a mesma importância, fica o primeiro', () => {
+    const visible = visibleLabels([], [
+      { id: 'primeiro', priority: 1, box: box(0, 0, 120) },
+      { id: 'segundo', priority: 1, box: box(100, 0, 120) },
+    ]);
+    expect([...visible]).toEqual(['primeiro']);
+  });
+
+  it('um nome nunca tapa um pin', () => {
+    const visible = visibleLabels([box(50, 0, 40, 40)], [{ id: 'a', priority: 0, box: box(0, 10, 120) }]);
+    expect(visible.size).toBe(0);
+  });
+
+  it('deixa uma pequena folga entre nomes', () => {
+    const visible = visibleLabels([], [
+      { id: 'a', priority: 1, box: box(0, 0, 100) },
+      { id: 'b', priority: 1, box: box(101, 0, 100) },
+    ], 3);
+    expect([...visible]).toEqual(['a']);
+  });
+});
+
+describe('clusterPoints', () => {
+  it('junta pontos próximos e deixa os afastados sozinhos', () => {
+    const groups = clusterPoints(
+      [
+        { id: 'a', x: 0, y: 0 },
+        { id: 'b', x: 20, y: 10 },
+        { id: 'c', x: 300, y: 300 },
+      ],
+      40,
+    );
+    expect(groups).toEqual([['a', 'b'], ['c']]);
+  });
+
+  it('une em cadeia: quem está perto de um membro entra no grupo', () => {
+    const groups = clusterPoints(
+      [
+        { id: 'a', x: 0, y: 0 },
+        { id: 'b', x: 35, y: 0 },
+        { id: 'c', x: 70, y: 0 },
+      ],
+      40,
+    );
+    expect(groups).toEqual([['a', 'b', 'c']]);
+  });
+
+  it('sem pontos não há grupos', () => {
+    expect(clusterPoints([], 40)).toEqual([]);
   });
 });

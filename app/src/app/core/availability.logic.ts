@@ -206,18 +206,23 @@ const asDate = (iso: string) => {
   return new Date(Date.UTC(year, month - 1, day));
 };
 
-/** "sáb., 14 nov.": o dia da semana, o dia e o mês, na língua da app. */
-export function formatDay(iso: string, lang: Lang): string {
-  return new Intl.DateTimeFormat(LOCALES[lang], { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(
-    asDate(iso),
-  );
+/** "17 de novembro", "21–22 de novembro" ou "30 de novembro – 2 de dezembro", na língua da app. */
+export function formatWindow(window: Pick<FreeWindow, 'start' | 'end'>, lang: Lang): string {
+  const format = new Intl.DateTimeFormat(LOCALES[lang], { day: 'numeric', month: 'long', timeZone: 'UTC' });
+  return window.start === window.end ? format.format(asDate(window.start)) : format.formatRange(asDate(window.start), asDate(window.end));
 }
 
-/** Um dia, ou "sáb., 14 nov. – seg., 16 nov." quando são vários. */
-export function formatWindow(window: Pick<FreeWindow, 'start' | 'end'>, lang: Lang): string {
-  return window.start === window.end
-    ? formatDay(window.start, lang)
-    : `${formatDay(window.start, lang)} – ${formatDay(window.end, lang)}`;
+/** Os dias da semana de uma janela: "terça-feira", "sábado e domingo" ou "sábado – segunda-feira". */
+export function formatWeekdays(window: Pick<FreeWindow, 'start' | 'end'>, lang: Lang): string {
+  const format = new Intl.DateTimeFormat(LOCALES[lang], { weekday: 'long', timeZone: 'UTC' });
+  if (window.start === window.end) return format.format(asDate(window.start));
+  if (addDays(window.start, 1) === window.end) {
+    return new Intl.ListFormat(LOCALES[lang], { type: 'conjunction' }).format([
+      format.format(asDate(window.start)),
+      format.format(asDate(window.end)),
+    ]);
+  }
+  return format.formatRange(asDate(window.start), asDate(window.end));
 }
 
 /** "novembro de 2026". */

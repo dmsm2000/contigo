@@ -255,3 +255,8 @@ export function initialOf(name: string): string {
   const first = Array.from(name.trim())[0] ?? '?';
   return first.toLocaleUpperCase();
 }
+
+/** As viagens pela data em que foram registadas, as mais recentes primeiro (é a ordem das histórias do Início). */
+export function byRecentlyAdded<T extends Pick<Trip, 'createdAt'>>(trips: readonly T[]): T[] {
+  return [...trips].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}

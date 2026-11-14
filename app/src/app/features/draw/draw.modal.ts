@@ -3,7 +3,7 @@ import { AlertController, IonContent, IonIcon, ModalController, ToastController 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline, closeOutline, diceOutline, heartOutline, sparklesOutline } from 'ionicons/icons';
-import { FreeWindow, formatWindow, windowKind } from '../../core/availability.logic';
+import { FreeWindow, formatWeekdays, formatWindow } from '../../core/availability.logic';
 import { AvailabilityService } from '../../core/availability.service';
 import { drawPool, reelDelays, reelFrames, summarizePool } from '../../core/draw.logic';
 import { DrawService } from '../../core/draw.service';
@@ -71,7 +71,7 @@ export class DrawModal implements OnDestroy {
     this.availability.windows().slice(0, 6).map((window) => ({
       ...window,
       label: formatWindow(window, this.language()),
-      kind: windowKind(window.days),
+      weekdays: formatWeekdays(window, this.language()),
     })),
   );
   protected readonly window = computed<FreeWindow | null>(() => {

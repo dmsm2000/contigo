@@ -265,7 +265,6 @@
     "dark": "Oscuro"
   },
   "home": {
-    "draw": "Sortear",
     "pastTrip": "Viaje hecho",
     "nextWindow": "Próxima ventana libre",
     "noWindowTitle": "Todavía sin ventanas",
@@ -308,7 +307,7 @@
     "previous": "Mes anterior",
     "next": "Mes siguiente",
     "legendPartner": "El punto muestra el día de {{name}}",
-    "legendShared": "el aro marca los días libres para los dos",
+    "legendShared": "El aro marca los días libres para los dos",
     "panelLabel": "Marcar días",
     "days_one": "{{count}} día",
     "days_other": "{{count}} días",
@@ -319,11 +318,8 @@
     "startTitle": "Empieza por un tipo de día",
     "startText": "Crea tus tipos, como “Mañana 7h–15h” o “Libre”, y luego toca los días del calendario para marcarlos.",
     "windowsTitle": "Ventanas en común",
-    "window": {
-      "day": "Un día",
-      "weekend": "Fin de semana",
-      "long": "Varios días"
-    },
+    "windowLength_one": "un día libre",
+    "windowLength_other": "{{count}} días seguidos",
     "windowsEmpty": "Todavía no hay días libres para los dos. Marcad los días en que podéis viajar.",
     "windowsNoPartner": "Por ahora solo hay una cuenta. Cuando la otra persona marque sus días, las ventanas aparecerán aquí.",
     "typesTitle": "Mis tipos de día",

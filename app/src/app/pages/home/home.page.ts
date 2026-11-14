@@ -3,14 +3,15 @@ import { RouterLink } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { add, chevronForwardOutline, diceOutline, heartOutline, imagesOutline, moonOutline, sunnyOutline } from 'ionicons/icons';
-import { formatWindow, windowKind } from '../../core/availability.logic';
+import { add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, sunnyOutline } from 'ionicons/icons';
+import { formatWeekdays, formatWindow } from '../../core/availability.logic';
 import { AvailabilityService } from '../../core/availability.service';
 import { DrawService } from '../../core/draw.service';
 import { LanguageService } from '../../core/language.service';
+import { StoriesService } from '../../core/stories.service';
 import { ProfileService } from '../../core/profile.service';
 import { ThemeService } from '../../core/theme.service';
-import { Trip, yearStats } from '../../core/trips.logic';
+import { byRecentlyAdded, Trip, yearStats } from '../../core/trips.logic';
 import { TripsService } from '../../core/trips.service';
 import { averageStars, WishlistItem } from '../../core/wishlist.logic';
 import { WishlistService } from '../../core/wishlist.service';
@@ -31,6 +32,7 @@ export class HomePage {
   protected readonly trips = inject(TripsService);
   protected readonly labels = inject(TripLabels);
   protected readonly wishlist = inject(WishlistService);
+  protected readonly stories = inject(StoriesService);
   private readonly availability = inject(AvailabilityService);
   protected readonly draws = inject(DrawService);
   private readonly language = inject(LanguageService).language;
@@ -39,17 +41,19 @@ export class HomePage {
   /** Os sítios diferentes do ano e os meses em que houve viagem. */
   protected readonly stats = computed(() => yearStats(this.trips.done(), this.year));
   /** As viagens mais recentes aparecem como "histórias". */
-  protected readonly recent = computed(() => this.trips.done().slice(0, 8));
+  protected readonly recent = computed(() => byRecentlyAdded(this.trips.done()).slice(0, 8));
   /** A próxima janela em que os dois estão livres, se já houver. */
   protected readonly nextWindow = computed(() => {
     const next = this.availability.next();
-    return next ? { label: formatWindow(next, this.language()), days: next.days, kind: windowKind(next.days) } : null;
+    return next
+      ? { label: formatWindow(next, this.language()), weekdays: formatWeekdays(next, this.language()), days: next.days }
+      : null;
   });
   /** Os três sítios por ir mais desejados. */
   protected readonly topWishes = computed(() => this.wishlist.sorted().slice(0, 3));
 
   constructor() {
-    addIcons({ add, chevronForwardOutline, diceOutline, heartOutline, imagesOutline, moonOutline, sunnyOutline });
+    addIcons({ add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, sunnyOutline });
   }
 
   protected toggleTheme(): void {
@@ -58,6 +62,11 @@ export class HomePage {
 
   protected addPastTrip(): void {
     void this.flow.openPastTrip();
+  }
+
+  /** Abre as histórias a começar na viagem tocada; passam por todas as que estão no topo. */
+  protected openStory(index: number): void {
+    void this.flow.openStories(this.recent().map((trip) => trip.id), index);
   }
 
   protected openDraw(): void {

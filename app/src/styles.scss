@@ -108,10 +108,31 @@ body {
   }
 }
 
+// A barra de estado do iPhone (app instalada) é transparente: esta faixa, da cor do tema, fica por trás das horas
+// e da bateria, e o conteúdo que passa por baixo ao fazer scroll não se mistura com elas. No browser a altura é 0.
+// Vive dentro do ion-app, por cima das páginas mas por baixo das janelas do Ionic (z-index 20000+), para o fundo
+// escurecido de um menu ou modal também a cobrir.
+// Sem zoom por duplo toque; o mapa trata dos seus próprios gestos.
+html {
+  touch-action: manipulation;
+}
+
+.ct-status-band {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background: var(--ct-bg);
+  z-index: 10;
+  pointer-events: none;
+}
+
 .ct-page {
   max-width: 720px;
   margin: 0 auto;
-  padding: 12px 16px calc(32px + env(safe-area-inset-bottom));
+  // A margem de cima é 0 em quase todo o lado; só conta se a app desenhar por baixo da barra de estado.
+  padding: calc(12px + env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom));
 }
 
 .ct-icon-btn {
@@ -406,6 +427,14 @@ html.ct-theme-fade *::after {
 }
 
 // Sítio por ir: só o contorno, mais pequeno, para se distinguir dos sítios onde já fomos.
+.ct-pin--cluster {
+  width: 48px;
+  height: 48px;
+  background: var(--ct-btn);
+  box-shadow: 0 0 0 6px rgba(194, 48, 111, 0.25), 0 4px 14px rgba(0, 0, 0, 0.3);
+  font-size: 18px;
+}
+
 .ct-pin--wish {
   width: 40px;
   height: 40px;
@@ -434,6 +463,11 @@ html.ct-theme-fade *::after {
 
 .ct-pin__label,
 .ct-home-pin__label {
+  // Nomes compridos ("Parque Nacional da Peneda-Gerês") cortam com reticências em vez de taparem o mapa.
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity var(--ct-dur-fast) var(--ct-ease);
   position: absolute;
   top: 100%;
   left: 50%;
@@ -451,6 +485,11 @@ html.ct-theme-fade *::after {
 
 // Sem `position`: o MapLibre põe `absolute` nos marcadores. Um `relative` aqui anulava-o e os dois marcadores
 // empilhavam-se em fila, com o de Madrid 28 px abaixo do sítio certo.
+.ct-pin__label.is-hidden,
+.ct-home-pin__label.is-hidden {
+  opacity: 0;
+}
+
 .ct-home-pin {
   width: 28px;
   height: 28px;

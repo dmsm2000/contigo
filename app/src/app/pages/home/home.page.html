@@ -13,21 +13,15 @@
 
     <ul class="stories">
       <li class="ct-rise" style="--i: 1">
-        <button class="story" type="button" (click)="openDraw()">
-          <span class="ring ring--grad"><span class="inner inner--draw"><ion-icon name="dice-outline" aria-hidden="true"></ion-icon></span></span>
-          <span class="story-label">{{ 'home.draw' | transloco }}</span>
-        </button>
-      </li>
-      <li class="ct-rise" style="--i: 2">
         <button class="story" type="button" (click)="addPastTrip()">
           <span class="ring ring--dashed"><span class="inner"><ion-icon name="add" aria-hidden="true"></ion-icon></span></span>
           <span class="story-label">{{ 'home.pastTrip' | transloco }}</span>
         </button>
       </li>
       @for (trip of recent(); track trip.id; let i = $index) {
-        <li class="ct-rise" [style.--i]="3 + i">
-          <button class="story" type="button" (click)="open(trip)">
-            <span class="ring" [class.ring--new]="i === 0">
+        <li class="ct-rise" [style.--i]="2 + i">
+          <button class="story" type="button" (click)="openStory(i)">
+            <span class="ring" [class.ring--new]="!stories.isSeen(trip.id)" [class.ring--seen]="stories.isSeen(trip.id)">
               <span class="inner inner--tile" [style.background]="labels.cover(trip)">{{ labels.hasCover(trip) ? '' : labels.initial(trip.place) }}</span>
             </span>
             <span class="story-label">{{ trip.place.name }}</span>
@@ -47,8 +41,8 @@
         <p class="eyebrow">{{ 'home.nextWindow' | transloco }}</p>
         <h1 class="ct-display hero-title hero-title--window">{{ window.label }}</h1>
         <p class="hero-text">
-          {{ (window.days === 1 ? 'dates.days_one' : 'dates.days_other') | transloco: { count: window.days } }}
-          · {{ 'dates.window.' + window.kind | transloco }}
+          {{ window.weekdays }} ·
+          {{ (window.days === 1 ? 'dates.windowLength_one' : 'dates.windowLength_other') | transloco: { count: window.days } }}
         </p>
         <button class="ct-btn ct-btn--light" type="button" (click)="openDraw()">{{ 'home.drawNow' | transloco }}</button>
       } @else {

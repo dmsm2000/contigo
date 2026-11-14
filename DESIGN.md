@@ -46,7 +46,7 @@ Moderna, com as fotos em primeiro lugar, ao estilo do Instagram: histórias no t
 
 ## 5. Navegação
 
-- **Telemóvel:** barra inferior com Início, Mapa, **+** (foto, despesa, sítio, ideia), Datas (a Disponibilidade) e Nós.
+- **Telemóvel:** barra inferior com Início, Mapa, **+** (viagem já feita, foto, sítio para ir, ideia; a despesa entra no menu quando existir, sem um "em breve" antes), Datas (a Disponibilidade) e Nós.
 - **Ecrãs imersivos sem barra:** o sorteio e o dia de viagem.
 - **Computador:** menu lateral, coluna principal e coluna lateral com o mapa e os sítios que cabem na janela.
 - **Rotas em inglês** `[confirmado]`: `/login`, `/home`, `/map`, `/wishlist`, `/availability`, `/ideas` e `/us`. A wishlist ("Por ir") não tem separador na barra inferior: abre-se a partir do Início ("Ver tudo"), do cartão do mapa e do menu **+**, e tem entrada própria no menu lateral do computador. Os textos que se veem continuam nas três línguas.

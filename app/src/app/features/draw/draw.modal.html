@@ -30,8 +30,8 @@
               >
                 <strong>{{ option.label }}</strong>
                 <small>
-                  {{ (option.days === 1 ? 'dates.days_one' : 'dates.days_other') | transloco: { count: option.days } }}
-                  · {{ 'dates.window.' + option.kind | transloco }}
+                  {{ option.weekdays }} ·
+                  {{ (option.days === 1 ? 'dates.windowLength_one' : 'dates.windowLength_other') | transloco: { count: option.days } }}
                 </small>
               </button>
             }

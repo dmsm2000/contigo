@@ -1,0 +1,68 @@
+@if (group(); as current) {
+  <div
+    class="stories"
+    [class.is-held]="held()"
+    (pointerdown)="pressStart($event)"
+    (pointerup)="pressEnd($event)"
+    (pointercancel)="pressCancel()"
+    (pointerleave)="pressCancel()"
+  >
+    <div class="media">
+      @if (imageUrl(); as url) {
+        <img class="image" [src]="url" [alt]="photo()?.caption ?? ('photos.alt' | transloco)" draggable="false" />
+      } @else if (slide()?.kind === 'card') {
+        <div class="card-bg" [style.background]="labels.tile(current.trip.place)"></div>
+      } @else {
+        <span class="spinner" aria-hidden="true"></span>
+      }
+      <div class="shade" aria-hidden="true"></div>
+    </div>
+
+    <header class="top">
+      <ol class="bars" aria-hidden="true">
+        <!-- Ao mudar de viagem as barras refazem-se, para a animação recomeçar. -->
+        @for (bar of current.slides; track bar; let i = $index) {
+          <li>
+            <span
+              class="fill"
+              [class.done]="barState(i) === 'done'"
+              [class.active]="barState(i) === 'active'"
+              [class.paused]="held() || waiting()"
+              [style.animation-duration.ms]="slideMs"
+              (animationend)="next()"
+            ></span>
+          </li>
+        }
+      </ol>
+      <div class="who">
+        <span class="avatar" [style.background]="labels.cover(current.trip)" aria-hidden="true">{{ labels.hasCover(current.trip) ? '' : labels.initial(current.trip.place) }}</span>
+        <span class="who-text">
+          <strong>{{ current.trip.place.name }}</strong>
+          <small>{{ labels.date(current.trip) }}</small>
+        </span>
+        <button class="round" type="button" (pointerdown)="$event.stopPropagation()" (pointerup)="$event.stopPropagation()" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+    </header>
+
+    @if (slide()?.kind === 'card') {
+      <div class="card">
+        <h2 class="ct-display">{{ current.trip.place.name }}</h2>
+        @let who = labels.who(current.trip);
+        <p class="meta">{{ labels.date(current.trip) }} · {{ who.key | transloco: who.params }}</p>
+        @if (current.trip.note) {
+          <p class="note">{{ current.trip.note }}</p>
+        }
+      </div>
+    } @else if (photo()?.caption; as caption) {
+      <p class="caption">{{ caption }}</p>
+    }
+
+    <footer class="foot">
+      <button class="open" type="button" (pointerdown)="$event.stopPropagation()" (pointerup)="$event.stopPropagation()" (click)="openTrip()">
+        {{ 'home.viewTrip' | transloco }}
+      </button>
+    </footer>
+  </div>
+}

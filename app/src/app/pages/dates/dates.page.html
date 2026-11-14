@@ -39,24 +39,26 @@
                 (click)="tap(cell)"
               >
                 <span class="num">{{ cell.day }}</span>
-                @if (cell.partner) {
-                  <span class="dot" [class]="'dot ' + toneClass(cell.partner)" aria-hidden="true"></span>
-                }
+                <!-- O ponto ocupa sempre o seu lugar, para os números ficarem todos à mesma altura. -->
+                <span class="dot" [class]="'dot ' + toneClass(cell.partner)" [class.none]="!cell.partner" aria-hidden="true"></span>
               </button>
             }
           </div>
         }
       </div>
 
-      <p class="legend">
+      <ul class="legend">
         @if (hasPartner()) {
-          <span class="legend-dot" aria-hidden="true"></span>
-          {{ 'dates.legendPartner' | transloco: { name: partnerName() || ('wish.theOther' | transloco) } }}
-          ·
+          <li>
+            <span class="legend-dot" aria-hidden="true"></span>
+            {{ 'dates.legendPartner' | transloco: { name: partnerName() || ('wish.theOther' | transloco) } }}
+          </li>
         }
-        <span class="legend-ring" aria-hidden="true"></span>
-        {{ 'dates.legendShared' | transloco }}
-      </p>
+        <li>
+          <span class="legend-ring" aria-hidden="true"></span>
+          {{ 'dates.legendShared' | transloco }}
+        </li>
+      </ul>
     </section>
 
     @if (selected().length) {
@@ -118,8 +120,8 @@
             <li class="window ct-card ct-rise" [style.--i]="i">
               <span class="window-label">{{ window.label }}</span>
               <span class="window-meta">
-                {{ (window.days === 1 ? 'dates.days_one' : 'dates.days_other') | transloco: { count: window.days } }}
-                · {{ 'dates.window.' + window.kind | transloco }}
+                {{ window.weekdays }} ·
+                {{ (window.days === 1 ? 'dates.windowLength_one' : 'dates.windowLength_other') | transloco: { count: window.days } }}
               </span>
             </li>
           }
