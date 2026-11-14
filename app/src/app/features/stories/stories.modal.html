@@ -26,7 +26,7 @@
               [class.done]="barState(i) === 'done'"
               [class.active]="barState(i) === 'active'"
               [class.paused]="held() || waiting()"
-              [style.animation-duration.ms]="slideMs"
+              [style.animation-duration.ms]="slideMs()"
               (animationend)="next()"
             ></span>
           </li>

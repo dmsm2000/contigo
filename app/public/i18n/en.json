@@ -326,7 +326,7 @@
     "next": "Next trip"
   },
   "dates": {
-    "title": "Availability",
+    "title": "Dates",
     "previous": "Previous month",
     "next": "Next month",
     "legendPartner": "The dot shows {{name}}'s day",
@@ -340,7 +340,7 @@
     "clearDays": "Clear marking",
     "startTitle": "Start with a day type",
     "startText": "Create your types, like “Morning 7am–3pm” or “Day off”, then tap days on the calendar to mark them.",
-    "windowsTitle": "Shared windows",
+    "windowsTitle": "All windows",
     "windowLength_one": "one free day",
     "windowLength_other": "{{count}} days in a row",
     "windowsEmpty": "No days free for both of you yet. Mark the days you can travel.",
@@ -348,7 +348,12 @@
     "typesTitle": "My day types",
     "errors": {
       "save": "Couldn't save. Try again."
-    }
+    },
+    "subtitle": "Mark the days you can travel. The app shows when you're both free.",
+    "legendMine": "The colour of each day is your day type",
+    "nextWindow": "Next shared window",
+    "moreWindows_one": "and {{count}} more after",
+    "moreWindows_other": "and {{count}} more after"
   },
   "shift": {
     "kind": {
@@ -427,7 +432,13 @@
       "porto": "Porto",
       "madrid": "Madrid"
     },
-    "homeHint": "On the map, your photo sits on your home."
+    "homeHint": "On the map, your photo sits on your home.",
+    "together": "The two of you",
+    "links": {
+      "wishlist": "The places we want to visit",
+      "expenses": "The onion and what was spent",
+      "settings": "Contribution, stories, language, account"
+    }
   },
   "login": {
     "title": "Hello again",
@@ -518,5 +529,20 @@
     "updated": "Updated by {{name}} · {{when}}",
     "someone": "someone",
     "last": "Information last updated on {{when}} ({{ago}}) by {{name}}."
+  },
+  "settings": {
+    "title": "Settings",
+    "save": "Save",
+    "money": "Money",
+    "allowance": "Your monthly contribution",
+    "allowanceHint": "The other person's: {{partner}}. Together the two add up to {{total}} a month.",
+    "allowanceSaved": "Contribution saved.",
+    "allowanceError": "Enter a valid amount in euros.",
+    "stories": "Stories",
+    "storyTime": "Time per screen",
+    "storyHint": "How long each photo or note stays on screen in the Home stories. Only applies on this phone.",
+    "look": "Language and theme",
+    "profile": "Profile",
+    "account": "Account"
   }
 }

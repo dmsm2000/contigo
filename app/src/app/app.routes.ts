@@ -19,6 +19,7 @@ export const routes: Routes = [
       { path: 'wishlist', loadComponent: () => import('./pages/wishlist/wishlist.page').then((m) => m.WishlistPage) },
       { path: 'ideas', loadComponent: () => import('./pages/ideas/ideas.page').then((m) => m.IdeasPage) },
       { path: 'availability', loadComponent: () => import('./pages/dates/dates.page').then((m) => m.DatesPage) },
+      { path: 'settings', loadComponent: () => import('./pages/settings/settings.page').then((m) => m.SettingsPage) },
       { path: 'us', loadComponent: () => import('./pages/us/us.page').then((m) => m.UsPage) },
       { path: '', pathMatch: 'full', redirectTo: 'home' },
     ],

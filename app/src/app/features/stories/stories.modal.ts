@@ -3,6 +3,7 @@ import { IonIcon, ModalController } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline } from 'ionicons/icons';
+import { SettingsService } from '../../core/settings.service';
 import { PhotosService } from '../../core/photos.service';
 import { buildSlides, nextPosition, previousPosition, StoryPosition, tapAction } from '../../core/stories.logic';
 import { StoriesService } from '../../core/stories.service';
@@ -12,8 +13,6 @@ import { PhotoImgComponent } from '../photos/photo-img.component';
 import { TripFlowService } from '../trips/trip-flow.service';
 import { TripLabels } from '../trips/trip-labels.service';
 
-/** Quanto dura cada ecrã de uma história. */
-const SLIDE_MS = 5000;
 /** Um toque que dura mais do que isto é "segurar": pausa em vez de passar. */
 const HOLD_MS = 220;
 
@@ -37,7 +36,8 @@ export class StoriesModal implements OnInit {
   private readonly tripsService = inject(TripsService);
   protected readonly photos = inject(PhotosService);
   protected readonly labels = inject(TripLabels);
-  protected readonly slideMs = SLIDE_MS;
+  /** Quanto dura cada ecrã de uma história: escolhe-se nas Definições. */
+  protected readonly slideMs = inject(SettingsService).storyMs;
 
   protected readonly at = signal<StoryPosition>({ group: 0, slide: 0 });
   protected readonly held = signal(false);

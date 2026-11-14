@@ -1,6 +1,21 @@
 <ion-content>
   <div class="ct-page">
     <h1 class="ct-page-title ct-rise" style="--i: 0">{{ 'dates.title' | transloco }}</h1>
+    <p class="subtitle ct-rise" style="--i: 0">{{ 'dates.subtitle' | transloco }}</p>
+
+    @if (windows()[0]; as next) {
+      <section class="next-window ct-rise" style="--i: 1">
+        <span class="next-label"><ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>{{ 'dates.nextWindow' | transloco }}</span>
+        <strong class="ct-display next-value">{{ next.label }}</strong>
+        <span class="next-meta">
+          {{ next.weekdays }} ·
+          {{ (next.days === 1 ? 'dates.windowLength_one' : 'dates.windowLength_other') | transloco: { count: next.days } }}
+          @if (windows().length > 1) {
+            · {{ (windows().length === 2 ? 'dates.moreWindows_one' : 'dates.moreWindows_other') | transloco: { count: windows().length - 1 } }}
+          }
+        </span>
+      </section>
+    }
 
     <section class="calendar ct-card ct-rise" style="--i: 1">
       <header class="month">
@@ -48,6 +63,10 @@
       </div>
 
       <ul class="legend">
+        <li>
+          <span class="legend-swatch" aria-hidden="true"></span>
+          {{ 'dates.legendMine' | transloco }}
+        </li>
         @if (hasPartner()) {
           <li>
             <span class="legend-dot" aria-hidden="true"></span>

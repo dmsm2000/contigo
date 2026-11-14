@@ -326,7 +326,7 @@
     "next": "Próximo viaje"
   },
   "dates": {
-    "title": "Disponibilidad",
+    "title": "Fechas",
     "previous": "Mes anterior",
     "next": "Mes siguiente",
     "legendPartner": "El punto muestra el día de {{name}}",
@@ -340,7 +340,7 @@
     "clearDays": "Quitar marca",
     "startTitle": "Empieza por un tipo de día",
     "startText": "Crea tus tipos, como “Mañana 7h–15h” o “Libre”, y luego toca los días del calendario para marcarlos.",
-    "windowsTitle": "Ventanas en común",
+    "windowsTitle": "Todas las ventanas",
     "windowLength_one": "un día libre",
     "windowLength_other": "{{count}} días seguidos",
     "windowsEmpty": "Todavía no hay días libres para los dos. Marcad los días en que podéis viajar.",
@@ -348,7 +348,12 @@
     "typesTitle": "Mis tipos de día",
     "errors": {
       "save": "No se ha podido guardar. Inténtalo otra vez."
-    }
+    },
+    "subtitle": "Marca los días en que puedes viajar. La app muestra cuándo estáis libres los dos.",
+    "legendMine": "El color de cada día es tu tipo de día",
+    "nextWindow": "Próxima ventana en común",
+    "moreWindows_one": "y {{count}} más después",
+    "moreWindows_other": "y {{count}} más después"
   },
   "shift": {
     "kind": {
@@ -427,7 +432,13 @@
       "porto": "Oporto",
       "madrid": "Madrid"
     },
-    "homeHint": "En el mapa, tu foto aparece en tu casa."
+    "homeHint": "En el mapa, tu foto aparece en tu casa.",
+    "together": "De los dos",
+    "links": {
+      "wishlist": "Los sitios que queremos conocer",
+      "expenses": "La cebolla y lo que se gastó",
+      "settings": "Aportación, historias, idioma, cuenta"
+    }
   },
   "login": {
     "title": "Hola de nuevo",
@@ -518,5 +529,20 @@
     "updated": "Actualizado por {{name}} · {{when}}",
     "someone": "alguien",
     "last": "Información actualizada por última vez el {{when}} ({{ago}}) por {{name}}."
+  },
+  "settings": {
+    "title": "Ajustes",
+    "save": "Guardar",
+    "money": "Dinero",
+    "allowance": "Tu aportación mensual",
+    "allowanceHint": "La de la otra persona: {{partner}}. Las dos juntas suman {{total}} al mes.",
+    "allowanceSaved": "Aportación guardada.",
+    "allowanceError": "Escribe un valor válido, en euros.",
+    "stories": "Historias",
+    "storyTime": "Duración de cada pantalla",
+    "storyHint": "Cuánto tiempo se ve cada foto o nota en las historias del Inicio. Solo vale en este móvil.",
+    "look": "Idioma y tema",
+    "profile": "Perfil",
+    "account": "Cuenta"
   }
 }

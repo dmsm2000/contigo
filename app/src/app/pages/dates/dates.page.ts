@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { IonContent, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { add, chevronBackOutline, chevronForwardOutline, closeOutline, createOutline } from 'ionicons/icons';
+import { add, chevronBackOutline, chevronForwardOutline, closeOutline, createOutline, sparklesOutline } from 'ionicons/icons';
 import {
   formatWeekdays,
   formatWindow,
@@ -118,7 +118,7 @@ export class DatesPage {
   private swipeStart: { x: number; y: number } | null = null;
 
   constructor() {
-    addIcons({ add, chevronBackOutline, chevronForwardOutline, closeOutline, createOutline });
+    addIcons({ add, chevronBackOutline, chevronForwardOutline, closeOutline, createOutline, sparklesOutline });
   }
 
   protected go(step: number): void {

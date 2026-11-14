@@ -1,0 +1,137 @@
+<ion-content>
+  <div class="ct-page">
+    <header class="top ct-rise" style="--i: 0">
+      <a class="ct-icon-btn back" routerLink="/us" [attr.aria-label]="'nav.us' | transloco">
+        <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
+      </a>
+      <h1 class="ct-page-title">{{ 'settings.title' | transloco }}</h1>
+    </header>
+
+    <!-- Dinheiro -->
+    <h2 class="group-title ct-rise" style="--i: 1">{{ 'settings.money' | transloco }}</h2>
+    <section class="setting ct-rise" style="--i: 1">
+      <h3 class="setting-title">{{ 'settings.allowance' | transloco }}</h3>
+      <form class="ct-card password-form" (ngSubmit)="saveAllowance()" novalidate>
+        <div class="money">
+          <input type="text" name="allowance" inputmode="decimal" autocomplete="off" [attr.aria-label]="'settings.allowance' | transloco" [(ngModel)]="allowance" (ngModelChange)="onAllowance()" />
+          <span class="unit" aria-hidden="true">€</span>
+          <button class="ct-btn save" type="submit" [disabled]="allowanceBusy()">{{ 'settings.save' | transloco }}</button>
+        </div>
+        <p class="hint">
+          {{ 'settings.allowanceHint' | transloco: { partner: money(partnerAllowance()), total: money(profile.monthlyTotal()) } }}
+        </p>
+        @switch (allowanceStatus().kind) {
+          @case ('error') {
+            <p class="status status--error" role="alert">{{ $any(allowanceStatus()).message | transloco }}</p>
+          }
+          @case ('saved') {
+            <p class="status status--ok" role="status">{{ 'settings.allowanceSaved' | transloco }}</p>
+          }
+        }
+      </form>
+    </section>
+
+    <!-- Histórias -->
+    <h2 class="group-title ct-rise" style="--i: 2">{{ 'settings.stories' | transloco }}</h2>
+    <section class="setting ct-rise" style="--i: 2">
+      <h3 class="setting-title">{{ 'settings.storyTime' | transloco }}</h3>
+      <div class="segmented" style="--n: 4" role="group" [attr.aria-label]="'settings.storyTime' | transloco" [style.--idx]="storyOptions.indexOf(settings.storySeconds())">
+        @for (option of storyOptions; track option) {
+          <button type="button" [class.on]="settings.storySeconds() === option" [attr.aria-pressed]="settings.storySeconds() === option" (click)="setStorySeconds(option)">
+            {{ option }} s
+          </button>
+        }
+      </div>
+      <p class="row-hint">{{ 'settings.storyHint' | transloco }}</p>
+    </section>
+
+    <!-- Aparência -->
+    <h2 class="group-title ct-rise" style="--i: 3">{{ 'settings.look' | transloco }}</h2>
+    <section class="setting ct-rise" style="--i: 3">
+      <h3 class="setting-title">{{ 'us.language' | transloco }}</h3>
+      <div class="segmented" role="group" [attr.aria-label]="'us.language' | transloco" [style.--idx]="languages.indexOf(language.language())">
+        @for (option of languages; track option) {
+          <button type="button" [class.on]="language.language() === option" [attr.aria-pressed]="language.language() === option" (click)="setLanguage(option)">
+            {{ 'languages.' + option | transloco }}
+          </button>
+        }
+      </div>
+    </section>
+    <section class="setting ct-rise" style="--i: 3">
+      <h3 class="setting-title">{{ 'us.theme' | transloco }}</h3>
+      <div class="segmented" role="group" [attr.aria-label]="'us.theme' | transloco" [style.--idx]="themes.indexOf(theme.preference())">
+        @for (option of themes; track option) {
+          <button type="button" [class.on]="theme.preference() === option" [attr.aria-pressed]="theme.preference() === option" (click)="setTheme(option)">
+            {{ 'theme.' + option | transloco }}
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- Perfil -->
+    <h2 class="group-title ct-rise" style="--i: 4">{{ 'settings.profile' | transloco }}</h2>
+    <section class="setting ct-rise" style="--i: 4">
+      <h3 class="setting-title">{{ 'us.nameTitle' | transloco }}</h3>
+      <form class="ct-card password-form" (ngSubmit)="saveName()" novalidate>
+        <label class="field">
+          <span class="field-label">{{ 'us.nameLabel' | transloco }}</span>
+          <input type="text" name="name" autocomplete="given-name" [attr.maxlength]="maxNameLength + 20" [(ngModel)]="name" (ngModelChange)="onName()" />
+        </label>
+        <p class="hint">{{ 'us.nameHint' | transloco }}</p>
+        @switch (nameStatus().kind) {
+          @case ('error') {
+            <p class="status status--error" role="alert">{{ $any(nameStatus()).message | transloco }}</p>
+          }
+          @case ('saved') {
+            <p class="status status--ok" role="status">{{ 'us.nameSaved' | transloco }}</p>
+          }
+        }
+        <button class="ct-btn save" type="submit" [disabled]="nameBusy()">{{ 'us.saveName' | transloco }}</button>
+      </form>
+    </section>
+    <section class="setting ct-rise" style="--i: 4">
+      <h3 class="setting-title">{{ 'us.home' | transloco }}</h3>
+      <div class="segmented" [class.none]="!profile.profile()?.home" style="--n: 2" role="group" [attr.aria-label]="'us.home' | transloco" [style.--idx]="homes.indexOf(profile.profile()?.home ?? 'porto')">
+        @for (option of homes; track option) {
+          <button type="button" [class.on]="profile.profile()?.home === option" [attr.aria-pressed]="profile.profile()?.home === option" (click)="setHome(option)">
+            {{ 'us.homes.' + option | transloco }}
+          </button>
+        }
+      </div>
+      <p class="row-hint">{{ 'us.homeHint' | transloco }}</p>
+    </section>
+
+    <!-- Conta -->
+    <h2 class="group-title ct-rise" style="--i: 5">{{ 'settings.account' | transloco }}</h2>
+    <section class="setting ct-rise" style="--i: 5">
+      <h3 class="setting-title">{{ 'us.password' | transloco }}</h3>
+      <form class="ct-card password-form" (ngSubmit)="savePassword()" novalidate>
+        <input class="ct-visually-hidden" type="text" name="username" autocomplete="username" [value]="auth.email()" tabindex="-1" aria-hidden="true" />
+        <label class="field">
+          <span class="field-label">{{ 'us.newPassword' | transloco }}</span>
+          <input type="password" name="newPassword" autocomplete="new-password" [attr.minlength]="minPasswordLength" [(ngModel)]="newPassword" (ngModelChange)="clearPasswordStatus()" />
+        </label>
+        <label class="field">
+          <span class="field-label">{{ 'us.confirmPassword' | transloco }}</span>
+          <input type="password" name="confirmPassword" autocomplete="new-password" [(ngModel)]="confirmPassword" (ngModelChange)="clearPasswordStatus()" />
+        </label>
+        <p class="hint">{{ 'us.passwordHint' | transloco: { count: minPasswordLength } }}</p>
+        @switch (passwordStatus().kind) {
+          @case ('error') {
+            <p class="status status--error" role="alert">{{ $any(passwordStatus()).message | transloco }}</p>
+          }
+          @case ('saved') {
+            <p class="status status--ok" role="status">{{ 'us.passwordSaved' | transloco }}</p>
+          }
+        }
+        <button class="ct-btn save" type="submit" [disabled]="passwordBusy()">{{ 'us.savePassword' | transloco }}</button>
+      </form>
+    </section>
+
+    <button class="ct-btn ct-btn--ghost sign-out ct-rise" style="--i: 6" type="button" (click)="signOut()">
+      <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+      {{ 'us.signOut' | transloco }}
+    </button>
+    <app-last-update />
+  </div>
+</ion-content>

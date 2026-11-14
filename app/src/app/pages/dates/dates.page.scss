@@ -1,3 +1,46 @@
+.subtitle {
+  margin: -6px 4px 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ct-mu);
+}
+
+// A próxima janela em comum: a resposta a "quando podemos ir?" logo no topo.
+.next-window {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 18px 20px;
+  border-radius: 26px;
+  background: var(--ct-grad);
+  color: #ffffff;
+  box-shadow: 0 12px 30px rgba(194, 48, 111, 0.28);
+}
+
+.next-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.9;
+
+  ion-icon {
+    font-size: 16px;
+  }
+}
+
+.next-value {
+  font-size: 26px;
+  line-height: 1.15;
+}
+
+.next-meta {
+  font-size: 14px;
+  opacity: 0.92;
+}
+
 .calendar {
   padding: 12px 10px 14px;
   border-radius: 26px;
@@ -166,6 +209,16 @@
     align-items: center;
     gap: 8px;
   }
+}
+
+.legend-swatch {
+  flex: none;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--ct-sf);
+  border: 2px solid var(--ct-mu);
 }
 
 .legend-dot {
