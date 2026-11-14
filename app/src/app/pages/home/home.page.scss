@@ -63,12 +63,6 @@
   transform: scale(0.92);
 }
 
-.ring--grad {
-  background: var(--ct-grad);
-  // Convida a tocar: um halo que se expande devagar.
-  animation: ct-pulse 2.8s ease-out infinite;
-}
-
 .spin-in {
   animation: ct-spin-in var(--ct-dur-slow) var(--ct-ease-spring) both;
 }
@@ -215,46 +209,6 @@
   font-size: 26px;
 }
 
-.stat-text {
-  margin: 0;
-  font-size: 12px;
-  color: var(--ct-mu);
-}
-
-.bars {
-  display: flex;
-  gap: 3px;
-  margin-top: 10px;
-
-  span {
-    flex: 1;
-    height: 6px;
-    border-radius: 3px;
-    background: var(--ct-ring);
-    transform-origin: left center;
-    transition: background-color var(--ct-dur) var(--ct-ease);
-
-    &.on {
-      background: var(--ct-ac);
-    }
-
-    // Os doze meses acendem-se um a seguir ao outro.
-    animation: ct-bar var(--ct-dur-slow) var(--ct-ease) both;
-    animation-delay: calc(450ms + var(--bar, 0) * 35ms);
-  }
-}
-
-@keyframes ct-bar {
-  from {
-    opacity: 0;
-    transform: scaleX(0.2);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 .memories,
 .wishes {
   margin-top: 24px;
@@ -279,103 +233,6 @@
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-}
-
-.memory-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.memory {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 12px 14px 12px 12px;
-  border: none;
-  border-radius: 22px;
-  background: var(--ct-sf);
-  color: var(--ct-tx);
-  font: inherit;
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform var(--ct-dur-fast) var(--ct-ease);
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--ct-ac);
-    outline-offset: 2px;
-  }
-
-  > ion-icon {
-    flex: none;
-    font-size: 20px;
-    color: var(--ct-mu);
-  }
-}
-
-.tile {
-  flex: none;
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  color: #ffffff;
-  font-family: var(--ct-font-display);
-  font-weight: 600;
-  font-size: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.memory-body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.memory-title {
-  font-size: 17px;
-  font-weight: 700;
-}
-
-.memory-meta {
-  font-size: 13px;
-  color: var(--ct-mu);
-}
-
-.memory-note {
-  margin-top: 2px;
-  font-size: 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.add-more {
-  width: 100%;
-  margin-top: 12px;
-
-  ion-icon {
-    font-size: 20px;
-  }
-}
-
-.memory.ct-skeleton {
-  height: 80px;
-  margin-bottom: 10px;
-  border-radius: 24px;
 }
 
 .skel-ring {
@@ -444,4 +301,344 @@
 .section-title {
   font-size: 21px;
   margin: 0 4px 10px;
+}
+
+// Memórias e "Por ir" em carrosséis de cartões grandes: mais para ver do que para ler. O que falta ver está a um toque de "Ver tudo".
+.rail {
+  display: flex;
+  gap: 12px;
+  list-style: none;
+  margin: 0 -16px;
+  padding: 2px 16px 6px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-padding: 0 16px;
+  scrollbar-width: none;
+
+  li {
+    flex: none;
+    scroll-snap-align: start;
+  }
+}
+
+.card {
+  position: relative;
+  display: block;
+  width: 150px;
+  height: 200px;
+  padding: 0;
+  border: none;
+  border-radius: 24px;
+  overflow: hidden;
+  color: #ffffff;
+  text-align: left;
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+
+  .cover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ct-font-display);
+    font-weight: 600;
+    font-size: 48px;
+  }
+
+  .shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 55%);
+  }
+
+  .info {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.25;
+
+    strong {
+      font-size: 16px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    small {
+      font-size: 12px;
+      opacity: 0.85;
+    }
+  }
+}
+
+// O "juntar" no fim da fila: tracejado, para parecer um espaço à espera.
+.card--add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  background: transparent;
+  border: 2px dashed var(--ct-ring);
+  color: var(--ct-mu);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 28px;
+  }
+}
+
+.card.ct-skeleton {
+  border-radius: 24px;
+}
+
+// Cartão com data: a folha do calendário e o texto lado a lado, e em baixo o botão com a contagem.
+.hero-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero-main {
+  flex: 1;
+  min-width: 0;
+
+  .hero-title {
+    max-width: none;
+  }
+
+  .hero-text {
+    margin-bottom: 0;
+    max-width: none;
+  }
+}
+
+.leaf {
+  flex: none;
+  width: 76px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  color: #2a1020;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+
+  .leaf-month {
+    display: block;
+    padding: 4px 0;
+    background: var(--ct-ac);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .leaf-day {
+    display: block;
+    padding: 6px 0 9px;
+    font: 600 38px/1 var(--ct-font-display);
+  }
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+// "Sortear" é uma opção, não o objetivo: um texto ao lado do botão principal, sem fundo.
+.draw-link {
+  margin-left: auto;
+  padding: 12px 6px;
+  border: none;
+  background: transparent;
+  color: #ffe9f1;
+  font: 600 14px var(--ion-font-family);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    outline: 2px solid #ffffff;
+    border-radius: 8px;
+  }
+}
+
+.stat--year {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// O ano em 12 bolinhas: com viagem mostram a capa; sem viagem, só a inicial do mês.
+.months {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.month {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ct-sf);
+  color: var(--ct-mu);
+  font-size: 10px;
+  font-weight: 600;
+  border: 1.5px solid var(--ct-ln);
+  box-sizing: border-box;
+
+  &.has {
+    border: 2px solid var(--ct-ac);
+    color: #ffffff;
+  }
+}
+
+
+
+// O cartão da cebola: fundo escuro de marca, o valor em grande e uma barra com o que já se gastou do mês.
+.onion {
+  display: block;
+  margin-top: 14px;
+  padding: 18px 20px 16px;
+  border-radius: 28px;
+  background: var(--ct-onion, linear-gradient(135deg, #3b1b4a 0%, #7a2a5c 55%, #c2476b 100%));
+  color: #ffffff;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+.onion-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.onion-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffd9e8;
+
+  img {
+    border-radius: 6px;
+  }
+}
+
+// As duas fotos sobrepostas, como nas conversas.
+.onion-people {
+  display: inline-flex;
+
+  app-avatar {
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #7a2a5c;
+
+    + app-avatar {
+      margin-left: -8px;
+    }
+  }
+}
+
+.onion-value {
+  margin: 10px 0 0;
+  font-size: 44px;
+  line-height: 1;
+
+  &.low {
+    color: #ffb4b4;
+  }
+}
+
+.onion-bar {
+  margin-top: 16px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+    background: #ffffff;
+    transform-origin: left center;
+    animation: ct-bar-grow 0.9s var(--ct-ease) 0.4s both;
+  }
+
+  &.over span {
+    background: #ffb4b4;
+  }
+}
+
+@keyframes ct-bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.onion-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #ffe9f1;
+}
+
+.onion-link {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.onion .stat-skel {
+  --ct-sf: rgba(255, 255, 255, 0.16);
+  --ct-ln: rgba(255, 255, 255, 0.3);
+  margin-top: 12px;
 }

@@ -29,7 +29,7 @@ async function run(query, what) {
 const photos = await run(admin.from('trip_photos').select('path, thumb_path'), 'ler fotos');
 const files = photos.flatMap((photo) => [photo.path, photo.thumb_path]);
 if (files.length) await admin.storage.from('trip-photos').remove(files);
-for (const table of ['trip_photos', 'trips', 'place_wishes', 'availability_days', 'shift_types', 'draw_vetoes', 'ideas']) {
+for (const table of ['expenses', 'trip_photos', 'trips', 'place_wishes', 'availability_days', 'shift_types', 'draw_vetoes', 'ideas']) {
   const column = ['place_wishes', 'availability_days', 'draw_vetoes'].includes(table) ? 'user_id' : 'id';
   await run(admin.from(table).delete().not(column, 'is', null), `limpar ${table}`);
 }
@@ -86,7 +86,7 @@ const trip = (name, start, extra = {}) => ({
   created_by: tu.id,
   ...extra,
 });
-await run(
+const createdTrips = await run(
   admin.from('trips').insert([
     trip('Braga', '2026-10-01', { would_return: 'yes', cost_eur: 140 }),
     trip('Guimarães', '2026-09-01', { would_return: 'maybe', cost_eur: 85.5, note: 'Subimos à Penha de teleférico e jantámos na praça.' }),
@@ -100,8 +100,25 @@ await run(
     trip('Coimbra', '2026-03-01', { would_return: 'no' }),
     trip('Braga', '2025-12-01', { cost_eur: 60 }),
     trip('Uma casa de campo sem morada', '2025-11-01'),
-  ]),
+  ]).select('id, place_id, start_date'),
   'criar viagens',
+);
+
+// Despesas de três viagens (a cebola conta a partir do mês da primeira).
+const tripOf = (name, start) => createdTrips.find((row) => row.place_id === placeId(name) && row.start_date === start).id;
+const spent = (name, start, amount_eur, category, note, spent_on, user_id) => ({ trip_id: tripOf(name, start), amount_eur, category, note, spent_on, user_id });
+await run(
+  admin.from('expenses').insert([
+    spent('Braga', '2026-10-01', 38.5, 'transport', 'Comboio', '2026-10-11', tu.id),
+    spent('Braga', '2026-10-01', 54, 'food', 'Jantar na praça', '2026-10-11', ela.id),
+    spent('Braga', '2026-10-01', 47.5, 'stay', null, '2026-10-12', tu.id),
+    spent('Guimarães', '2026-09-01', 22, 'activities', 'Teleférico', '2026-09-13', ela.id),
+    spent('Guimarães', '2026-09-01', 63.5, 'food', null, '2026-09-13', tu.id),
+    spent('Salamanca', '2026-05-01', 120, 'stay', 'Hostal', '2026-05-16', tu.id),
+    spent('Salamanca', '2026-05-01', 90, 'food', 'Tapas', '2026-05-17', ela.id),
+    spent('Salamanca', '2026-05-01', 100, 'transport', 'Autocarro', '2026-05-16', ela.id),
+  ]),
+  'criar despesas',
 );
 
 await run(
@@ -163,5 +180,5 @@ await run(
   'criar ideias',
 );
 
-console.log('Dados de exemplo criados: 8 viagens, 5 sítios na wishlist, 4 semanas de turnos e 3 ideias.');
+console.log('Dados de exemplo criados: 8 viagens (3 com despesas), 5 sítios na wishlist, 4 semanas de turnos e 3 ideias.');
 console.log('Entra com tu@contigo.test (Diogo) ou ela@contigo.test (Lucía).');

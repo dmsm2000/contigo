@@ -49,7 +49,6 @@
     </ul>
 
     <section class="hero ct-rise" style="--i: 3">
-      <span class="dice" aria-hidden="true"><i></i><i></i><i></i></span>
       @if (heroLoading()) {
         <div class="hero-skel" aria-hidden="true">
           <span class="ct-skeleton s1"></span>
@@ -57,20 +56,38 @@
           <span class="ct-skeleton s3"></span>
           <span class="ct-skeleton s4"></span>
         </div>
-      } @else if (draws.active(); as active) {
-        <p class="eyebrow">{{ 'home.nextTrip' | transloco }}</p>
-        <h1 class="ct-display hero-title hero-title--window">{{ active.place.name }}</h1>
-        <p class="hero-text">{{ labels.date(active) }}</p>
-        <button class="ct-btn ct-btn--light" type="button" (click)="open(active)">{{ 'home.viewTrip' | transloco }}</button>
-      } @else if (nextWindow(); as window) {
-        <p class="eyebrow">{{ 'home.nextWindow' | transloco }}</p>
-        <h1 class="ct-display hero-title hero-title--window">{{ window.label }}</h1>
-        <p class="hero-text">
-          {{ window.weekdays }} ·
-          {{ (window.days === 1 ? 'dates.windowLength_one' : 'dates.windowLength_other') | transloco: { count: window.days } }}
-        </p>
-        <button class="ct-btn ct-btn--light" type="button" (click)="openDraw()">{{ 'home.drawNow' | transloco }}</button>
+      } @else if (heroDate(); as date) {
+        <!-- Com data: a folha do calendário à esquerda e o texto ao lado dela, tudo na mesma linha de leitura. -->
+        <div class="hero-row">
+          <span class="leaf" aria-hidden="true">
+            <span class="leaf-month">{{ date.leaf.month }}</span>
+            <span class="leaf-day">{{ date.leaf.day }}</span>
+          </span>
+          <div class="hero-main">
+            @if (draws.active(); as active) {
+              <p class="eyebrow">{{ 'home.nextTrip' | transloco }} · {{ date.countdown.key | transloco: date.countdown.params }}</p>
+              <h1 class="ct-display hero-title hero-title--window">{{ active.place.name }}</h1>
+              <p class="hero-text">{{ labels.date(active) }}</p>
+            } @else if (nextWindow(); as window) {
+              <p class="eyebrow">{{ 'home.nextWindow' | transloco }} · {{ date.countdown.key | transloco: date.countdown.params }}</p>
+              <h1 class="ct-display hero-title hero-title--window">{{ window.label }}</h1>
+              <p class="hero-text">
+                {{ window.weekdays }} ·
+                {{ (window.days === 1 ? 'dates.windowLength_one' : 'dates.windowLength_other') | transloco: { count: window.days } }}
+              </p>
+            }
+          </div>
+        </div>
+        <div class="hero-actions">
+          @if (draws.active(); as active) {
+            <button class="ct-btn ct-btn--light" type="button" (click)="open(active)">{{ 'home.viewTrip' | transloco }}</button>
+          } @else {
+            <a class="ct-btn ct-btn--light" routerLink="/availability">{{ 'home.viewAvailability' | transloco }}</a>
+            <button class="draw-link" type="button" (click)="openDraw()">{{ 'home.drawNow' | transloco }}</button>
+          }
+        </div>
       } @else {
+        <span class="dice" aria-hidden="true"><i></i><i></i><i></i></span>
         <p class="eyebrow">{{ 'home.nextWindow' | transloco }}</p>
         <h1 class="ct-display hero-title">{{ 'home.noWindowTitle' | transloco }}</h1>
         <p class="hero-text">{{ 'home.noWindowText' | transloco }}</p>
@@ -78,24 +95,49 @@
       }
     </section>
 
-    <div class="stats">
-      <div class="ct-card stat ct-rise" style="--i: 4">
-        <p class="stat-label">
-          <img src="icons/icon.svg" alt="" width="18" height="18" />
-          {{ 'home.onion' | transloco }}
-        </p>
-        <p class="ct-display stat-value">+0€</p>
-        <p class="stat-text">{{ 'home.onionText' | transloco }}</p>
+    <a class="onion ct-rise" style="--i: 4" routerLink="/expenses">
+      <div class="onion-head">
+        <span class="onion-label"><img src="icons/icon.svg" alt="" width="20" height="20" />{{ 'home.onion' | transloco }}</span>
+        <span class="onion-people" aria-hidden="true">
+          @for (person of people(); track person.id) {
+            <app-avatar [userId]="person.id" [size]="30" />
+          }
+        </span>
       </div>
-      <div class="ct-card stat ct-rise" style="--i: 5">
+      @if (expenses.loaded()) {
+        <p class="ct-display onion-value" [class.low]="expenses.cebola().amount < 0">{{ cebolaText() }}</p>
+        @if (expenses.items().length) {
+          <div class="onion-bar" [class.over]="expenses.cebola().available < 0" role="img" [attr.aria-label]="'home.onionAvailable' | transloco: { amount: availableText() }">
+            <span [style.width.%]="spentShare() * 100"></span>
+          </div>
+          <p class="onion-foot">
+            <span>{{ 'home.onionAvailable' | transloco: { amount: availableText() } }}</span>
+            <span class="onion-link">{{ 'home.onionSeeExpenses' | transloco }}<ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></span>
+          </p>
+        } @else {
+          <p class="onion-foot">
+            <span>{{ 'home.onionText' | transloco }}</span>
+            <span class="onion-link">{{ 'home.onionSeeExpenses' | transloco }}<ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></span>
+          </p>
+        }
+      } @else {
+        <div class="stat-skel" aria-hidden="true">
+          <span class="ct-skeleton a"></span>
+          <span class="ct-skeleton b"></span>
+        </div>
+      }
+    </a>
+
+    <div class="stats">
+      <a class="ct-card stat stat--year ct-rise" style="--i: 5" routerLink="/trips">
         <p class="stat-label">{{ year }}</p>
         @if (trips.loaded()) {
           <p class="ct-display stat-value">
             {{ (stats().places === 1 ? 'home.places_one' : 'home.places_other') | transloco: { count: stats().places } }}
           </p>
-          <div class="bars" aria-hidden="true">
-            @for (on of stats().months; track $index) {
-              <span [class.on]="on" [style.--bar]="$index"></span>
+          <div class="months" aria-hidden="true">
+            @for (month of yearMonths(); track $index) {
+              <span class="month" [class.has]="month.trip" [style.background]="month.trip ? labels.cover(month.trip) : null">{{ month.trip && labels.hasCover(month.trip) ? '' : month.initial }}</span>
             }
           </div>
         } @else {
@@ -104,86 +146,38 @@
             <span class="ct-skeleton b"></span>
           </div>
         }
-      </div>
+      </a>
     </div>
 
-    @if (wishlist.loaded()) {
-      <section class="wishes ct-rise" style="--i: 6">
-        <div class="section-head">
-          <h2 class="ct-display section-title">{{ 'home.wishlist' | transloco }}</h2>
-          @if (topWishes().length) {
-            <a class="see-all" routerLink="/wishlist">{{ 'home.wishlistAll' | transloco }}</a>
-          }
-        </div>
-
-        @if (topWishes().length) {
-          <ul class="memory-list">
-            @for (item of topWishes(); track item.place.id; let i = $index) {
-              <li class="ct-rise" [style.--i]="i">
-                <a class="memory" routerLink="/wishlist">
-                  <span class="tile" [style.background]="labels.tile(item.place)" aria-hidden="true">{{ labels.initial(item.place) }}</span>
-                  <span class="memory-body">
-                    <span class="memory-title">{{ item.place.name }}</span>
-                    @if (labels.where(item.place)) {
-                      <span class="memory-meta">{{ labels.where(item.place) }}</span>
-                    }
-                  </span>
-                  <app-stars [value]="stars(item)" />
-                </a>
-              </li>
-            }
-          </ul>
-          <button class="ct-btn ct-btn--ghost add-more" type="button" (click)="addWish()">
-            <ion-icon name="add" aria-hidden="true"></ion-icon>
-            {{ 'home.wishlistAdd' | transloco }}
-          </button>
-        } @else {
-          <div class="ct-card ct-empty">
-            <ion-icon name="heart-outline" aria-hidden="true"></ion-icon>
-            <p>{{ 'home.wishlistEmpty' | transloco }}</p>
-            <button class="ct-btn" type="button" (click)="addWish()">{{ 'home.wishlistAdd' | transloco }}</button>
-          </div>
-        }
-      </section>
-    } @else if (!wishlist.loadFailed()) {
-      <section class="wishes" aria-hidden="true">
-        <h2 class="ct-display section-title">{{ 'home.wishlist' | transloco }}</h2>
-        <div class="memory ct-skeleton"></div>
-        <div class="memory ct-skeleton"></div>
-      </section>
-    }
-
-    <section class="memories ct-rise" style="--i: 7">
+    <section class="memories ct-rise" style="--i: 6">
       <div class="section-head">
         <h2 class="ct-display section-title">{{ 'home.memories' | transloco }}</h2>
-        @if (hasMore()) {
+        @if (trips.done().length) {
           <a class="see-all" routerLink="/trips">{{ 'home.wishlistAll' | transloco }}</a>
         }
       </div>
 
       @if (trips.done().length) {
-        <ul class="memory-list">
+        <ul class="rail">
           @for (trip of memories(); track trip.id; let i = $index) {
-            <li class="ct-rise" [style.--i]="i">
-              <button class="memory" type="button" (click)="open(trip)">
-                <span class="tile" [style.background]="labels.cover(trip)" aria-hidden="true">{{ labels.hasCover(trip) ? '' : labels.initial(trip.place) }}</span>
-                <span class="memory-body">
-                  <span class="memory-title">{{ trip.place.name }}</span>
-                  @let who = labels.who(trip);
-                  <span class="memory-meta">{{ labels.date(trip) }} · {{ who.key | transloco: who.params }}</span>
-                  @if (trip.note) {
-                    <span class="memory-note">{{ trip.note }}</span>
-                  }
+            <li>
+              <button class="card card--trip" type="button" (click)="open(trip)">
+                <span class="cover" [style.background]="labels.cover(trip)" aria-hidden="true">{{ labels.hasCover(trip) ? '' : labels.initial(trip.place) }}</span>
+                <span class="shade" aria-hidden="true"></span>
+                <span class="info">
+                  <strong>{{ trip.place.name }}</strong>
+                  <small>{{ labels.date(trip) }}</small>
                 </span>
-                <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
               </button>
             </li>
           }
+          <li>
+            <button class="card card--add" type="button" (click)="addPastTrip()">
+              <ion-icon name="add" aria-hidden="true"></ion-icon>
+              <span>{{ 'home.registerPastTrip' | transloco }}</span>
+            </button>
+          </li>
         </ul>
-        <button class="ct-btn ct-btn--ghost add-more" type="button" (click)="addPastTrip()">
-          <ion-icon name="add" aria-hidden="true"></ion-icon>
-          {{ 'home.registerPastTrip' | transloco }}
-        </button>
       } @else if (trips.loaded()) {
         <div class="ct-card ct-empty">
           <ion-icon name="images-outline" aria-hidden="true"></ion-icon>
@@ -191,8 +185,57 @@
           <button class="ct-btn" type="button" (click)="addPastTrip()">{{ 'home.registerPastTrip' | transloco }}</button>
         </div>
       } @else {
-        <div class="memory ct-skeleton" aria-hidden="true"></div>
-        <div class="memory ct-skeleton" aria-hidden="true"></div>
+        <ul class="rail" aria-hidden="true">
+          @for (n of [1, 2, 3]; track n) {
+            <li><span class="card ct-skeleton"></span></li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="wishes ct-rise" style="--i: 7">
+      <div class="section-head">
+        <h2 class="ct-display section-title">{{ 'home.wishlist' | transloco }}</h2>
+        @if (wishlist.loaded() && topWishes().length) {
+          <a class="see-all" routerLink="/wishlist">{{ 'home.wishlistAll' | transloco }}</a>
+        }
+      </div>
+
+      @if (wishlist.loaded()) {
+        @if (topWishes().length) {
+          <ul class="rail">
+            @for (item of topWishes(); track item.place.id) {
+              <li>
+                <a class="card card--wish" routerLink="/wishlist">
+                  <span class="cover" [style.background]="labels.tile(item.place)" aria-hidden="true">{{ labels.initial(item.place) }}</span>
+                  <span class="shade" aria-hidden="true"></span>
+                  <span class="info">
+                    <strong>{{ item.place.name }}</strong>
+                    <app-stars [value]="stars(item)" />
+                  </span>
+                </a>
+              </li>
+            }
+            <li>
+              <button class="card card--add" type="button" (click)="addWish()">
+                <ion-icon name="add" aria-hidden="true"></ion-icon>
+                <span>{{ 'home.wishlistAdd' | transloco }}</span>
+              </button>
+            </li>
+          </ul>
+        } @else {
+          <div class="ct-card ct-empty">
+            <ion-icon name="heart-outline" aria-hidden="true"></ion-icon>
+            <p>{{ 'home.wishlistEmpty' | transloco }}</p>
+            <button class="ct-btn" type="button" (click)="addWish()">{{ 'home.wishlistAdd' | transloco }}</button>
+          </div>
+        }
+      } @else if (!wishlist.loadFailed()) {
+        <ul class="rail" aria-hidden="true">
+          @for (n of [1, 2, 3]; track n) {
+            <li><span class="card ct-skeleton"></span></li>
+          }
+        </ul>
       }
     </section>
   </div>

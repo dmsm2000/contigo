@@ -12,7 +12,8 @@
     "us": "Nós",
     "ideas": "Ideias",
     "add": "Adicionar",
-    "trips": "Viagens"
+    "trips": "Viagens",
+    "expenses": "Despesas"
   },
   "add": {
     "title": "O que queres guardar?",
@@ -296,7 +297,14 @@
     "nextTrip": "A vossa próxima viagem",
     "viewTrip": "Ver viagem",
     "drawNow": "Sortear",
-    "seeAll": "Ver todas"
+    "seeAll": "Ver todas",
+    "today": "hoje",
+    "tomorrow": "amanhã",
+    "inDays_one": "daqui a {{count}} dia",
+    "inDays_other": "daqui a {{count}} dias",
+    "viewAvailability": "Ver disponibilidade",
+    "onionSeeExpenses": "Ver despesas",
+    "onionAvailable": "Para gastar este mês: {{amount}}"
   },
   "map": {
     "title": "Mapa",
@@ -407,7 +415,10 @@
       "mismatch": "As duas palavras-passe não são iguais.",
       "same": "Escolhe uma palavra-passe diferente da atual.",
       "generic": "Não foi possível guardar. Tenta outra vez."
-    }
+    },
+    "photoChange": "Mudar foto de perfil",
+    "photoRemove": "Remover foto",
+    "photoError": "Não foi possível guardar a foto. Tenta outra vez."
   },
   "login": {
     "title": "Olá de novo",
@@ -436,5 +447,60 @@
     "asStories": "Ver como histórias",
     "count_one": "{{count}} viagem",
     "count_other": "{{count}} viagens"
+  },
+  "expenses": {
+    "title": "Despesas",
+    "cebola": "A cebola",
+    "cebolaEmpty": "A cebola é o que sobra de cada mês e passa para o seguinte. Começa a contar no mês da primeira despesa.",
+    "cebolaText": "O que sobrou dos {{months}} meses anteriores.",
+    "cebolaTextOne": "O que sobrou do mês anterior.",
+    "cebolaLow": "A cebola desceu: gastaram mais do que entrou.",
+    "cebolaOk": "A cebola agradece.",
+    "allowance": "Dotação mensal",
+    "allowanceText": "A tua parte por mês. A dos dois soma {{total}}.",
+    "allowanceChange": "Mudar",
+    "allowanceTitle": "A tua dotação mensal",
+    "allowanceMessage": "Quanto pões por mês, em euros.",
+    "allowanceSaved": "Dotação guardada.",
+    "allowanceError": "Escreve um valor entre 0 e 100000.",
+    "byTrip": "Por viagem",
+    "byCategory": "Por categoria",
+    "recent": "Últimas despesas",
+    "empty": "Ainda sem despesas.",
+    "add": "Nova despesa",
+    "removeTitle": "Apagar esta despesa?",
+    "removeText": "Isto não se pode desfazer.",
+    "remove": "Apagar",
+    "removed": "Despesa apagada.",
+    "removeError": "Não consegui apagar. Tenta outra vez.",
+    "total": "Total",
+    "category": {
+      "transport": "Transporte",
+      "stay": "Alojamento",
+      "food": "Comida",
+      "activities": "Atividades",
+      "other": "Outros"
+    },
+    "form": {
+      "title": "Nova despesa",
+      "amount": "Valor",
+      "amountPlaceholder": "0,00",
+      "category": "Categoria",
+      "trip": "Em que viagem?",
+      "note": "Nota",
+      "notePlaceholder": "Ex.: jantar na praça",
+      "date": "Quando",
+      "save": "Guardar despesa",
+      "saved": "Despesa guardada.",
+      "errors": {
+        "amount": "Escreve um valor maior que zero (por exemplo 12,50).",
+        "note": "A nota é demasiado comprida.",
+        "noTrip": "Primeiro registem uma viagem para lhe juntar despesas.",
+        "save": "Não consegui guardar. Tenta outra vez."
+      }
+    },
+    "cebolaFirst": "Ainda é o primeiro mês: o que sobrar dele passa para a cebola.",
+    "available": "Para gastar este mês",
+    "availableText": "{{monthly}} de dotação, mais a cebola, menos {{spent}} já gastos."
   }
 }

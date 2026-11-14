@@ -12,7 +12,8 @@
     "us": "Us",
     "ideas": "Ideas",
     "add": "Add",
-    "trips": "Trips"
+    "trips": "Trips",
+    "expenses": "Expenses"
   },
   "add": {
     "title": "What do you want to save?",
@@ -296,7 +297,14 @@
     "nextTrip": "Your next trip",
     "viewTrip": "See the trip",
     "drawNow": "Draw",
-    "seeAll": "See all"
+    "seeAll": "See all",
+    "today": "today",
+    "tomorrow": "tomorrow",
+    "inDays_one": "in {{count}} day",
+    "inDays_other": "in {{count}} days",
+    "viewAvailability": "View availability",
+    "onionSeeExpenses": "See expenses",
+    "onionAvailable": "To spend this month: {{amount}}"
   },
   "map": {
     "title": "Map",
@@ -407,7 +415,10 @@
       "mismatch": "The two passwords don't match.",
       "same": "Choose a password different from the current one.",
       "generic": "Couldn't save. Try again."
-    }
+    },
+    "photoChange": "Change profile photo",
+    "photoRemove": "Remove photo",
+    "photoError": "Couldn't save the photo. Try again."
   },
   "login": {
     "title": "Hello again",
@@ -436,5 +447,60 @@
     "asStories": "Watch as stories",
     "count_one": "{{count}} trip",
     "count_other": "{{count}} trips"
+  },
+  "expenses": {
+    "title": "Expenses",
+    "cebola": "The onion",
+    "cebolaEmpty": "The onion is what is left over each month and carries on to the next. It starts counting in the month of the first expense.",
+    "cebolaText": "What was left over from the previous {{months}} months.",
+    "cebolaTextOne": "What was left over from last month.",
+    "cebolaLow": "The onion went down: you spent more than came in.",
+    "cebolaOk": "The onion says thanks.",
+    "allowance": "Monthly allowance",
+    "allowanceText": "Your share each month. Together you put in {{total}}.",
+    "allowanceChange": "Change",
+    "allowanceTitle": "Your monthly allowance",
+    "allowanceMessage": "How much you put in each month, in euros.",
+    "allowanceSaved": "Allowance saved.",
+    "allowanceError": "Enter an amount between 0 and 100000.",
+    "byTrip": "By trip",
+    "byCategory": "By category",
+    "recent": "Latest expenses",
+    "empty": "No expenses yet.",
+    "add": "New expense",
+    "removeTitle": "Delete this expense?",
+    "removeText": "This cannot be undone.",
+    "remove": "Delete",
+    "removed": "Expense deleted.",
+    "removeError": "Could not delete it. Try again.",
+    "total": "Total",
+    "category": {
+      "transport": "Transport",
+      "stay": "Stay",
+      "food": "Food",
+      "activities": "Activities",
+      "other": "Other"
+    },
+    "form": {
+      "title": "New expense",
+      "amount": "Amount",
+      "amountPlaceholder": "0.00",
+      "category": "Category",
+      "trip": "Which trip?",
+      "note": "Note",
+      "notePlaceholder": "E.g. dinner in the square",
+      "date": "When",
+      "save": "Save expense",
+      "saved": "Expense saved.",
+      "errors": {
+        "amount": "Enter an amount above zero (for example 12.50).",
+        "note": "The note is too long.",
+        "noTrip": "Add a trip first so you can add expenses to it.",
+        "save": "Could not save. Try again."
+      }
+    },
+    "cebolaFirst": "It is still the first month: whatever is left carries into the onion.",
+    "available": "To spend this month",
+    "availableText": "{{monthly}} allowance, plus the onion, minus {{spent}} already spent."
   }
 }

@@ -1,0 +1,90 @@
+import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { IonContent, IonIcon, ModalController, ToastController } from '@ionic/angular';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { addIcons } from 'ionicons';
+import { closeOutline } from 'ionicons/icons';
+import { todayIso } from '../../core/availability.logic';
+import { DrawService } from '../../core/draw.service';
+import { cleanExpenseNote, EXPENSE_CATEGORIES, ExpenseCategory, parseAmount } from '../../core/expenses.logic';
+import { ExpensesService } from '../../core/expenses.service';
+import { LanguageService } from '../../core/language.service';
+import { formatTripDate } from '../../core/trips.logic';
+import { TripsService } from '../../core/trips.service';
+
+/** Registar uma despesa numa viagem. */
+@Component({
+  selector: 'app-expense-modal',
+  imports: [IonContent, IonIcon, FormsModule, TranslocoPipe],
+  templateUrl: './expense.modal.html',
+  styleUrl: './expense.modal.scss',
+})
+export class ExpenseModal implements OnInit {
+  private readonly modalCtrl = inject(ModalController);
+  private readonly toasts = inject(ToastController);
+  private readonly transloco = inject(TranslocoService);
+  private readonly expenses = inject(ExpensesService);
+  private readonly trips = inject(TripsService);
+  private readonly draws = inject(DrawService);
+  private readonly language = inject(LanguageService).language;
+
+  /** A viagem já escolhida (quando se abre a partir de uma viagem). */
+  @Input() tripId: string | null = null;
+
+  protected readonly categories = EXPENSE_CATEGORIES;
+  protected readonly chosenTrip = signal('');
+  protected readonly category = signal<ExpenseCategory>('food');
+  protected readonly saving = signal(false);
+  protected readonly error = signal<string | null>(null);
+  protected amount = '';
+  protected note = '';
+  protected spentOn = todayIso();
+  protected readonly today = todayIso();
+
+  protected readonly options = computed(() =>
+    this.trips.trips().map((trip) => ({ id: trip.id, label: `${trip.place.name} · ${formatTripDate(trip, this.language())}` })),
+  );
+
+  constructor() {
+    addIcons({ closeOutline });
+  }
+
+  ngOnInit(): void {
+    // Por defeito, a viagem sorteada que vem aí (é onde se gasta) ou a mais recente.
+    this.chosenTrip.set(this.tripId ?? this.draws.active()?.id ?? this.trips.trips()[0]?.id ?? '');
+  }
+
+  protected close(): void {
+    void this.modalCtrl.dismiss();
+  }
+
+  protected onTrip(event: Event): void {
+    this.chosenTrip.set((event.target as HTMLSelectElement).value);
+  }
+
+  protected async save(): Promise<void> {
+    if (!this.chosenTrip()) return this.error.set('expenses.form.errors.noTrip');
+    const amount = parseAmount(this.amount);
+    if (amount === 'invalid') return this.error.set('expenses.form.errors.amount');
+    const note = cleanExpenseNote(this.note);
+    if (note === 'tooLong') return this.error.set('expenses.form.errors.note');
+
+    this.saving.set(true);
+    this.error.set(null);
+    try {
+      await this.expenses.add({
+        tripId: this.chosenTrip(),
+        amount,
+        category: this.category(),
+        note,
+        spentOn: this.spentOn || this.today,
+      });
+    } catch {
+      this.saving.set(false);
+      return this.error.set('expenses.form.errors.save');
+    }
+    await this.modalCtrl.dismiss({ saved: true });
+    const toast = await this.toasts.create({ message: this.transloco.translate('expenses.form.saved'), duration: 2200, position: 'top' });
+    await toast.present();
+  }
+}

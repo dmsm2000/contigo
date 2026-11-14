@@ -83,3 +83,36 @@ export async function compressImage(file: File): Promise<Compressed> {
     decoded.release();
   }
 }
+
+/** Lado da foto de perfil: pequena, porque só aparece em círculos. */
+export const AVATAR_SIDE = 320;
+
+/** Recorta o centro em quadrado e reduz: a foto de perfil. */
+export async function compressAvatar(file: File): Promise<Blob> {
+  const decoded = await decode(file);
+  try {
+    const side = Math.min(decoded.width, decoded.height);
+    const canvas = document.createElement('canvas');
+    canvas.width = AVATAR_SIDE;
+    canvas.height = AVATAR_SIDE;
+    const context = canvas.getContext('2d');
+    if (!context) throw new UnsupportedImageError();
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, AVATAR_SIDE, AVATAR_SIDE);
+    context.imageSmoothingQuality = 'high';
+    context.drawImage(
+      decoded.source,
+      (decoded.width - side) / 2,
+      (decoded.height - side) / 2,
+      side,
+      side,
+      0,
+      0,
+      AVATAR_SIDE,
+      AVATAR_SIDE,
+    );
+    return await toBlob(canvas, 0.85);
+  } finally {
+    decoded.release();
+  }
+}

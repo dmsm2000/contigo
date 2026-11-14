@@ -88,6 +88,10 @@ Tudo aqui é `[proposta]` até dizermos que sim. O objetivo é a solução mais 
 
 A **cebola** calcula-se a partir das dotações e dos gastos das viagens, em vez de se guardar um saldo. Assim nunca fica desalinhada.
 
+**Despesas e cebola (feito):** tabela `expenses` (viagem, autor, valor até 100 000 €, categoria `transport|stay|food|activities|other`, nota até 200 caracteres, dia do gasto; migração `20261114100000_expenses.sql`) e `profiles.monthly_allowance` (200 € por defeito; cada um muda a sua). Os dois leem, registam em seu nome, corrigem e apagam qualquer despesa; a viagem e o autor não mudam (gatilho). A cebola é `cebola()` em `core/expenses.logic.ts`: o que sobra de cada mês **já fechado** (as dotações dos dois menos o que se gastou nesse mês; se se gastou a mais, deixa um buraco) e passa para os meses seguintes. O mês de hoje não entra na cebola: gasta-se da dotação deste mês mais a cebola de trás ("para gastar este mês" = dotação + cebola − gasto até agora). Conta desde o mês do primeiro gasto: antes disso vale 0, porque a app não sabe o que se passou. Ainda não há teto por viagem nem aviso ao passá-lo.
+
+**Foto de perfil (feito):** `profiles.avatar_path` e o bucket privado `avatars` (só JPEG, até 1 MB; migração `20261114110000_avatars.sql`). Cada um só escreve na pasta com o seu id (`<id>/<instante>.jpg`, nome novo a cada troca para não haver cache velha); os dois leem. A app recorta o centro em quadrado de 320 px (`compressAvatar`), mostra-a por link temporário (`ProfileService.avatarUrl`) e o componente `app-avatar` cai para a inicial enquanto a foto não chega.
+
 ## 5. Fotos
 
 - Guardam-se versões otimizadas. Os originais continuam no telemóvel.

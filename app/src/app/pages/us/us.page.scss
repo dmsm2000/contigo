@@ -4,19 +4,60 @@
   gap: 14px;
 }
 
-.avatar {
-  width: 56px;
-  height: 56px;
+.avatar-pick {
+  position: relative;
+  flex: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &.busy {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 3px;
+    border-radius: 50%;
+  }
+}
+
+.avatar-badge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: var(--ct-grad);
+  background: var(--ct-ac);
   color: #ffffff;
-  font-family: var(--ct-font-display);
-  font-weight: 600;
-  font-size: 24px;
+  border: 2px solid var(--ct-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: none;
+  font-size: 14px;
+}
+
+.photo-error {
+  margin: 8px 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #d64545;
+}
+
+:host-context(.ion-palette-dark) .photo-error {
+  color: #ff8a8a;
+}
+
+.photo-remove {
+  margin: 4px 0 0;
+  padding: 6px 0;
+  border: none;
+  background: transparent;
+  color: var(--ct-mu);
+  font: 600 13px var(--ion-font-family);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .me-text {

@@ -19,6 +19,7 @@ import {
   bulbOutline,
   calendarOutline,
   cameraOutline,
+  cashOutline,
   heartOutline,
   homeOutline,
   imagesOutline,
@@ -71,6 +72,7 @@ export class ShellPage {
     { tab: 'trips', icon: 'images-outline', label: 'nav.trips' },
     { tab: 'wishlist', icon: 'heart-outline', label: 'nav.wishlist' },
     { tab: 'availability', icon: 'calendar-outline', label: 'nav.availability' },
+    { tab: 'expenses', icon: 'cash-outline', label: 'nav.expenses' },
     { tab: 'ideas', icon: 'bulb-outline', label: 'nav.ideas' },
     { tab: 'us', icon: 'people-outline', label: 'nav.us' },
   ];
@@ -81,6 +83,7 @@ export class ShellPage {
       bulbOutline,
       calendarOutline,
       cameraOutline,
+      cashOutline,
       heartOutline,
       homeOutline,
       imagesOutline,
@@ -97,6 +100,7 @@ export class ShellPage {
       header: t('add.title'),
       buttons: [
         { text: t('add.pastTrip'), icon: 'images-outline', handler: () => void this.flow.openPastTrip() },
+        { text: t('add.expense'), icon: 'cash-outline', handler: () => void this.addExpense() },
         { text: t('add.photo'), icon: 'camera-outline', handler: () => void this.addPhotos() },
         { text: t('add.place'), icon: 'location-outline', handler: () => void this.flow.openAddWish() },
         { text: t('add.idea'), icon: 'bulb-outline', handler: () => void this.flow.openIdea() },
@@ -104,6 +108,17 @@ export class ShellPage {
       ],
     });
     await sheet.present();
+  }
+
+  /** Sem nenhuma viagem não há onde pôr a despesa: diz-se como começar. */
+  private async addExpense(): Promise<void> {
+    if (this.trips.trips().length) return this.flow.openExpense();
+    const toast = await this.toasts.create({
+      message: this.transloco.translate('expenses.form.errors.noTrip'),
+      duration: 2800,
+      position: 'top',
+    });
+    await toast.present();
   }
 
   /** Sem nenhuma viagem não há onde pôr as fotos: diz-se como começar. */

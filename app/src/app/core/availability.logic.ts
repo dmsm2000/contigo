@@ -243,3 +243,23 @@ export function weekdayNames(lang: Lang): string[] {
 export function shortClock(clock: string): string {
   return clock.replace(/^0/, '');
 }
+
+/** Quantos dias faltam até uma data (0 = hoje; negativo = já passou). */
+export function daysUntil(iso: string, today: string): number {
+  const a = parseIso(iso);
+  const b = parseIso(today);
+  return Math.round((Date.UTC(a.year, a.month - 1, a.day) - Date.UTC(b.year, b.month - 1, b.day)) / 86_400_000);
+}
+
+/** As partes da "folha de calendário": "nov" e 17. */
+export function leafParts(iso: string, lang: Lang): { month: string; day: number } {
+  const { year, month, day } = parseIso(iso);
+  const name = new Intl.DateTimeFormat(LOCALES[lang], { month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, day)));
+  return { month: name.replace(/\.$/, ''), day };
+}
+
+/** A inicial de cada mês do ano ("J F M …"). */
+export function monthInitials(lang: Lang): string[] {
+  const formatter = new Intl.DateTimeFormat(LOCALES[lang], { month: 'narrow', timeZone: 'UTC' });
+  return Array.from({ length: 12 }, (_, index) => formatter.format(new Date(Date.UTC(2026, index, 1))));
+}

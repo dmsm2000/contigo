@@ -1,0 +1,77 @@
+<ion-content>
+  <div class="sheet">
+    <header class="head">
+      <h1 class="ct-display title">{{ 'expenses.form.title' | transloco }}</h1>
+      <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    <form (ngSubmit)="save()" novalidate>
+      <section class="block ct-rise" style="--i: 0">
+        <label class="label" for="expense-amount">{{ 'expenses.form.amount' | transloco }}</label>
+        <div class="amount-field">
+          <input
+            id="expense-amount"
+            name="amount"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            [placeholder]="'expenses.form.amountPlaceholder' | transloco"
+            [(ngModel)]="amount"
+            (ngModelChange)="error.set(null)"
+          />
+          <span class="euro" aria-hidden="true">€</span>
+        </div>
+      </section>
+
+      <section class="block ct-rise" style="--i: 1">
+        <span class="label" id="expense-category-label">{{ 'expenses.form.category' | transloco }}</span>
+        <div class="chips" role="radiogroup" aria-labelledby="expense-category-label">
+          @for (option of categories; track option) {
+            <button
+              class="chip"
+              type="button"
+              role="radio"
+              [class.on]="category() === option"
+              [attr.aria-checked]="category() === option"
+              (click)="category.set(option)"
+            >
+              {{ 'expenses.category.' + option | transloco }}
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="block ct-rise" style="--i: 2">
+        <label class="label" for="expense-trip">{{ 'expenses.form.trip' | transloco }}</label>
+        <select id="expense-trip" [value]="chosenTrip()" [disabled]="!!tripId" (change)="onTrip($event)">
+          @for (option of options(); track option.id) {
+            <option [value]="option.id" [selected]="option.id === chosenTrip()">{{ option.label }}</option>
+          }
+        </select>
+        @if (!options().length) {
+          <p class="hint">{{ 'expenses.form.errors.noTrip' | transloco }}</p>
+        }
+      </section>
+
+      <section class="block ct-rise" style="--i: 3">
+        <label class="label" for="expense-note">{{ 'expenses.form.note' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em></label>
+        <input id="expense-note" name="note" type="text" maxlength="220" [placeholder]="'expenses.form.notePlaceholder' | transloco" [(ngModel)]="note" (ngModelChange)="error.set(null)" />
+      </section>
+
+      <section class="block ct-rise" style="--i: 4">
+        <label class="label" for="expense-date">{{ 'expenses.form.date' | transloco }}</label>
+        <input id="expense-date" name="spentOn" type="date" [max]="today" [(ngModel)]="spentOn" />
+      </section>
+
+      @if (error(); as key) {
+        <p class="error" role="alert">{{ key | transloco }}</p>
+      }
+
+      <button class="ct-btn save" type="submit" [disabled]="saving()">
+        {{ (saving() ? 'trip.form.saving' : 'expenses.form.save') | transloco }}
+      </button>
+    </form>
+  </div>
+</ion-content>

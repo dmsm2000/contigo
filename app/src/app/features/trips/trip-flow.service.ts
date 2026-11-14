@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { Idea } from '../../core/ideas.logic';
 import { Suggestion } from '../../core/suggestions';
 import { DrawModal } from '../draw/draw.modal';
+import { ExpenseModal } from '../expenses/expense.modal';
 import { IdeaModal } from '../ideas/idea.modal';
 import { AddPhotosModal } from '../photos/add-photos.modal';
 import { PhotoViewerModal } from '../photos/photo-viewer.modal';
@@ -44,6 +45,11 @@ export class TripFlowService {
     await this.present(() =>
       this.modals.create({ component: StoriesModal, componentProps: { tripIds, startAt }, cssClass: 'ct-modal' }),
     );
+  }
+
+  /** Registar uma despesa; com `tripId`, a viagem já vem escolhida. */
+  async openExpense(tripId: string | null = null): Promise<void> {
+    await this.present(() => this.modals.create({ component: ExpenseModal, componentProps: { tripId }, cssClass: 'ct-modal' }));
   }
 
   /** Escrever uma ideia nova, ou mudar uma que já escreveste. */

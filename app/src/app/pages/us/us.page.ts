@@ -4,13 +4,14 @@ import { Router, RouterLink } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { bulbOutline, chevronForwardOutline, logOutOutline } from 'ionicons/icons';
+import { bulbOutline, cameraOutline, chevronForwardOutline, logOutOutline } from 'ionicons/icons';
 import { AuthService } from '../../core/auth.service';
 import { IdeasService } from '../../core/ideas.service';
 import { Language, LANGUAGES, LanguageService } from '../../core/language.service';
 import { cleanName, MAX_NAME_LENGTH } from '../../core/profile.logic';
 import { ProfileService } from '../../core/profile.service';
 import { ThemePreference, ThemeService } from '../../core/theme.service';
+import { AvatarComponent } from '../../features/profile/avatar.component';
 
 export const MIN_PASSWORD_LENGTH = 8;
 
@@ -20,7 +21,7 @@ type PasswordStatus = { kind: 'idle' } | { kind: 'saved' } | { kind: 'error'; me
 
 @Component({
   selector: 'app-us',
-  imports: [IonContent, IonIcon, FormsModule, RouterLink, TranslocoPipe],
+  imports: [IonContent, IonIcon, FormsModule, RouterLink, TranslocoPipe, AvatarComponent],
   templateUrl: './us.page.html',
   styleUrl: './us.page.scss',
 })
@@ -35,9 +36,8 @@ export class UsPage {
   protected readonly languages = LANGUAGES;
   protected readonly themes: readonly ThemePreference[] = ['system', 'light', 'dark'];
   protected readonly minPasswordLength = MIN_PASSWORD_LENGTH;
-  protected readonly initial = computed(() =>
-    (this.profile.profile()?.name || this.auth.email() || '?').charAt(0).toUpperCase(),
-  );
+  protected readonly avatarBusy = signal(false);
+  protected readonly avatarFailed = signal(false);
 
   protected readonly maxNameLength = MAX_NAME_LENGTH;
   protected readonly nameBusy = signal(false);
@@ -51,7 +51,7 @@ export class UsPage {
   protected confirmPassword = '';
 
   constructor() {
-    addIcons({ bulbOutline, chevronForwardOutline, logOutOutline });
+    addIcons({ bulbOutline, cameraOutline, chevronForwardOutline, logOutOutline });
 
     // Mostra o nome que já está guardado, enquanto a pessoa não começar a escrever.
     effect(() => {
@@ -89,6 +89,23 @@ export class UsPage {
     } else {
       this.nameStatus.set({ kind: 'error', message: 'us.nameErrors.generic' });
     }
+  }
+
+  /** A foto escolhida (da galeria ou da câmara) passa a ser a minha foto de perfil. */
+  protected async pickAvatar(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    this.avatarBusy.set(true);
+    this.avatarFailed.set(!(await this.profile.setAvatar(file)));
+    this.avatarBusy.set(false);
+  }
+
+  protected async removeAvatar(): Promise<void> {
+    this.avatarBusy.set(true);
+    this.avatarFailed.set(!(await this.profile.removeAvatar()));
+    this.avatarBusy.set(false);
   }
 
   protected clearPasswordStatus(): void {

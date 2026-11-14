@@ -276,6 +276,57 @@ try {
   const photoTripGone = await a.from('trips').delete().eq('id', photoTrip.data.id).select();
   check('apagar a viagem apaga os registos das fotos', photoTripGone.data?.length === 1 && (await a.from('trip_photos').select('id').eq('id', photoId)).data?.length === 0);
   await a.from('places').delete().eq('id', photoPlace.data.id);
+
+  // 7) Despesas e dotação mensal.
+  const expPlace = await a.from('places').insert({ name: `Despesas ${run}` }).select().single();
+  const expTrip = await a.from('trips').insert({ place_id: expPlace.data.id, start_date: '2026-10-01', date_precision: 'month' }).select().single();
+  const expA = await a.from('expenses').insert({ trip_id: expTrip.data.id, amount_eur: 42.5, category: 'food', note: 'Jantar' }).select().single();
+  check('A regista uma despesa', !expA.error, expA.error?.message);
+  check('a despesa fica com o autor certo', expA.data?.user_id === created[0]);
+  const expSeen = await b.from('expenses').select('id').eq('trip_id', expTrip.data.id);
+  check('B vê as despesas da viagem', expSeen.data?.length === 1);
+  const expAnon = await anon.from('expenses').select('id');
+  check('sem sessão: não vê despesas', !expAnon.error && expAnon.data.length === 0);
+  const expForged = await b.from('expenses').insert({ trip_id: expTrip.data.id, amount_eur: 5, user_id: created[0] });
+  check('não se registam despesas em nome do outro', Boolean(expForged.error));
+  const expFix = await b.from('expenses').update({ amount_eur: 40, category: 'transport' }).eq('id', expA.data.id).select();
+  check('B corrige o valor e a categoria', expFix.data?.length === 1 && Number(expFix.data[0].amount_eur) === 40, expFix.error?.message);
+  const expMove = await b.from('expenses').update({ user_id: created[1] }).eq('id', expA.data.id).select();
+  check('uma despesa não muda de autor', Boolean(expMove.error));
+  const expZero = await a.from('expenses').insert({ trip_id: expTrip.data.id, amount_eur: 0 });
+  check('o valor tem de ser positivo', Boolean(expZero.error));
+  const expCat = await a.from('expenses').insert({ trip_id: expTrip.data.id, amount_eur: 3, category: 'luxo' });
+  check('a categoria tem de ser uma das conhecidas', Boolean(expCat.error));
+  const allowA = await a.from('profiles').update({ monthly_allowance: 250 }).eq('id', created[0]).select();
+  check('A muda a sua dotação mensal', allowA.data?.length === 1 && Number(allowA.data[0].monthly_allowance) === 250, allowA.error?.message);
+  const allowB = await b.from('profiles').update({ monthly_allowance: 1 }).eq('id', created[0]).select();
+  check('B não muda a dotação de A', !allowB.error && allowB.data?.length === 0);
+  const allowBad = await a.from('profiles').update({ monthly_allowance: -5 }).eq('id', created[0]);
+  check('a dotação não pode ser negativa', Boolean(allowBad.error));
+  const expDel = await b.from('expenses').delete().eq('id', expA.data.id).select();
+  check('B apaga uma despesa', expDel.data?.length === 1);
+  const expA2 = await a.from('expenses').insert({ trip_id: expTrip.data.id, amount_eur: 9 }).select().single();
+  await a.from('trips').delete().eq('id', expTrip.data.id);
+  check('apagar a viagem apaga as despesas', (await a.from('expenses').select('id').eq('id', expA2.data.id)).data?.length === 0);
+  await a.from('places').delete().eq('id', expPlace.data.id);
+
+  // Fotos de perfil: cada um só mexe na sua pasta.
+  const avatarA = await a.storage.from('avatars').upload(`${created[0]}/1.jpg`, jpeg, { contentType: 'image/jpeg' });
+  check('A envia a sua foto de perfil', !avatarA.error, avatarA.error?.message);
+  const avatarForged = await b.storage.from('avatars').upload(`${created[0]}/2.jpg`, jpeg, { contentType: 'image/jpeg' });
+  check('B não envia para a pasta de A', Boolean(avatarForged.error));
+  const avatarSee = await b.storage.from('avatars').download(`${created[0]}/1.jpg`);
+  check('B vê a foto de perfil de A', !avatarSee.error, avatarSee.error?.message);
+  const avatarAnon = await anon.storage.from('avatars').download(`${created[0]}/1.jpg`);
+  check('quem não entrou não vê fotos de perfil', Boolean(avatarAnon.error));
+  const avatarRemoveB = await b.storage.from('avatars').remove([`${created[0]}/1.jpg`]);
+  check('B não apaga a foto de A', (avatarRemoveB.data ?? []).length === 0);
+  const avatarPng = await a.storage.from('avatars').upload(`${created[0]}/x.png`, new Blob(['x'], { type: 'image/png' }), { contentType: 'image/png' });
+  check('só se aceita JPEG', Boolean(avatarPng.error));
+  const avatarRow = await a.from('profiles').update({ avatar_path: `${created[0]}/1.jpg` }).eq('id', created[0]).select();
+  check('A guarda o caminho da foto no perfil', avatarRow.data?.length === 1, avatarRow.error?.message);
+  const avatarRemoveA = await a.storage.from('avatars').remove([`${created[0]}/1.jpg`]);
+  check('A apaga a sua foto', avatarRemoveA.data?.length === 1);
 } finally {
   for (const id of created) await admin.auth.admin.deleteUser(id);
 }

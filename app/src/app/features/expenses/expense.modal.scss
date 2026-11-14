@@ -1,0 +1,65 @@
+@use '../shared/form';
+
+.amount-field {
+  position: relative;
+
+  input {
+    height: 64px;
+    padding-right: 44px;
+    font: 600 28px var(--ct-font-display);
+  }
+
+  .euro {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font: 600 22px var(--ct-font-display);
+    color: var(--ct-mu);
+    pointer-events: none;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid var(--ct-ln);
+  border-radius: 22px;
+  background: var(--ct-sf);
+  color: var(--ct-tx);
+  font: 600 14px var(--ion-font-family);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--ct-dur-fast),
+    border-color var(--ct-dur-fast);
+
+  &.on {
+    border-color: var(--ct-ac);
+    background: var(--ct-acs);
+    color: var(--ct-act);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+// No iPhone o campo de data tem uma largura própria que o faz sair do ecrã: aqui obedece à coluna.
+input[type='date'] {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  text-align: left;
+  // Sem isto, o iPhone cola o texto ao topo do campo.
+  line-height: 52px;
+}

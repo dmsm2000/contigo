@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  daysUntil,
+  leafParts,
   addDays,
   commonWindows,
   DayMark,
@@ -262,5 +264,19 @@ describe('textos de datas', () => {
     expect(shortClock('07:00')).toBe('7:00');
     expect(shortClock('15:30')).toBe('15:30');
     expect(shortClock('00:30')).toBe('0:30');
+  });
+});
+
+describe('daysUntil e leafParts', () => {
+  it('conta os dias até uma data', () => {
+    expect(daysUntil('2026-11-17', '2026-11-14')).toBe(3);
+    expect(daysUntil('2026-11-14', '2026-11-14')).toBe(0);
+    expect(daysUntil('2026-11-10', '2026-11-14')).toBe(-4);
+    expect(daysUntil('2027-01-01', '2026-12-31')).toBe(1);
+  });
+  it('dá o mês curto e o dia', () => {
+    const leaf = leafParts('2026-11-17', 'en');
+    expect(leaf.day).toBe(17);
+    expect(leaf.month.toLowerCase()).toBe('nov');
   });
 });

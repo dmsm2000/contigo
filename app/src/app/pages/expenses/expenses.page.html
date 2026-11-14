@@ -1,0 +1,115 @@
+<ion-content>
+  <div class="ct-page">
+    <header class="top ct-rise" style="--i: 0">
+      <a class="ct-icon-btn back" routerLink="/home" [attr.aria-label]="'nav.home' | transloco">
+        <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
+      </a>
+      <h1 class="ct-page-title">{{ 'expenses.title' | transloco }}</h1>
+      <button class="ct-icon-btn add" type="button" (click)="add()" [attr.aria-label]="'expenses.add' | transloco">
+        <ion-icon name="add" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    <!-- A cebola: o que sobra das dotações depois do que se gastou. -->
+    <section class="onion ct-rise" style="--i: 1">
+      <span class="onion-label"><img src="icons/icon.svg" alt="" width="22" height="22" />{{ 'expenses.cebola' | transloco }}</span>
+      @if (expenses.loaded()) {
+        <p class="ct-display onion-value" [class.low]="cebola().amount < 0">{{ cebolaText() }}</p>
+        @if (!expenses.items().length) {
+          <p class="onion-text">{{ 'expenses.cebolaEmpty' | transloco }}</p>
+        } @else {
+          <p class="onion-text">
+            @if (cebola().months) {
+              {{ (cebola().months === 1 ? 'expenses.cebolaTextOne' : 'expenses.cebolaText') | transloco: { months: cebola().months } }}
+            } @else {
+              {{ 'expenses.cebolaFirst' | transloco }}
+            }
+          </p>
+          <div class="onion-available">
+            <span>{{ 'expenses.available' | transloco }}</span>
+            <strong [class.low]="cebola().available < 0">{{ money(cebola().available) }}</strong>
+          </div>
+          <p class="onion-small">{{ 'expenses.availableText' | transloco: { monthly: money(cebola().monthly), spent: money(cebola().spentThisMonth) } }}</p>
+        }
+      } @else {
+        <div class="onion-skel" aria-hidden="true">
+          <span class="ct-skeleton a"></span>
+          <span class="ct-skeleton b"></span>
+        </div>
+      }
+    </section>
+
+    <section class="allowance ct-card ct-rise" style="--i: 2">
+      <div class="allowance-text">
+        <strong>{{ 'expenses.allowance' | transloco }}</strong>
+        <small>{{ 'expenses.allowanceText' | transloco: { total: money(profile.monthlyTotal()) } }}</small>
+      </div>
+      <button class="allowance-btn" type="button" (click)="changeAllowance()">{{ money(myAllowance()) }}</button>
+    </section>
+
+    @if (expenses.loaded()) {
+      @if (expenses.items().length) {
+        <section class="block ct-rise" style="--i: 3">
+          <h2 class="ct-display section-title">{{ 'expenses.byCategory' | transloco }}</h2>
+          <ul class="cats ct-card">
+            @for (row of categoryRows(); track row.category) {
+              <li>
+                <span class="cat-head">
+                  <span>{{ 'expenses.category.' + row.category | transloco }}</span>
+                  <strong>{{ money(row.total) }}</strong>
+                </span>
+                <span class="bar"><span class="fill" [style.width.%]="row.share * 100"></span></span>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="block ct-rise" style="--i: 4">
+          <h2 class="ct-display section-title">{{ 'expenses.byTrip' | transloco }}</h2>
+          <ul class="rows">
+            @for (row of tripRows(); track row.trip.id) {
+              <li>
+                <button class="row" type="button" (click)="openTrip(row.trip.id)">
+                  <span class="tile" [style.background]="labels.cover(row.trip)" aria-hidden="true">{{ labels.hasCover(row.trip) ? '' : labels.initial(row.trip.place) }}</span>
+                  <span class="row-body">
+                    <strong>{{ row.trip.place.name }}</strong>
+                    <small>{{ labels.date(row.trip) }}</small>
+                  </span>
+                  <span class="amount">{{ money(row.amount) }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="block ct-rise" style="--i: 5">
+          <h2 class="ct-display section-title">{{ 'expenses.recent' | transloco }}</h2>
+          <ul class="rows">
+            @for (expense of expenses.newest().slice(0, 20); track expense.id) {
+              <li class="expense ct-card">
+                <span class="expense-body">
+                  <strong>{{ expense.note || ('expenses.category.' + expense.category | transloco) }}</strong>
+                  <small>{{ 'expenses.category.' + expense.category | transloco }} · {{ tripName(expense) }}</small>
+                </span>
+                <span class="amount">{{ money(expense.amount) }}</span>
+                <button class="ct-icon-btn del" type="button" (click)="confirmRemove(expense)" [attr.aria-label]="'expenses.remove' | transloco">
+                  <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+      } @else {
+        <div class="ct-card ct-empty ct-rise" style="--i: 3">
+          <p>{{ 'expenses.empty' | transloco }}</p>
+          <button class="ct-btn" type="button" (click)="add()">{{ 'expenses.add' | transloco }}</button>
+        </div>
+      }
+    } @else if (!expenses.loadFailed()) {
+      <div class="rows" aria-hidden="true">
+        <div class="row-skel ct-skeleton"></div>
+        <div class="row-skel ct-skeleton"></div>
+      </div>
+    }
+  </div>
+</ion-content>
