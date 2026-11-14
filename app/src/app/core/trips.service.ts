@@ -85,6 +85,26 @@ export class TripsService {
     await this.load();
   }
 
+  /** Corrige uma viagem já feita (sítio, mês, com quem, nota…). O sítio antigo sai se ficar sem viagens. */
+  async updatePastTrip(trip: Trip, input: PastTripInput): Promise<void> {
+    const placeId = await this.savePlace(input.place);
+    const { error } = await this.supabase
+      .from('trips')
+      .update({
+        place_id: placeId,
+        start_date: startDateFor(input.year, input.month),
+        with_partner: input.withPartner,
+        would_return: input.wouldReturn,
+        cost_eur: input.costEur,
+        note: input.note,
+      })
+      .eq('id', trip.id);
+    if (error) throw error;
+    // Se mudou de sítio, o antigo só sai se já não tiver mais viagens; se tiver, a base de dados recusa e ele fica.
+    if (placeId !== trip.placeId) await this.supabase.from('places').delete().eq('id', trip.placeId);
+    await this.load();
+  }
+
   async remove(trip: Trip): Promise<void> {
     // Os registos das fotos saem com a viagem, mas os ficheiros no bucket têm de ser apagados antes.
     await this.photos.removeFilesOfTrip(trip.id).catch(() => undefined);

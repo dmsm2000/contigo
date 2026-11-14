@@ -18,8 +18,8 @@ describe('describeAudit', () => {
     expect(audit.updated).toEqual({ by: 'b', at: '2026-11-12T09:00:00Z' });
   });
 
-  it('aceita um autor desconhecido (conta apagada)', () => {
-    expect(describeAudit({ ...base, updatedBy: null, updatedAt: '2026-11-12T09:00:00Z' }).updated?.by).toBeNull();
+  it('sem autor da alteração (linhas antigas) não mostra "atualizado"', () => {
+    expect(describeAudit({ ...base, updatedBy: null, updatedAt: '2026-11-12T09:00:00Z' }).updated).toBeNull();
   });
 });
 

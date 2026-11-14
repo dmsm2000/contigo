@@ -3,12 +3,12 @@ import { RouterLink } from '@angular/router';
 import { AlertController, IonContent, IonIcon, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { add, chevronBackOutline, receiptOutline, trashOutline } from 'ionicons/icons';
-import { Expense, MAX_EXPENSE, parseAmount, totalOf } from '../../core/expenses.logic';
+import { add, chevronBackOutline, chevronForwardOutline, receiptOutline, trashOutline } from 'ionicons/icons';
+import { Expense, totalOf } from '../../core/expenses.logic';
 import { ExpensesService } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
 import { ProfileService } from '../../core/profile.service';
-import { formatCost, formatTripDate } from '../../core/trips.logic';
+import { formatCost } from '../../core/trips.logic';
 import { TripsService } from '../../core/trips.service';
 import { TripFlowService } from '../../features/trips/trip-flow.service';
 import { TripLabels } from '../../features/trips/trip-labels.service';
@@ -36,6 +36,13 @@ export class ExpensesPage {
   protected readonly total = computed(() => totalOf(this.expenses.items()));
   protected readonly myAllowance = computed(() => Number(this.profile.profile()?.monthly_allowance ?? 0));
 
+  /** Quanto do que havia para este mês já foi gasto (0 a 1; passa de 1 quando se gastou a mais). */
+  protected readonly spentShare = computed(() => {
+    const { available, spentThisMonth } = this.cebola();
+    const budget = available + spentThisMonth;
+    return budget > 0 ? Math.min(1, spentThisMonth / budget) : spentThisMonth > 0 ? 1 : 0;
+  });
+
   /** O valor da cebola com sinal: "+140 €" ou "−30 €". */
   protected readonly cebolaText = computed(() => {
     const { amount } = this.cebola();
@@ -57,7 +64,7 @@ export class ExpensesPage {
   });
 
   constructor() {
-    addIcons({ add, chevronBackOutline, receiptOutline, trashOutline });
+    addIcons({ add, chevronBackOutline, chevronForwardOutline, receiptOutline, trashOutline });
   }
 
   protected money(amount: number): string {
@@ -66,7 +73,7 @@ export class ExpensesPage {
 
   protected tripName(expense: Expense): string {
     const trip = this.trips.trips().find((candidate) => candidate.id === expense.tripId);
-    return trip ? `${trip.place.name} · ${formatTripDate(trip, this.language())}` : '';
+    return trip?.place.name ?? '';
   }
 
   protected add(): void {
@@ -77,26 +84,8 @@ export class ExpensesPage {
     void this.flow.openDetail(tripId);
   }
 
-  protected async changeAllowance(): Promise<void> {
-    const t = (key: string) => this.transloco.translate(key);
-    const alert = await this.alerts.create({
-      header: t('expenses.allowanceTitle'),
-      message: t('expenses.allowanceMessage'),
-      inputs: [{ name: 'amount', type: 'text', value: String(this.myAllowance()).replace('.', ','), attributes: { inputmode: 'decimal' } }],
-      buttons: [
-        { text: t('common.cancel'), role: 'cancel' },
-        { text: t('expenses.allowanceChange'), handler: (data: { amount: string }) => void this.saveAllowance(data.amount) },
-      ],
-    });
-    await alert.present();
-  }
-
-  private async saveAllowance(input: string): Promise<void> {
-    // O zero é válido (pausa as dotações), por isso não passa pelo parseAmount, que exige mais do que zero.
-    const value = input.trim() === '0' ? 0 : parseAmount(input);
-    if (value === 'invalid' || value > MAX_EXPENSE) return this.toast('expenses.allowanceError');
-    const ok = await this.profile.setAllowance(value);
-    await this.toast(ok ? 'expenses.allowanceSaved' : 'expenses.allowanceError');
+  protected edit(expense: Expense): void {
+    void this.flow.openExpense(expense.tripId, expense);
   }
 
   protected async confirmRemove(expense: Expense): Promise<void> {

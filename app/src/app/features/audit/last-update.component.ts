@@ -62,7 +62,7 @@ export class LastUpdateComponent {
 
   protected name(userId: string | null): string {
     if (!userId) return this.transloco.translate('audit.someone');
-    if (userId === this.auth.userId()) return this.transloco.translate('wish.you');
+    if (userId === this.auth.userId()) return this.transloco.translate('audit.you');
     return this.profile.nameOf(userId) || this.transloco.translate('wish.theOther');
   }
 }

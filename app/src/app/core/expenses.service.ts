@@ -73,6 +73,16 @@ export class ExpensesService {
     await this.load();
   }
 
+  /** Corrige uma despesa: o valor, a categoria, a nota e o dia. A viagem e o autor não mudam. */
+  async update(id: string, input: { amount: number; category: ExpenseCategory; note: string | null; spentOn: string }): Promise<void> {
+    const { error } = await this.supabase
+      .from('expenses')
+      .update({ amount_eur: input.amount, category: input.category, note: input.note, spent_on: input.spentOn })
+      .eq('id', id);
+    if (error) throw error;
+    await this.load();
+  }
+
   async remove(id: string): Promise<void> {
     const { error } = await this.supabase.from('expenses').delete().eq('id', id);
     if (error) throw error;

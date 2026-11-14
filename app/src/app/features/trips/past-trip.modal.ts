@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -7,7 +7,7 @@ import { closeOutline } from 'ionicons/icons';
 import { PlaceCandidate } from '../../core/geocoder';
 import { LanguageService } from '../../core/language.service';
 import { TripsService } from '../../core/trips.service';
-import { isFutureMonth, monthOptions, parseCost, previousMonth, WouldReturn, yearOptions } from '../../core/trips.logic';
+import { isFutureMonth, monthOptions, parseCost, previousMonth, Trip, WouldReturn, yearOptions } from '../../core/trips.logic';
 import { PlacePickerComponent } from '../places/place-picker.component';
 
 @Component({
@@ -16,7 +16,10 @@ import { PlacePickerComponent } from '../places/place-picker.component';
   templateUrl: './past-trip.modal.html',
   styleUrl: './past-trip.modal.scss',
 })
-export class PastTripModal {
+export class PastTripModal implements OnInit {
+  /** Com uma viagem, o formulário abre preenchido para a corrigir; sem ela, regista-se uma nova. */
+  @Input() trip: Trip | null = null;
+
   private readonly modalCtrl = inject(ModalController);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
@@ -47,6 +50,26 @@ export class PastTripModal {
     addIcons({ closeOutline });
   }
 
+  ngOnInit(): void {
+    const trip = this.trip;
+    if (!trip) return;
+    this.place.set({
+      osmRef: trip.place.osmRef,
+      name: trip.place.name,
+      admin1: trip.place.admin1,
+      countryCode: trip.place.countryCode,
+      lat: trip.place.lat,
+      lng: trip.place.lng,
+    });
+    const [year, month] = trip.startDate.split('-').map(Number);
+    this.year.set(year);
+    this.month.set(month);
+    this.withPartner.set(trip.withPartner);
+    this.wouldReturn.set(trip.wouldReturn);
+    this.cost = trip.costEur === null ? '' : String(trip.costEur).replace('.', ',');
+    this.note = trip.note ?? '';
+  }
+
   protected close(): void {
     void this.modalCtrl.dismiss();
   }
@@ -75,7 +98,7 @@ export class PastTripModal {
     this.saving.set(true);
     this.error.set(null);
     try {
-      await this.trips.addPastTrip({
+      const input = {
         place,
         year: this.year(),
         month: this.month(),
@@ -83,14 +106,16 @@ export class PastTripModal {
         wouldReturn: this.wouldReturn(),
         costEur: cost,
         note: this.note.trim() || null,
-      });
+      };
+      if (this.trip) await this.trips.updatePastTrip(this.trip, input);
+      else await this.trips.addPastTrip(input);
     } catch {
       this.saving.set(false);
       return this.fail('trip.form.errors.save');
     }
     await this.modalCtrl.dismiss({ saved: true });
     const toast = await this.toasts.create({
-      message: this.transloco.translate('trip.form.saved'),
+      message: this.transloco.translate(this.trip ? 'trip.form.updated' : 'trip.form.saved'),
       duration: 2200,
       position: 'top',
     });

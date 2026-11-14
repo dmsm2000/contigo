@@ -1,0 +1,215 @@
+:host {
+  display: block;
+}
+
+.post {
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--ct-sf);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.head-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ct-tx);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  strong {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    font-size: 12px;
+    color: var(--ct-mu);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.when {
+  flex: none;
+  font-size: 12px;
+  color: var(--ct-mu);
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--ct-ln);
+}
+
+.slides {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.slide {
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  scroll-snap-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.slide--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.initial {
+  font-family: var(--ct-font-display);
+  font-weight: 600;
+  font-size: 96px;
+}
+
+.no-photos {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.counter {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 14px;
+}
+
+.like {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ct-mu);
+
+  ion-icon {
+    font-size: 26px;
+  }
+
+  &.on {
+    color: var(--ct-ac);
+  }
+
+  &.on ion-icon {
+    animation: ct-pop var(--ct-dur) var(--ct-ease-spring) both;
+  }
+}
+
+.dots {
+  position: absolute;
+  left: 50%;
+  display: flex;
+  gap: 5px;
+  transform: translateX(-50%);
+
+  i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ct-ln);
+    transition: background-color var(--ct-dur-fast), transform var(--ct-dur-fast);
+
+    &.on {
+      background: var(--ct-ac);
+      transform: scale(1.25);
+    }
+  }
+}
+
+.cost {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ct-mu);
+}
+
+.caption {
+  display: block;
+  width: 100%;
+  padding: 0 14px 14px;
+  border: none;
+  background: transparent;
+  color: var(--ct-tx);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+
+  strong {
+    margin-right: 6px;
+  }
+
+  // A legenda não ocupa o feed todo: três linhas e reticências.
+  .text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+  }
+
+  .muted {
+    color: var(--ct-mu);
+  }
+}

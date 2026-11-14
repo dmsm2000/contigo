@@ -4,6 +4,11 @@
       <button class="ct-icon-btn close" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
         <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
       </button>
+      @if (!isDrawn(t)) {
+        <button class="ct-icon-btn edit" type="button" (click)="edit(t)" [attr.aria-label]="'trip.detail.edit' | transloco">
+          <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
       @if (!hasCover(t)) {
         <span class="initial ct-pop" aria-hidden="true">{{ labels.initial(t.place) }}</span>
       }
@@ -42,6 +47,36 @@
           <p>{{ t.note }}</p>
         </section>
       }
+
+      <section class="spend ct-rise" style="--i: 5">
+        <h2>
+          {{ 'trip.detail.expenses' | transloco }}
+          @if (tripExpenses().length) {
+            <span class="spend-total">{{ expensesTotal() }}</span>
+          }
+        </h2>
+        @if (tripExpenses().length) {
+          <ul class="spend-list">
+            @for (item of tripExpenses().slice(0, 5); track item.id) {
+              <li>
+                <button class="spend-row" type="button" (click)="editExpense(item)">
+                  <span class="spend-what">{{ item.note || ('expenses.category.' + item.category | transloco) }}</span>
+                  <span class="spend-amount">{{ money(item.amount) }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+          @if (tripExpenses().length > 5) {
+            <p class="spend-more">{{ 'trip.detail.moreExpenses' | transloco: { count: tripExpenses().length - 5 } }}</p>
+          }
+        } @else {
+          <p class="spend-empty">{{ 'trip.detail.noExpenses' | transloco }}</p>
+        }
+        <button class="ct-btn ct-btn--ghost small" type="button" (click)="addExpense()">
+          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+          {{ 'expenses.add' | transloco }}
+        </button>
+      </section>
 
       @if (!isDrawn(t)) {
         <section class="gallery ct-rise" style="--i: 5">

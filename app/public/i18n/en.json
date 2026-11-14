@@ -61,7 +61,9 @@
         "future": "That month hasn't happened yet.",
         "cost": "Enter an amount, like 120 or 85.50.",
         "save": "Couldn't save. Try again."
-      }
+      },
+      "editTitle": "Edit the trip",
+      "updated": "Trip updated."
     },
     "detail": {
       "together": "We went together",
@@ -82,7 +84,11 @@
       "deleteError": "Couldn't delete. Try again.",
       "notFound": "This trip no longer exists.",
       "drawn": "Drawn",
-      "vetoHint": "Each of you gets one veto a month. Whoever uses it cancels this trip and the place leaves the draw until next month."
+      "vetoHint": "Each of you gets one veto a month. Whoever uses it cancels this trip and the place leaves the draw until next month.",
+      "edit": "Edit the trip",
+      "expenses": "Expenses",
+      "noExpenses": "No expenses on this trip yet.",
+      "moreExpenses": "and {{count}} more"
     }
   },
   "wish": {
@@ -466,7 +472,12 @@
     "title": "Trips",
     "asStories": "Watch as stories",
     "count_one": "{{count}} trip",
-    "count_other": "{{count}} trips"
+    "count_other": "{{count}} trips",
+    "next": "Coming up",
+    "viewGrid": "View as grid",
+    "viewFeed": "View as feed",
+    "noPhotos": "No photos yet",
+    "wouldReturn": "We'd go back"
   },
   "expenses": {
     "title": "Expenses",
@@ -517,7 +528,9 @@
         "note": "The note is too long.",
         "noTrip": "Add a trip first so you can add expenses to it.",
         "save": "Could not save. Try again."
-      }
+      },
+      "editTitle": "Edit expense",
+      "updated": "Expense updated."
     },
     "cebolaFirst": "It is still the first month: whatever is left carries into the onion.",
     "available": "To spend this month",
@@ -528,7 +541,9 @@
     "written": "Written by {{name}} · {{when}}",
     "updated": "Updated by {{name}} · {{when}}",
     "someone": "someone",
-    "last": "Information last updated on {{when}} ({{ago}}) by {{name}}."
+    "last": "Information last updated on {{when}} ({{ago}}) by {{name}}.",
+    "edited": "edited",
+    "you": "you"
   },
   "settings": {
     "title": "Settings",

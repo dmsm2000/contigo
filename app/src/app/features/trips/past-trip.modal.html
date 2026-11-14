@@ -1,7 +1,7 @@
 <ion-content>
   <div class="sheet">
     <header class="head">
-      <h1 class="ct-display title">{{ 'trip.form.title' | transloco }}</h1>
+      <h1 class="ct-display title">{{ (trip ? 'trip.form.editTitle' : 'trip.form.title') | transloco }}</h1>
       <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
         <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
       </button>
@@ -12,7 +12,7 @@
         <app-place-picker
           inputId="trip-search"
           labelKey="trip.form.where"
-          [autofocus]="true"
+          [autofocus]="!trip"
           [place]="place()"
           (placeChange)="setPlace($event)"
         />

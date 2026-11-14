@@ -8,6 +8,7 @@
     margin: 8px 0 16px;
   }
 
+  .view,
   .play {
     margin-bottom: 8px;
     background: var(--ct-acs);
@@ -112,4 +113,105 @@
   .back {
     display: none;
   }
+}
+
+// A viagem que ainda vem aí: em destaque, antes das memórias.
+.next {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 24px;
+  background: var(--ct-grad);
+  color: #ffffff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(194, 48, 111, 0.28);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  strong {
+    font-size: 24px;
+    line-height: 1.15;
+  }
+}
+
+.next-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.next-meta {
+  font-size: 14px;
+  opacity: 0.92;
+}
+
+.year {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 22px 4px 10px;
+  font-size: 22px;
+  font-weight: 600;
+
+  small {
+    font-family: var(--ion-font-family);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ct-mu);
+  }
+}
+
+.badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.42);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+  font-weight: 700;
+
+  ion-icon {
+    font-size: 13px;
+  }
+}
+
+.badge--heart ion-icon {
+  color: #ff7aa8;
+}
+
+// O feed: uma coluna, como no Instagram; em ecrãs largos fica no centro com a largura de um telemóvel.
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 520px;
+  margin: 0 auto;
 }

@@ -1,7 +1,7 @@
 <ion-content>
   <div class="sheet">
     <header class="head">
-      <h1 class="ct-display title">{{ 'expenses.form.title' | transloco }}</h1>
+      <h1 class="ct-display title">{{ (expense ? 'expenses.form.editTitle' : 'expenses.form.title') | transloco }}</h1>
       <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
         <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
       </button>
@@ -45,7 +45,7 @@
 
       <section class="block ct-rise" style="--i: 2">
         <label class="label" for="expense-trip">{{ 'expenses.form.trip' | transloco }}</label>
-        <select id="expense-trip" [value]="chosenTrip()" [disabled]="!!tripId" (change)="onTrip($event)">
+        <select id="expense-trip" [value]="chosenTrip()" [disabled]="!!tripId || !!expense" (change)="onTrip($event)">
           @for (option of options(); track option.id) {
             <option [value]="option.id" [selected]="option.id === chosenTrip()">{{ option.label }}</option>
           }

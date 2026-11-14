@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  groupByYear,
   byRecentlyAdded,
   isDone,
   isUpcoming,
@@ -214,5 +215,19 @@ describe('byRecentlyAdded', () => {
     ];
     expect(byRecentlyAdded(list).map((trip) => trip.id)).toEqual(['c', 'b', 'a']);
     expect(list.map((trip) => trip.id)).toEqual(['a', 'c', 'b']);
+  });
+});
+
+describe('groupByYear', () => {
+  const t = (startDate: string, createdAt: string) => ({ startDate, createdAt });
+
+  it('agrupa por ano, o mais recente primeiro', () => {
+    const groups = groupByYear([t('2025-03-01', 'a'), t('2026-10-01', 'b'), t('2026-08-01', 'c')]);
+    expect(groups.map((g) => g.year)).toEqual(['2026', '2025']);
+    expect(groups[0].trips.map((x) => x.startDate)).toEqual(['2026-10-01', '2026-08-01']);
+  });
+
+  it('sem viagens não há grupos', () => {
+    expect(groupByYear([])).toEqual([]);
   });
 });

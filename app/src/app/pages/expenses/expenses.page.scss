@@ -84,6 +84,36 @@
   }
 }
 
+.onion-bar {
+  margin-top: 12px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+    background: #ffffff;
+    transform-origin: left center;
+    animation: ct-bar-grow 0.9s var(--ct-ease) 0.3s both;
+  }
+
+  &.over span {
+    background: #ffb4b4;
+  }
+}
+
+@keyframes ct-bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
 .onion-small {
   margin: 4px 0 0;
   font-size: 12px;
@@ -137,6 +167,9 @@
 
 .allowance-btn {
   flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 44px;
   padding: 0 18px;
   border: none;
@@ -288,4 +321,31 @@
 // Sem despesas: fica a respirar por baixo da dotação, como as outras secções.
 .empty {
   margin-top: 12px;
+}
+
+a.allowance {
+  color: var(--ct-tx);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.allowance-chev {
+  flex: none;
+  font-size: 20px;
+  color: var(--ct-mu);
+}
+
+// A despesa inteira é um botão: tocar abre-a para corrigir.
+.expense-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ct-tx);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }

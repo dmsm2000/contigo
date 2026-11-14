@@ -1,6 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from '../../core/auth.service';
 import { LanguageService } from '../../core/language.service';
+import { totalOf } from '../../core/expenses.logic';
+import { ExpensesService } from '../../core/expenses.service';
 import { PhotosService } from '../../core/photos.service';
 import { ProfileService } from '../../core/profile.service';
 import { formatCost, formatTripDate, initialOf, Place, placeSubtitle, tileColors, Trip } from '../../core/trips.logic';
@@ -20,6 +22,7 @@ export class TripLabels {
   private readonly profile = inject(ProfileService);
   private readonly auth = inject(AuthService);
   private readonly photos = inject(PhotosService);
+  private readonly expenses = inject(ExpensesService);
 
   date(trip: Trip): string {
     return formatTripDate(trip, this.language());
@@ -40,10 +43,11 @@ export class TripLabels {
     return trip.wouldReturn ? { key: `trip.detail.wouldReturn.${trip.wouldReturn}` } : null;
   }
 
+  /** O que se gastou: a soma das despesas registadas, e só se não houver nenhuma, o valor escrito à mão na viagem. */
   cost(trip: Trip): Label | null {
-    return trip.costEur === null
-      ? null
-      : { key: 'trip.detail.cost', params: { amount: formatCost(trip.costEur, this.language()) } };
+    const logged = this.expenses.items().filter((item) => item.tripId === trip.id);
+    const amount = logged.length ? totalOf(logged) : trip.costEur;
+    return amount === null ? null : { key: 'trip.detail.cost', params: { amount: formatCost(amount, this.language()) } };
   }
 
   initial(place: Place): string {

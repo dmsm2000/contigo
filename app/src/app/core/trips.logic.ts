@@ -266,3 +266,21 @@ export function initialOf(name: string): string {
 export function byRecentlyAdded<T extends Pick<Trip, 'createdAt'>>(trips: readonly T[]): T[] {
   return [...trips].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
+
+export interface YearGroup<T> {
+  year: string;
+  trips: T[];
+}
+
+/** As viagens agrupadas por ano da viagem (não do registo): o ano mais recente primeiro, e dentro dele a viagem mais recente. */
+export function groupByYear<T extends Pick<Trip, 'startDate' | 'createdAt'>>(trips: readonly T[]): YearGroup<T>[] {
+  const sorted = [...trips].sort((a, b) => b.startDate.localeCompare(a.startDate) || b.createdAt.localeCompare(a.createdAt));
+  const groups: YearGroup<T>[] = [];
+  for (const trip of sorted) {
+    const year = trip.startDate.slice(0, 4);
+    const last = groups[groups.length - 1];
+    if (last && last.year === year) last.trips.push(trip);
+    else groups.push({ year, trips: [trip] });
+  }
+  return groups;
+}

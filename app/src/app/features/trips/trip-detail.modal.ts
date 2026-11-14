@@ -2,14 +2,19 @@ import { Component, Input, OnInit, effect, inject, signal, untracked } from '@an
 import { AlertController, IonContent, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { addOutline, closeOutline, trashOutline } from 'ionicons/icons';
+import { addOutline, closeOutline, createOutline, trashOutline } from 'ionicons/icons';
+import { Expense, totalOf } from '../../core/expenses.logic';
+import { ExpensesService } from '../../core/expenses.service';
+import { LanguageService } from '../../core/language.service';
 import { entrySource } from '../../core/draw.logic';
 import { DrawService } from '../../core/draw.service';
 import { TripsService } from '../../core/trips.service';
 import { Photo } from '../../core/photos.logic';
 import { PhotosService } from '../../core/photos.service';
-import { Trip } from '../../core/trips.logic';
+import { formatCost, Trip } from '../../core/trips.logic';
 import { AuditLineComponent } from '../audit/audit-line.component';
+import { ExpenseModal } from '../expenses/expense.modal';
+import { PastTripModal } from './past-trip.modal';
 import { AddPhotosModal } from '../photos/add-photos.modal';
 import { PhotoImgComponent } from '../photos/photo-img.component';
 import { PhotoViewerModal } from '../photos/photo-viewer.modal';
@@ -34,9 +39,42 @@ export class TripDetailModal implements OnInit {
   protected readonly photos = inject(PhotosService);
   protected readonly labels = inject(TripLabels);
   protected readonly deleting = signal(false);
+  protected readonly expenses = inject(ExpensesService);
+  private readonly language = inject(LanguageService).language;
+
+  /** As despesas desta viagem, as mais recentes primeiro. */
+  protected tripExpenses(): Expense[] {
+    return this.expenses
+      .items()
+      .filter((item) => item.tripId === this.tripId)
+      .sort((a, b) => b.spentOn.localeCompare(a.spentOn) || b.createdAt.localeCompare(a.createdAt));
+  }
+
+  protected expensesTotal(): string {
+    return formatCost(totalOf(this.tripExpenses()), this.language());
+  }
+
+  protected money(amount: number): string {
+    return formatCost(amount, this.language());
+  }
+
+  protected async addExpense(): Promise<void> {
+    const modal = await this.modalCtrl.create({ component: ExpenseModal, componentProps: { tripId: this.tripId }, cssClass: 'ct-modal' });
+    await modal.present();
+  }
+
+  protected async editExpense(expense: Expense): Promise<void> {
+    const modal = await this.modalCtrl.create({ component: ExpenseModal, componentProps: { tripId: this.tripId, expense }, cssClass: 'ct-modal' });
+    await modal.present();
+  }
+
+  protected async edit(trip: Trip): Promise<void> {
+    const modal = await this.modalCtrl.create({ component: PastTripModal, componentProps: { trip }, cssClass: 'ct-modal' });
+    await modal.present();
+  }
 
   constructor() {
-    addIcons({ addOutline, closeOutline, trashOutline });
+    addIcons({ addOutline, closeOutline, createOutline, trashOutline });
 
     // Quando chegam fotos (as minhas ou as do outro), pedem-se os links das miniaturas e da capa.
     effect(() => {

@@ -25,3 +25,17 @@ describe('SettingsService', () => {
     expect(TestBed.inject(SettingsService).storySeconds()).toBe('5');
   });
 });
+
+describe('SettingsService: vista das viagens', () => {
+  beforeEach(() => {
+    localStorage.removeItem('contigo.tripsView');
+    TestBed.resetTestingModule();
+  });
+
+  it('abre como feed e lembra-se da grelha', () => {
+    expect(TestBed.inject(SettingsService).tripsView()).toBe('feed');
+    TestBed.inject(SettingsService).setTripsView('grid');
+    TestBed.resetTestingModule();
+    expect(TestBed.inject(SettingsService).tripsView()).toBe('grid');
+  });
+});

@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { Expense } from '../../core/expenses.logic';
 import { Idea } from '../../core/ideas.logic';
 import { Suggestion } from '../../core/suggestions';
 import { DrawModal } from '../draw/draw.modal';
@@ -48,8 +49,8 @@ export class TripFlowService {
   }
 
   /** Registar uma despesa; com `tripId`, a viagem já vem escolhida. */
-  async openExpense(tripId: string | null = null): Promise<void> {
-    await this.present(() => this.modals.create({ component: ExpenseModal, componentProps: { tripId }, cssClass: 'ct-modal' }));
+  async openExpense(tripId: string | null = null, expense: Expense | null = null): Promise<void> {
+    await this.present(() => this.modals.create({ component: ExpenseModal, componentProps: { tripId, expense }, cssClass: 'ct-modal' }));
   }
 
   /** Escrever uma ideia nova, ou mudar uma que já escreveste. */

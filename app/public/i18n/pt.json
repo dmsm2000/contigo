@@ -61,7 +61,9 @@
         "future": "Esse mês ainda não chegou.",
         "cost": "Escreve um valor, por exemplo 120 ou 85,50.",
         "save": "Não foi possível guardar. Tenta outra vez."
-      }
+      },
+      "editTitle": "Corrigir a viagem",
+      "updated": "Viagem atualizada."
     },
     "detail": {
       "together": "Fomos os dois",
@@ -82,7 +84,11 @@
       "deleteError": "Não foi possível apagar. Tenta outra vez.",
       "notFound": "Esta viagem já não existe.",
       "drawn": "Sorteada",
-      "vetoHint": "Cada um tem um veto por mês. Quem o usar cancela esta viagem e a opção sai do sorteio até ao mês que vem."
+      "vetoHint": "Cada um tem um veto por mês. Quem o usar cancela esta viagem e a opção sai do sorteio até ao mês que vem.",
+      "edit": "Corrigir a viagem",
+      "expenses": "Despesas",
+      "noExpenses": "Ainda sem despesas nesta viagem.",
+      "moreExpenses": "e mais {{count}}"
     }
   },
   "wish": {
@@ -466,7 +472,12 @@
     "title": "Viagens",
     "asStories": "Ver como histórias",
     "count_one": "{{count}} viagem",
-    "count_other": "{{count}} viagens"
+    "count_other": "{{count}} viagens",
+    "next": "A seguir",
+    "viewGrid": "Ver em grelha",
+    "viewFeed": "Ver como feed",
+    "noPhotos": "Ainda sem fotos",
+    "wouldReturn": "Voltávamos"
   },
   "expenses": {
     "title": "Despesas",
@@ -517,7 +528,9 @@
         "note": "A nota é demasiado comprida.",
         "noTrip": "Primeiro registem uma viagem para lhe juntar despesas.",
         "save": "Não consegui guardar. Tenta outra vez."
-      }
+      },
+      "editTitle": "Corrigir despesa",
+      "updated": "Despesa atualizada."
     },
     "cebolaFirst": "Ainda é o primeiro mês: o que sobrar dele passa para a cebola.",
     "available": "Para gastar este mês",
@@ -528,7 +541,9 @@
     "written": "Escrita por {{name}} · {{when}}",
     "updated": "Atualizado por {{name}} · {{when}}",
     "someone": "alguém",
-    "last": "Informação atualizada pela última vez em {{when}} ({{ago}}) por {{name}}."
+    "last": "Informação atualizada pela última vez em {{when}} ({{ago}}) por {{name}}.",
+    "edited": "editada",
+    "you": "ti"
   },
   "settings": {
     "title": "Definições",

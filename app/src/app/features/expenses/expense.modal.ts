@@ -6,7 +6,7 @@ import { addIcons } from 'ionicons';
 import { closeOutline } from 'ionicons/icons';
 import { todayIso } from '../../core/availability.logic';
 import { DrawService } from '../../core/draw.service';
-import { cleanExpenseNote, EXPENSE_CATEGORIES, ExpenseCategory, parseAmount } from '../../core/expenses.logic';
+import { cleanExpenseNote, EXPENSE_CATEGORIES, Expense, ExpenseCategory, parseAmount } from '../../core/expenses.logic';
 import { ExpensesService } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
 import { formatTripDate } from '../../core/trips.logic';
@@ -30,6 +30,8 @@ export class ExpenseModal implements OnInit {
 
   /** A viagem já escolhida (quando se abre a partir de uma viagem). */
   @Input() tripId: string | null = null;
+  /** Com uma despesa, o formulário abre preenchido para a corrigir (a viagem não muda). */
+  @Input() expense: Expense | null = null;
 
   protected readonly categories = EXPENSE_CATEGORIES;
   protected readonly chosenTrip = signal('');
@@ -51,6 +53,15 @@ export class ExpenseModal implements OnInit {
 
   ngOnInit(): void {
     // Por defeito, a viagem sorteada que vem aí (é onde se gasta) ou a mais recente.
+    const expense = this.expense;
+    if (expense) {
+      this.chosenTrip.set(expense.tripId);
+      this.category.set(expense.category);
+      this.amount = String(expense.amount).replace('.', ',');
+      this.note = expense.note ?? '';
+      this.spentOn = expense.spentOn;
+      return;
+    }
     this.chosenTrip.set(this.tripId ?? this.draws.active()?.id ?? this.trips.trips()[0]?.id ?? '');
   }
 
@@ -72,19 +83,15 @@ export class ExpenseModal implements OnInit {
     this.saving.set(true);
     this.error.set(null);
     try {
-      await this.expenses.add({
-        tripId: this.chosenTrip(),
-        amount,
-        category: this.category(),
-        note,
-        spentOn: this.spentOn || this.today,
-      });
+      const fields = { amount, category: this.category(), note, spentOn: this.spentOn || this.today };
+      if (this.expense) await this.expenses.update(this.expense.id, fields);
+      else await this.expenses.add({ tripId: this.chosenTrip(), ...fields });
     } catch {
       this.saving.set(false);
       return this.error.set('expenses.form.errors.save');
     }
     await this.modalCtrl.dismiss({ saved: true });
-    const toast = await this.toasts.create({ message: this.transloco.translate('expenses.form.saved'), duration: 2200, position: 'top' });
+    const toast = await this.toasts.create({ message: this.transloco.translate(this.expense ? 'expenses.form.updated' : 'expenses.form.saved'), duration: 2200, position: 'top' });
     await toast.present();
   }
 }

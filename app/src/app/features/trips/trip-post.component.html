@@ -1,0 +1,61 @@
+@let t = trip();
+<article class="post">
+  <header class="head">
+    <app-avatar [userId]="t.createdBy" [size]="34" />
+    <button class="head-text" type="button" (click)="open.emit()">
+      <strong>{{ t.place.name }}</strong>
+      <small>{{ labels.where(t.place) || labels.date(t) }}</small>
+    </button>
+    <span class="when">{{ labels.date(t) }}</span>
+  </header>
+
+  <div class="media">
+    @if (photos().length) {
+      <div class="slides" (scroll)="onScroll($event)">
+        @for (photo of photos(); track photo.id) {
+          <button class="slide" type="button" (click)="open.emit()" [attr.aria-label]="t.place.name">
+            <app-photo-img [photo]="photo" [alt]="photo.caption ?? t.place.name" />
+          </button>
+        }
+      </div>
+      @if (photos().length > 1) {
+        <span class="counter" aria-hidden="true">{{ page() + 1 }}/{{ photos().length }}</span>
+      }
+    } @else {
+      <button class="slide slide--empty" type="button" (click)="open.emit()" [style.background]="labels.cover(t)" [attr.aria-label]="t.place.name">
+        <span class="initial" aria-hidden="true">{{ labels.initial(t.place) }}</span>
+        <span class="no-photos"><ion-icon name="images-outline" aria-hidden="true"></ion-icon>{{ 'trips.noPhotos' | transloco }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="actions">
+    <span class="like" [class.on]="t.wouldReturn === 'yes'">
+      <ion-icon [name]="t.wouldReturn === 'yes' ? 'heart' : 'heart-outline'" aria-hidden="true"></ion-icon>
+      @if (t.wouldReturn === 'yes') {
+        <span>{{ 'trips.wouldReturn' | transloco }}</span>
+      }
+    </span>
+    @if (dots().length) {
+      <span class="dots" aria-hidden="true">
+        @for (dot of dots(); track dot) {
+          <i [class.on]="dot === page()"></i>
+        }
+      </span>
+    }
+    @if (labels.cost(t); as spent) {
+      <span class="cost">{{ spent.key | transloco: spent.params }}</span>
+    }
+  </div>
+
+  <button class="caption" type="button" (click)="open.emit()">
+    <span class="text">
+      <strong>{{ author() }}</strong>
+      @if (t.note) {
+        <span class="note">{{ t.note }}</span>
+      } @else {
+        <span class="note muted">{{ labels.who(t).key | transloco: labels.who(t).params }}</span>
+      }
+    </span>
+  </button>
+</article>

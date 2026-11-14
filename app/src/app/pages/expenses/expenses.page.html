@@ -29,6 +29,7 @@
             <span>{{ 'expenses.available' | transloco }}</span>
             <strong [class.low]="cebola().available < 0">{{ money(cebola().available) }}</strong>
           </div>
+          <div class="onion-bar" [class.over]="cebola().available < 0" aria-hidden="true"><span [style.width.%]="spentShare() * 100"></span></div>
           <p class="onion-small">{{ 'expenses.availableText' | transloco: { monthly: money(cebola().monthly), spent: money(cebola().spentThisMonth) } }}</p>
         }
       } @else {
@@ -39,13 +40,14 @@
       }
     </section>
 
-    <section class="allowance ct-card ct-rise" style="--i: 2">
+    <a class="allowance ct-card ct-rise" style="--i: 2" routerLink="/settings">
       <div class="allowance-text">
         <strong>{{ 'expenses.allowance' | transloco }}</strong>
         <small>{{ 'expenses.allowanceText' | transloco: { total: money(profile.monthlyTotal()) } }}</small>
       </div>
-      <button class="allowance-btn" type="button" (click)="changeAllowance()">{{ money(myAllowance()) }}</button>
-    </section>
+      <span class="allowance-btn">{{ money(myAllowance()) }}</span>
+      <ion-icon class="allowance-chev" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+    </a>
 
     @if (expenses.loaded()) {
       @if (expenses.items().length) {
@@ -87,11 +89,11 @@
           <ul class="rows">
             @for (expense of expenses.newest().slice(0, 20); track expense.id) {
               <li class="expense ct-card">
-                <span class="expense-body">
+                <button class="expense-body" type="button" (click)="edit(expense)">
                   <strong>{{ expense.note || ('expenses.category.' + expense.category | transloco) }}</strong>
                   <small>{{ 'expenses.category.' + expense.category | transloco }} · {{ tripName(expense) }}</small>
-                  <app-audit-line [data]="{ createdBy: expense.userId, createdAt: expense.createdAt, updatedBy: expense.updatedBy, updatedAt: expense.updatedAt }" />
-                </span>
+                  <app-audit-line [compact]="true" [data]="{ createdBy: expense.userId, createdAt: expense.createdAt, updatedBy: expense.updatedBy, updatedAt: expense.updatedAt }" />
+                </button>
                 <span class="amount">{{ money(expense.amount) }}</span>
                 <button class="ct-icon-btn del" type="button" (click)="confirmRemove(expense)" [attr.aria-label]="'expenses.remove' | transloco">
                   <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>

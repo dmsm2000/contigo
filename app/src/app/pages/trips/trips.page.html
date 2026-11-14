@@ -6,30 +6,65 @@
       </a>
       <h1 class="ct-page-title">{{ 'trips.title' | transloco }}</h1>
       @if (all().length) {
+        <button class="ct-icon-btn view" type="button" (click)="toggleView()" [attr.aria-label]="(settings.tripsView() === 'feed' ? 'trips.viewGrid' : 'trips.viewFeed') | transloco">
+          <ion-icon [name]="settings.tripsView() === 'feed' ? 'grid-outline' : 'square-outline'" aria-hidden="true"></ion-icon>
+        </button>
         <button class="ct-icon-btn play" type="button" (click)="playStories()" [attr.aria-label]="'trips.asStories' | transloco">
           <ion-icon name="play-outline" aria-hidden="true"></ion-icon>
         </button>
       }
     </header>
 
+    @for (trip of upcoming(); track trip.id) {
+      <button class="next ct-rise" style="--i: 1" type="button" (click)="open(trip)">
+        <span class="next-label"><ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>{{ 'trips.next' | transloco }}</span>
+        <strong class="ct-display">{{ trip.place.name }}</strong>
+        <span class="next-meta">{{ labels.date(trip) }}</span>
+      </button>
+    }
+
     @if (all().length) {
-      <p class="count ct-rise" style="--i: 1">
+      @if (years().length > 1) {
+        <p class="count ct-rise" style="--i: 1">
         {{ (all().length === 1 ? 'trips.count_one' : 'trips.count_other') | transloco: { count: all().length } }}
       </p>
-      <ul class="grid">
-        @for (trip of all(); track trip.id; let i = $index) {
-          <li class="ct-rise" [style.--i]="1 + (i < 12 ? i : 12)">
-            <button class="tile" type="button" (click)="open(trip)">
-              <span class="cover" [style.background]="labels.cover(trip)" aria-hidden="true">{{ labels.hasCover(trip) ? '' : labels.initial(trip.place) }}</span>
-              <span class="shade" aria-hidden="true"></span>
-              <span class="info">
-                <strong>{{ trip.place.name }}</strong>
-                <small>{{ labels.date(trip) }}</small>
-              </span>
-            </button>
-          </li>
+      }
+      @if (settings.tripsView() === 'feed') {
+        <div class="feed">
+          @for (trip of feed(); track trip.id; let i = $index) {
+            <app-trip-post class="ct-rise" [style.--i]="1 + (i < 6 ? i : 6)" [trip]="trip" (open)="open(trip)" />
+          }
+        </div>
+      } @else {
+      @for (group of years(); track group.year; let g = $index) {
+          <h2 class="year ct-rise" [style.--i]="1 + g">
+            <span class="ct-display">{{ group.year }}</span>
+            <small>{{ (group.trips.length === 1 ? 'trips.count_one' : 'trips.count_other') | transloco: { count: group.trips.length } }}</small>
+          </h2>
+          <ul class="grid">
+            @for (trip of group.trips; track trip.id; let i = $index) {
+              <li class="ct-rise" [style.--i]="2 + g + (i < 8 ? i : 8)">
+                <button class="tile" type="button" (click)="open(trip)">
+                  <span class="cover" [style.background]="labels.cover(trip)" aria-hidden="true">{{ labels.hasCover(trip) ? '' : labels.initial(trip.place) }}</span>
+                  <span class="shade" aria-hidden="true"></span>
+                  <span class="badges" aria-hidden="true">
+                    @if (trip.wouldReturn === 'yes') {
+                      <span class="badge badge--heart"><ion-icon name="heart"></ion-icon></span>
+                    }
+                    @if (photos.photosOf(trip.id).length; as n) {
+                      <span class="badge"><ion-icon name="images-outline"></ion-icon>{{ n }}</span>
+                    }
+                  </span>
+                  <span class="info">
+                    <strong>{{ trip.place.name }}</strong>
+                    <small>{{ labels.date(trip) }}</small>
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
         }
-      </ul>
+      }
     } @else if (trips.loaded()) {
       <div class="ct-card ct-empty">
         <p>{{ 'home.memoriesEmpty' | transloco }}</p>

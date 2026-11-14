@@ -13,6 +13,15 @@ import { AvatarComponent } from '../profile/avatar.component';
   imports: [TranslocoPipe, AvatarComponent],
   template: `
     @let a = audit();
+    @if (compact()) {
+      @let last = a.updated ?? a.created;
+      <p class="line">
+        @if (last.by) {
+          <app-avatar [userId]="last.by" [size]="16" />
+        }
+        <span>{{ name(last.by, false) }} · {{ when(last.at) }}{{ a.updated ? ' · ' + ('audit.edited' | transloco) : '' }}</span>
+      </p>
+    } @else {
     <p class="line">
       @if (a.created.by) {
         <app-avatar [userId]="a.created.by" [size]="16" />
@@ -26,6 +35,7 @@ import { AvatarComponent } from '../profile/avatar.component';
         }
         <span>{{ 'audit.updated' | transloco: { name: name(u.by), when: when(u.at) } }}</span>
       </p>
+    }
     }
   `,
   styles: `
@@ -52,13 +62,16 @@ export class AuditLineComponent {
   readonly data = input.required<AuditInput>();
   /** 'added' para o que se regista ("Registado por"), 'written' para o que se escreve ("Escrita por"). */
   readonly kind = input<'added' | 'written'>('added');
+  /** Uma só linha, curta: "Diogo · há 6 horas" (com "editada" se alguém mexeu depois). */
+  readonly compact = input(false);
 
   protected readonly audit = computed(() => describeAudit(this.data()));
   protected readonly createdKey = computed(() => (this.kind() === 'written' ? 'audit.written' : 'audit.added'));
 
-  protected name(userId: string | null): string {
+  /** O nome depois de "por": "por ti" para quem está a usar a app; sozinho (versão curta) é "Tu". */
+  protected name(userId: string | null, afterBy = true): string {
     if (!userId) return this.transloco.translate('audit.someone');
-    if (userId === this.auth.userId()) return this.transloco.translate('wish.you');
+    if (userId === this.auth.userId()) return this.transloco.translate(afterBy ? 'audit.you' : 'wish.you');
     return this.profile.nameOf(userId) || this.transloco.translate('wish.theOther');
   }
 

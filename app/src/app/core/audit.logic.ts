@@ -25,7 +25,8 @@ const SAME_MOMENT_MS = 60_000;
 export function describeAudit(input: AuditInput): Audit {
   const created: AuditLine = { by: input.createdBy, at: input.createdAt };
   const updatedAt = input.updatedAt ?? null;
-  if (!updatedAt) return { created, updated: null };
+  // Sem autor da alteração não há "atualizado por": é o caso das linhas anteriores a esta funcionalidade.
+  if (!updatedAt || !input.updatedBy) return { created, updated: null };
   const gap = new Date(updatedAt).getTime() - new Date(input.createdAt).getTime();
   if (!(gap > SAME_MOMENT_MS)) return { created, updated: null };
   return { created, updated: { by: input.updatedBy ?? null, at: updatedAt } };
