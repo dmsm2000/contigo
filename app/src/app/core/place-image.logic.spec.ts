@@ -25,6 +25,16 @@ describe('pickImage', () => {
     expect(pickImage(pages, sintra)).toBeNull();
   });
 
+  it('nunca devolve bandeiras, brasões ou mapas em português ou espanhol', () => {
+    for (const file of ['Bandera_de_Cáceres.svg.png', 'Bandeira_de_Braga.png', 'Escudo_de_Aveiro.png', 'Provincia_Cáceres.png', 'Mapa_de_Sintra.png', 'Sintra_locator_map.png']) {
+      expect(pickImage([page('Sintra', photo(file), 38.8, -9.38)], sintra)).toBeNull();
+    }
+  });
+
+  it('com coordenadas, um artigo sem coordenadas e com o mesmo nome (a província) não serve', () => {
+    expect(pickImage([page('Sintra (província)', photo('Foto'))], sintra)).toBeNull();
+  });
+
   it('sem coordenadas, serve o artigo cujo título é o nome', () => {
     expect(pickImage([page('Braga', photo('Se'))], { name: 'braga', lat: null, lng: null })).toBe(photo('Se'));
   });

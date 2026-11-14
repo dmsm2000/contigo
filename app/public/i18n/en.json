@@ -319,7 +319,9 @@
     "inDays_other": "in {{count}} days",
     "viewAvailability": "View availability",
     "onionSeeExpenses": "See expenses",
-    "onionAvailable": "To spend this month: {{amount}}"
+    "onionAvailable": "To spend this month: {{amount}}",
+    "discover": "To discover",
+    "discoverAdd": "Add to the list"
   },
   "map": {
     "title": "Map",

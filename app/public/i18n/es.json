@@ -319,7 +319,9 @@
     "inDays_other": "dentro de {{count}} días",
     "viewAvailability": "Ver disponibilidad",
     "onionSeeExpenses": "Ver gastos",
-    "onionAvailable": "Para gastar este mes: {{amount}}"
+    "onionAvailable": "Para gastar este mes: {{amount}}",
+    "discover": "Para descubrir",
+    "discoverAdd": "Añadir a la lista"
   },
   "map": {
     "title": "Mapa",

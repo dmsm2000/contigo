@@ -12,9 +12,10 @@ import { LanguageService } from '../../core/language.service';
 import { StoriesService } from '../../core/stories.service';
 import { ProfileService } from '../../core/profile.service';
 import { ThemeService } from '../../core/theme.service';
-import { byRecentlyAdded, formatCost, Trip, yearStats } from '../../core/trips.logic';
+import { byRecentlyAdded, formatCost, placeSubtitle, tileColors, Trip, yearStats } from '../../core/trips.logic';
 import { TripsService } from '../../core/trips.service';
-import { averageStars, WishlistItem } from '../../core/wishlist.logic';
+import { Suggestion } from '../../core/suggestions';
+import { averageStars, nearestOrigin, WishlistItem } from '../../core/wishlist.logic';
 import { WishlistService } from '../../core/wishlist.service';
 import { TripFlowService } from '../../features/trips/trip-flow.service';
 import { TripLabels } from '../../features/trips/trip-labels.service';
@@ -26,6 +27,11 @@ const STORIES_SHOWN = 8;
 const MEMORIES_SHOWN = 8;
 
 import { LastUpdateComponent } from '../../features/audit/last-update.component';
+/** Quantos sítios por ir se mostram no carrossel do Início. */
+const WISHES_SHOWN = 5;
+/** Quantas ideias para descobrir se mostram quando a lista é curta. */
+const DISCOVER_SHOWN = 8;
+
 @Component({
   selector: 'app-home',
   imports: [LastUpdateComponent, IonContent, IonIcon, RouterLink, TranslocoPipe, StarsComponent, AvatarComponent],
@@ -108,8 +114,19 @@ export class HomePage {
       trip: this.trips.done().find((trip) => trip.startDate.startsWith(`${this.year}-${String(index + 1).padStart(2, '0')}`)) ?? null,
     }));
   });
-  /** Os três sítios por ir mais desejados. */
-  protected readonly topWishes = computed(() => this.wishlist.sorted().slice(0, 3));
+  /** Os sítios por ir mais desejados (até {@link WISHES_SHOWN}). */
+  protected readonly topWishes = computed(() => this.wishlist.sorted().slice(0, WISHES_SHOWN));
+  /**
+   * Quando a lista tem menos de {@link WISHES_SHOWN} sítios, um segundo carrossel, à parte, com ideias para descobrir
+   * (as sugestões mais perto de casa), para haver sempre o que ver e juntar com um toque.
+   */
+  protected readonly discover = computed(() =>
+    this.wishlist.sorted().length >= WISHES_SHOWN
+      ? []
+      : [...this.wishlist.suggestions()]
+          .sort((a, b) => nearestOrigin([a.lng, a.lat]).km - nearestOrigin([b.lng, b.lat]).km || a.name.localeCompare(b.name, 'pt'))
+          .slice(0, DISCOVER_SHOWN),
+  );
 
   constructor() {
     addIcons({ add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, sunnyOutline });
@@ -117,6 +134,19 @@ export class HomePage {
 
   protected toggleTheme(): void {
     void this.profile.setTheme(this.theme.isDark() ? 'light' : 'dark');
+  }
+
+  protected addSuggestion(suggestion: Suggestion): void {
+    void this.flow.openAddWish(suggestion);
+  }
+
+  protected suggestionWhere(suggestion: Suggestion): string {
+    return placeSubtitle(suggestion, this.language());
+  }
+
+  protected suggestionTile(name: string): string {
+    const { from, to } = tileColors(name);
+    return `linear-gradient(135deg, ${from}, ${to})`;
   }
 
   protected addPastTrip(): void {

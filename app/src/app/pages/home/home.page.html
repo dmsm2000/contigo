@@ -241,6 +241,31 @@
         </ul>
       }
     </section>
+
+    <!-- Com poucos sítios na lista, um segundo carrossel com ideias para descobrir. -->
+    @if (wishlist.loaded() && discover().length) {
+      <section class="wishes ct-rise" style="--i: 8">
+        <div class="section-head">
+          <h2 class="ct-display section-title">{{ 'home.discover' | transloco }}</h2>
+          <a class="see-all" routerLink="/wishlist">{{ 'home.wishlistAll' | transloco }}</a>
+        </div>
+        <ul class="rail">
+          @for (suggestion of discover(); track suggestion.id) {
+            <li>
+              <button class="card card--wish" type="button" (click)="addSuggestion(suggestion)" [attr.aria-label]="('home.discoverAdd' | transloco) + ' ' + suggestion.name">
+                <span class="cover" [style.background]="suggestionTile(suggestion.name)" aria-hidden="true">{{ suggestion.name.charAt(0) }}</span>
+                <span class="shade" aria-hidden="true"></span>
+                <span class="info">
+                  <strong>{{ suggestion.name }}</strong>
+                  <small class="where">{{ suggestionWhere(suggestion) }}</small>
+                </span>
+                <span class="plus" aria-hidden="true"><ion-icon name="add"></ion-icon></span>
+              </button>
+            </li>
+          }
+        </ul>
+      </section>
+    }
     <app-last-update />
   </div>
 </ion-content>

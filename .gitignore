@@ -47,3 +47,6 @@ yarn-error.log*
 # Supabase local (estado da máquina e ligação ao projeto)
 **/supabase/.temp/
 **/supabase/.branches/
+
+# Dados pessoais de viagens (scripts de carga que não vão para o GitHub público)
+*.local.sql

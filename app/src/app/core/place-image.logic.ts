@@ -25,7 +25,11 @@ export function isWikimediaUrl(url: string): boolean {
 
 /** Bandeiras, brasões, mapas e logótipos não são fotos do sítio. */
 function looksLikeEmblem(url: string): boolean {
-  return /flag_of|coat_of_arms|\blogo\b|_logo|escudo|brasao|bandeira|locator|location_map|map_of|\.svg(\.|\/|$)/i.test(decodeURIComponent(url));
+  const name = decodeURIComponent(url)
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase();
+  return /flag_of|bandera|bandeira|drapeau|coat_of_arms|escudo|brasao|blason|emblem|\blogo\b|_logo|seal_of|sello|locator|location_map|localizacion|ubicacion|situacion|_map\b|\bmap_|mapa|provincia_|distrito_|\.svg(\.|\/|$)/i.test(name);
 }
 
 /**
@@ -50,7 +54,7 @@ export function pickImage(
   // 1.º o artigo com o nome do sítio, perto dele; 2.º o artigo com o nome (se não há coordenadas); 3.º um artigo perto cujo nome contém o do sítio.
   const best =
     withImage.find((page) => title(page) === name && near(page)) ??
-    withImage.find((page) => title(page) === name && (place.lat === null || !(page.coordinates ?? []).length)) ??
+    withImage.find((page) => title(page) === name && place.lat === null) ??
     withImage.find((page) => near(page) && title(page).includes(name));
   return best?.thumbnail?.source ?? null;
 }
