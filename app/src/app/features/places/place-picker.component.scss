@@ -22,13 +22,47 @@
   }
 }
 
-.results {
-  margin-top: 8px;
+.picker {
+  position: relative;
+}
+
+// A lista abre por cima do resto do formulário, por baixo do campo, e tem o seu próprio deslize.
+.dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 30;
+  max-height: min(46vh, 340px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 6px;
+  border: 1.5px solid var(--ct-ln);
+  border-radius: 20px;
+  background: var(--ct-bg);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
+  transform-origin: top center;
+}
+
+.tag {
+  flex: none;
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: var(--ct-acs);
+  color: var(--ct-act);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.hint {
+  margin: 8px 10px;
+  font-size: 14px;
+  color: var(--ct-mu);
 }
 
 .result-list {
   list-style: none;
-  margin: 4px 0 0;
+  margin: 0;
   padding: 0;
 }
 

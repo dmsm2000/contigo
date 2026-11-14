@@ -1,6 +1,7 @@
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
+import { reuseKnownPlace } from './places.service';
 import { PlaceCandidate } from './geocoder';
 import { PhotosService } from './photos.service';
 import { SupabaseService } from './supabase.service';
@@ -69,9 +70,10 @@ export class TripsService {
     return this.trips().find((trip) => trip.id === id);
   }
 
-  async addPastTrip(input: PastTripInput): Promise<void> {
+  /** Regista uma viagem já feita e devolve o id dela (para lhe juntar fotos logo a seguir). */
+  async addPastTrip(input: PastTripInput): Promise<string> {
     const placeId = await this.savePlace(input.place);
-    const { error } = await this.supabase.from('trips').insert({
+    const { data, error } = await this.supabase.from('trips').insert({
       place_id: placeId,
       status: 'past',
       start_date: startDateFor(input.year, input.month),
@@ -80,9 +82,10 @@ export class TripsService {
       would_return: input.wouldReturn,
       cost_eur: input.costEur,
       note: input.note,
-    });
-    if (error) throw error;
+    }).select('id').single<{ id: string }>();
+    if (error || !data) throw error ?? new Error('Não foi possível guardar a viagem.');
     await this.load();
+    return data.id;
   }
 
   /** Corrige uma viagem já feita (sítio, mês, com quem, nota…). O sítio antigo sai se ficar sem viagens. */
@@ -115,7 +118,8 @@ export class TripsService {
     await this.load();
   }
 
-  private async savePlace(place: PlaceCandidate): Promise<string> {
+  private async savePlace(candidate: PlaceCandidate): Promise<string> {
+    const place = await reuseKnownPlace(this.supabase, candidate);
     const row = {
       name: place.name,
       admin1: place.admin1,

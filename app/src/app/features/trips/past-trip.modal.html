@@ -7,7 +7,7 @@
       </button>
     </header>
 
-    <form (ngSubmit)="save()" novalidate>
+    <form id="past-trip-form" (ngSubmit)="save()" novalidate>
       <section class="block ct-rise" style="--i: 0">
         <app-place-picker
           inputId="trip-search"
@@ -17,7 +17,6 @@
           (placeChange)="setPlace($event)"
         />
       </section>
-
       <section class="block ct-rise" style="--i: 1">
         <span class="label" id="when-label">{{ 'trip.form.when' | transloco }}</span>
         <div class="row" role="group" aria-labelledby="when-label">
@@ -39,8 +38,35 @@
           </label>
         </div>
       </section>
-
-      <section class="block ct-rise" style="--i: 2">
+      @if (!trip) {
+        <section class="block ct-rise" style="--i: 2">
+          <span class="label" id="photos-label">
+            {{ 'trip.form.photos' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
+          </span>
+          <input #picker class="ct-visually-hidden" type="file" accept="image/*" multiple tabindex="-1" aria-hidden="true" (change)="onFiles($event)" />
+          <ul class="strip" aria-labelledby="photos-label">
+            @for (item of picked(); track item.id) {
+              <li class="strip-item">
+                <img [src]="item.preview" alt="" />
+                <button class="strip-remove" type="button" (click)="removePhoto(item)" [attr.aria-label]="'photos.remove' | transloco" [disabled]="saving()">
+                  <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+                </button>
+              </li>
+            }
+            @if (picked().length < maxPhotos) {
+              <li>
+                <button class="strip-add" type="button" (click)="choosePhotos()" [disabled]="saving()">
+                  <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                  @if (!picked().length) {
+                    <span>{{ 'trip.form.addPhotos' | transloco }}</span>
+                  }
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+      <section class="block ct-rise" style="--i: 3">
         <button
           class="switch-row"
           type="button"
@@ -55,8 +81,7 @@
           <span class="switch" [class.on]="withPartner()" aria-hidden="true"><span></span></span>
         </button>
       </section>
-
-      <section class="block ct-rise" style="--i: 3">
+      <section class="block ct-rise" style="--i: 4">
         <span class="label" id="return-label">
           {{ 'trip.form.wouldReturn' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
         </span>
@@ -74,8 +99,20 @@
           }
         </div>
       </section>
-
-      <section class="block ct-rise" style="--i: 4">
+      <section class="block ct-rise" style="--i: 5">
+        <label class="label" for="trip-note">
+          {{ 'trip.form.note' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
+        </label>
+        <textarea
+          id="trip-note"
+          name="note"
+          rows="3"
+          maxlength="500"
+          [placeholder]="'trip.form.notePlaceholder' | transloco"
+          [(ngModel)]="note"
+        ></textarea>
+      </section>
+      <section class="block ct-rise" style="--i: 6">
         <label class="label" for="trip-cost">
           {{ 'trip.form.cost' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
         </label>
@@ -92,27 +129,21 @@
         <p class="hint">{{ 'trip.form.costHint' | transloco }}</p>
       </section>
 
-      <section class="block ct-rise" style="--i: 5">
-        <label class="label" for="trip-note">
-          {{ 'trip.form.note' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
-        </label>
-        <textarea
-          id="trip-note"
-          name="note"
-          rows="3"
-          maxlength="500"
-          [placeholder]="'trip.form.notePlaceholder' | transloco"
-          [(ngModel)]="note"
-        ></textarea>
-      </section>
-
       @if (error(); as key) {
         <p class="error" role="alert">{{ key | transloco }}</p>
       }
 
-      <button class="ct-btn save" type="submit" [disabled]="saving()">
-        {{ (saving() ? 'trip.form.saving' : 'trip.form.save') | transloco }}
-      </button>
     </form>
   </div>
 </ion-content>
+
+<!-- O botão fica fora da área que desliza: nunca tapa o formulário nem deixa ver o que vai por trás. -->
+<ion-footer class="form-footer">
+    <button class="ct-btn save" type="submit" form="past-trip-form" [disabled]="saving()">
+      @if (sending(); as state) {
+        {{ 'trip.form.sendingPhotos' | transloco: { done: state.done, total: state.total } }}
+      } @else {
+        {{ (saving() ? 'trip.form.saving' : trip ? 'trip.form.saveEdit' : 'trip.form.save') | transloco }}
+      }
+    </button>
+</ion-footer>

@@ -2,6 +2,7 @@ import { computed, effect, inject, Injectable, signal, untracked } from '@angula
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
 import { PlaceCandidate } from './geocoder';
+import { reuseKnownPlace } from './places.service';
 import { SupabaseService } from './supabase.service';
 import { MinStay, Suggestion, SUGGESTIONS } from './suggestions';
 import { TripsService } from './trips.service';
@@ -85,7 +86,8 @@ export class WishlistService {
     this.loaded.set(true);
   }
 
-  async add(place: PlaceCandidate, input: WishInput): Promise<void> {
+  async add(candidate: PlaceCandidate, input: WishInput): Promise<void> {
+    const place = await reuseKnownPlace(this.supabase, candidate);
     const row: Record<string, unknown> = {
       name: place.name,
       admin1: place.admin1,

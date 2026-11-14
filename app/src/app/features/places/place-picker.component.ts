@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, computed, inject, inpu
 import { IonIcon } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { locationOutline, searchOutline } from 'ionicons/icons';
+import { locationOutline, searchOutline, starOutline } from 'ionicons/icons';
 import { GeocoderService, PlaceCandidate } from '../../core/geocoder';
 import { LanguageService } from '../../core/language.service';
 import { initialOf, placeSubtitle, tileColors } from '../../core/trips.logic';
@@ -20,6 +20,7 @@ import { initialOf, placeSubtitle, tileColors } from '../../core/trips.logic';
 export class PlacePickerComponent implements AfterViewInit, OnDestroy {
   private readonly geocoder = inject(GeocoderService);
   private readonly language = inject(LanguageService).language;
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** O sítio escolhido. */
   readonly place = model<PlaceCandidate | null>(null);
@@ -38,6 +39,8 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
   protected readonly searching = signal(false);
   protected readonly searched = signal(false);
   protected readonly searchFailed = signal(false);
+  /** A lista aberta por baixo do campo: fecha ao escolher, com Esc e quando o foco sai do seletor. */
+  protected readonly open = signal(false);
   /** O que foi escrito, se der para guardar só com o nome. */
   protected readonly typed = computed(() => {
     const name = this.query().trim();
@@ -45,7 +48,7 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
   });
 
   constructor() {
-    addIcons({ locationOutline, searchOutline });
+    addIcons({ locationOutline, searchOutline, starOutline });
   }
 
   ngAfterViewInit(): void {
@@ -58,7 +61,20 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
     this.searchRequest?.abort();
   }
 
+  protected onFocusOut(event: FocusEvent): void {
+    // Tocar num resultado tira o foco do campo mas continua dentro do seletor: só fecha quando o foco sai mesmo.
+    if (!this.host.nativeElement.contains(event.relatedTarget as Node | null)) this.open.set(false);
+  }
+
+  protected onKey(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.open()) {
+      event.stopPropagation();
+      this.open.set(false);
+    }
+  }
+
   protected onQuery(value: string): void {
+    this.open.set(true);
     this.query.set(value);
     clearTimeout(this.searchTimer);
     this.searchRequest?.abort();
@@ -80,7 +96,7 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
     const request = new AbortController();
     this.searchRequest = request;
     try {
-      const found = await this.geocoder.search(text, request.signal);
+      const found = await this.geocoder.search(text, this.language(), request.signal);
       if (request.signal.aborted) return;
       this.results.set(found);
     } catch {
@@ -97,6 +113,7 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
 
   protected choose(candidate: PlaceCandidate): void {
     this.place.set(candidate);
+    this.open.set(false);
     this.results.set([]);
     this.query.set('');
   }

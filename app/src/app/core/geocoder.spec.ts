@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mapPhoton } from './geocoder';
+import { mapMeteo, mapPhoton, mergeCandidates } from './geocoder';
 
 const feature = (properties: Record<string, unknown>, coordinates: number[] = [-8.428, 41.551]) => ({
   type: 'Feature',
@@ -95,5 +95,44 @@ describe('mapPhoton', () => {
     expect(mapPhoton({})).toEqual([]);
     expect(mapPhoton({ features: 'x' })).toEqual([]);
     expect(mapPhoton({ features: [{}, { properties: {} }, null] as never })).toEqual([]);
+  });
+});
+
+describe('mapMeteo', () => {
+  const result = (over: Record<string, unknown>) => ({ id: 1, name: 'X', latitude: 1, longitude: 2, country_code: 'ES', feature_code: 'PPL', population: 0, ...over });
+
+  it('põe a capital à frente de cidades com o mesmo nome e traduz o código', () => {
+    const out = mapMeteo(
+      {
+        results: [
+          result({ id: 3675707, name: 'Madrid', admin1: 'Cundinamarca', country_code: 'CO', feature_code: 'PPLA2', population: 135000 }),
+          result({ id: 3117735, name: 'Madrid', admin1: 'Comunidade de Madrid', feature_code: 'PPLC', population: 3255944 }),
+        ],
+      },
+      'Madrid',
+    );
+    expect(out.map((place) => place.countryCode)).toEqual(['ES', 'CO']);
+    expect(out[0]).toMatchObject({ osmRef: 'G3117735', capital: true });
+  });
+
+  it('o nome exato vem antes de um que só começa assim', () => {
+    const out = mapMeteo({ results: [result({ id: 2, name: 'Madridejos', population: 11000 }), result({ id: 3, name: 'Madrid', population: 5 })] }, 'madrid');
+    expect(out.map((place) => place.name)).toEqual(['Madrid', 'Madridejos']);
+  });
+
+  it('deixa de fora aeroportos e outros sítios que não são destino', () => {
+    const out = mapMeteo({ results: [result({ name: 'Aeroporto', feature_code: 'AIRP' }), result({ id: 9, name: 'Serra', feature_code: 'MT' })] }, 'x');
+    expect(out.map((place) => place.name)).toEqual(['Serra']);
+  });
+
+  it('junta resultados sem repetir nome e país', () => {
+    const a = { osmRef: 'G1', name: 'Braga', admin1: null, countryCode: 'PT', lat: 1, lng: 1 };
+    const b = { ...a, osmRef: 'R2' };
+    expect(mergeCandidates([[a], [b, { ...a, name: 'Guimarães', osmRef: 'R3' }]]).map((place) => place.osmRef)).toEqual(['G1', 'R3']);
+  });
+
+  it('respostas estranhas não rebentam', () => {
+    expect(mapMeteo(null, 'x')).toEqual([]);
+    expect(mapMeteo({ results: 'nada' }, 'x')).toEqual([]);
   });
 });

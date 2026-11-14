@@ -7,11 +7,12 @@
       </button>
     </header>
 
-    <form (ngSubmit)="save()" novalidate>
+    <form id="expense-form" (ngSubmit)="save()" novalidate>
       <section class="block ct-rise" style="--i: 0">
         <label class="label" for="expense-amount">{{ 'expenses.form.amount' | transloco }}</label>
         <div class="amount-field">
           <input
+            #amountField
             id="expense-amount"
             name="amount"
             type="text"
@@ -37,6 +38,7 @@
               [attr.aria-checked]="category() === option"
               (click)="category.set(option)"
             >
+              <ion-icon [name]="categoryIcon[option]" aria-hidden="true"></ion-icon>
               {{ 'expenses.category.' + option | transloco }}
             </button>
           }
@@ -69,9 +71,12 @@
         <p class="error" role="alert">{{ key | transloco }}</p>
       }
 
-      <button class="ct-btn save" type="submit" [disabled]="saving()">
-        {{ (saving() ? 'trip.form.saving' : 'expenses.form.save') | transloco }}
-      </button>
     </form>
   </div>
 </ion-content>
+
+<ion-footer class="form-footer">
+  <button class="ct-btn save" type="submit" form="expense-form" [disabled]="saving()">
+    {{ (saving() ? 'trip.form.saving' : 'expenses.form.save') | transloco }}
+  </button>
+</ion-footer>

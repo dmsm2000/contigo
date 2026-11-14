@@ -1,9 +1,9 @@
-import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, ElementRef, inject, Input, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonIcon, ModalController, ToastController } from '@ionic/angular';
+import { IonContent, IonFooter, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { closeOutline } from 'ionicons/icons';
+import { bedOutline, closeOutline, ellipsisHorizontal, restaurantOutline, ticketOutline, trainOutline } from 'ionicons/icons';
 import { todayIso } from '../../core/availability.logic';
 import { DrawService } from '../../core/draw.service';
 import { cleanExpenseNote, EXPENSE_CATEGORIES, Expense, ExpenseCategory, parseAmount } from '../../core/expenses.logic';
@@ -15,11 +15,11 @@ import { TripsService } from '../../core/trips.service';
 /** Registar uma despesa numa viagem. */
 @Component({
   selector: 'app-expense-modal',
-  imports: [IonContent, IonIcon, FormsModule, TranslocoPipe],
+  imports: [IonContent, IonFooter, IonIcon, FormsModule, TranslocoPipe],
   templateUrl: './expense.modal.html',
   styleUrl: './expense.modal.scss',
 })
-export class ExpenseModal implements OnInit {
+export class ExpenseModal implements OnInit, AfterViewInit {
   private readonly modalCtrl = inject(ModalController);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
@@ -34,6 +34,14 @@ export class ExpenseModal implements OnInit {
   @Input() expense: Expense | null = null;
 
   protected readonly categories = EXPENSE_CATEGORIES;
+  protected readonly categoryIcon: Record<ExpenseCategory, string> = {
+    transport: 'train-outline',
+    stay: 'bed-outline',
+    food: 'restaurant-outline',
+    activities: 'ticket-outline',
+    other: 'ellipsis-horizontal',
+  };
+  private readonly amountField = viewChild<ElementRef<HTMLInputElement>>('amountField');
   protected readonly chosenTrip = signal('');
   protected readonly category = signal<ExpenseCategory>('food');
   protected readonly saving = signal(false);
@@ -48,7 +56,7 @@ export class ExpenseModal implements OnInit {
   );
 
   constructor() {
-    addIcons({ closeOutline });
+    addIcons({ bedOutline, closeOutline, ellipsisHorizontal, restaurantOutline, ticketOutline, trainOutline });
   }
 
   ngOnInit(): void {
@@ -63,6 +71,11 @@ export class ExpenseModal implements OnInit {
       return;
     }
     this.chosenTrip.set(this.tripId ?? this.draws.active()?.id ?? this.trips.trips()[0]?.id ?? '');
+  }
+
+  ngAfterViewInit(): void {
+    // Uma despesa nova começa pelo valor: abre o teclado logo (depois de a animação de entrada acabar).
+    if (!this.expense) setTimeout(() => this.amountField()?.nativeElement.focus(), 450);
   }
 
   protected close(): void {

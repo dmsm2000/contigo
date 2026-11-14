@@ -32,7 +32,7 @@
     "form": {
       "title": "Past trip",
       "where": "Where did you go?",
-      "searchPlaceholder": "Search for a city or a place",
+      "searchPlaceholder": "E.g. Madrid, Spain",
       "searching": "Searching…",
       "noResults": "We couldn't find anything with that name.",
       "searchError": "Couldn't search right now. You can save just the name.",
@@ -49,13 +49,13 @@
       "maybe": "Maybe",
       "no": "No",
       "cost": "How much did we spend?",
-      "costHint": "In euros, the whole trip.",
+      "costHint": "The trip's total, in euros. If you log expenses, those count instead.",
       "note": "Note",
       "notePlaceholder": "A moment you want to remember",
       "save": "Save trip",
       "saving": "Saving…",
       "saved": "Trip saved.",
-      "attribution": "Place search with data © OpenStreetMap contributors.",
+      "attribution": "Places: GeoNames (via Open-Meteo) and OpenStreetMap.",
       "errors": {
         "place": "Choose the place.",
         "future": "That month hasn't happened yet.",
@@ -63,7 +63,13 @@
         "save": "Couldn't save. Try again."
       },
       "editTitle": "Edit the trip",
-      "updated": "Trip updated."
+      "updated": "Trip updated.",
+      "photos": "Photos",
+      "addPhotos": "Add photos",
+      "sendingPhotos": "Sending photos {{done}}/{{total}}…",
+      "saveEdit": "Save changes",
+      "photosFailed": "Trip saved, but {{count}} photo(s) didn't go through. Add them from the trip.",
+      "capital": "Capital"
     },
     "detail": {
       "together": "We went together",

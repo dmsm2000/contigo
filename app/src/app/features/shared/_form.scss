@@ -142,3 +142,25 @@ ion-content {
   width: 100%;
   margin-top: 22px;
 }
+
+// O botão de guardar vive num <ion-footer>, fora da área que desliza: fica sempre à vista, com fundo sólido.
+.form-footer {
+  --background: var(--ct-bg);
+  border-top: 1px solid var(--ct-ln);
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+
+  &::before {
+    display: none;
+  }
+
+  .save {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+// A lista de resultados da pesquisa de sítios abre por cima dos blocos seguintes: o bloco que a contém fica à frente.
+.block:has(app-place-picker) {
+  position: relative;
+  z-index: 20;
+}

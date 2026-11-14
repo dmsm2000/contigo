@@ -32,7 +32,7 @@
     "form": {
       "title": "Viagem já feita",
       "where": "Onde foram?",
-      "searchPlaceholder": "Procura uma cidade ou um sítio",
+      "searchPlaceholder": "Ex.: Madrid, Espanha",
       "searching": "A procurar…",
       "noResults": "Não encontrámos nada com esse nome.",
       "searchError": "Não foi possível procurar agora. Podes guardar só o nome.",
@@ -49,13 +49,13 @@
       "maybe": "Talvez",
       "no": "Não",
       "cost": "Quanto gastámos?",
-      "costHint": "Em euros, o total da viagem.",
+      "costHint": "O total da viagem, em euros. Se registares despesas, contam elas.",
       "note": "Nota",
       "notePlaceholder": "Um momento que queres lembrar",
       "save": "Guardar viagem",
       "saving": "A guardar…",
       "saved": "Viagem guardada.",
-      "attribution": "Pesquisa de sítios com dados © OpenStreetMap contributors.",
+      "attribution": "Sítios: GeoNames (via Open-Meteo) e OpenStreetMap.",
       "errors": {
         "place": "Escolhe o sítio.",
         "future": "Esse mês ainda não chegou.",
@@ -63,7 +63,13 @@
         "save": "Não foi possível guardar. Tenta outra vez."
       },
       "editTitle": "Corrigir a viagem",
-      "updated": "Viagem atualizada."
+      "updated": "Viagem atualizada.",
+      "photos": "Fotos",
+      "addPhotos": "Juntar fotos",
+      "sendingPhotos": "A enviar fotos {{done}}/{{total}}…",
+      "saveEdit": "Guardar alterações",
+      "photosFailed": "Viagem guardada, mas {{count}} foto(s) não seguiram. Junta-as na viagem.",
+      "capital": "Capital"
     },
     "detail": {
       "together": "Fomos os dois",
