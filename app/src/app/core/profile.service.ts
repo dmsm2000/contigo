@@ -1,5 +1,6 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { AuthService } from './auth.service';
+import { AllowanceChange, monthlyIncome } from './expenses.logic';
 import { compressAvatar } from './image-compress';
 import { Language, LanguageService } from './language.service';
 import { SupabaseService } from './supabase.service';
@@ -42,6 +43,13 @@ export class ProfileService {
   /** A outra pessoa, se já existe (no início só há uma conta). */
   /** O que entra por mês: a dotação dos dois (ou só a minha enquanto a outra pessoa não tem conta). */
   readonly monthlyTotal = computed(() => this.people().reduce((sum, person) => sum + Number(person.monthly_allowance), 0));
+
+  /** Quando cada um mudou a sua dotação (a de antes da primeira mudança vem como "2000-01"). */
+  readonly allowanceHistory = signal<AllowanceChange[]>([]);
+
+  /** O que os dois punham num mês ("2026-11"): conta com as mudanças de dotação; sem histórico, a dotação de hoje. */
+  incomeFor = (month: string): number =>
+    monthlyIncome(this.allowanceHistory(), this.people().map((person) => person.id), month, this.monthlyTotal());
   readonly partner = computed(() => this.people().find((person) => person.id !== this.auth.userId()) ?? null);
 
   constructor() {
@@ -52,6 +60,7 @@ export class ProfileService {
       } else {
         this.profile.set(null);
         this.people.set([]);
+        this.allowanceHistory.set([]);
         this.avatarUrls.set(new Map());
       }
     });
@@ -190,6 +199,7 @@ export class ProfileService {
     if (error || !data) return false;
     this.profile.set(data);
     this.people.update((people) => people.map((person) => (person.id === data.id ? data : person)));
+    await this.loadAllowanceHistory();
     return true;
   }
 
@@ -202,12 +212,22 @@ export class ProfileService {
     const { data } = await this.supabase.from('profiles').select(COLUMNS).returns<Profile[]>();
     if (!data) return;
     this.people.set(data);
+    void this.loadAllowanceHistory();
     const mine = data.find((person) => person.id === userId);
     if (!mine) return;
     this.profile.set(mine);
     this.language.set(mine.language);
     this.theme.set(mine.theme);
     await this.signAvatars();
+  }
+
+  private async loadAllowanceHistory(): Promise<void> {
+    const { data } = await this.supabase
+      .from('allowance_history')
+      .select('user_id, month, amount')
+      .returns<{ user_id: string; month: string; amount: number | string }[]>();
+    if (!data) return;
+    this.allowanceHistory.set(data.map((row) => ({ userId: row.user_id, month: row.month, amount: Number(row.amount) })));
   }
 
   private async save(changes: Partial<Pick<Profile, 'name' | 'language' | 'theme'>>): Promise<void> {

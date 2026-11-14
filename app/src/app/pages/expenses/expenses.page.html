@@ -40,14 +40,44 @@
       }
     </section>
 
-    <a class="allowance ct-card ct-rise" style="--i: 2" routerLink="/settings">
-      <div class="allowance-text">
-        <strong>{{ 'expenses.allowance' | transloco }}</strong>
-        <small>{{ 'expenses.allowanceText' | transloco: { total: money(profile.monthlyTotal()) } }}</small>
+    <section class="pot ct-card ct-rise" style="--i: 2">
+      <h2 class="pot-title">{{ 'expenses.potTitle' | transloco }}</h2>
+      <ul class="pot-people">
+        @for (person of pot(); track person.id) {
+          <li>
+            @if (person.mine) {
+              <a class="pot-row" routerLink="/settings">
+                <app-avatar [userId]="person.id" [size]="36" />
+                <span class="pot-name">{{ person.name }}</span>
+                <span class="pot-amount">{{ money(person.allowance) }}<small>{{ 'expenses.perMonth' | transloco }}</small></span>
+                <ion-icon class="pot-chev" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+              </a>
+            } @else {
+              <div class="pot-row">
+                <app-avatar [userId]="person.id" [size]="36" />
+                <span class="pot-name">{{ person.name }}</span>
+                <span class="pot-amount">{{ money(person.allowance) }}<small>{{ 'expenses.perMonth' | transloco }}</small></span>
+                <span class="pot-chev"></span>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+      <div class="pot-sum">
+        <span>{{ 'expenses.potTogether' | transloco }}</span>
+        <strong>{{ money(profile.monthlyTotal()) }}<small>{{ 'expenses.perMonth' | transloco }}</small></strong>
       </div>
-      <span class="allowance-btn">{{ money(myAllowance()) }}</span>
-      <ion-icon class="allowance-chev" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
-    </a>
+      @if (expenses.items().length) {
+        <p class="pot-spent">
+          {{ 'expenses.potSpent' | transloco: { total: money(cebola().spentThisMonth) } }}
+          @for (person of pot(); track person.id) {
+            @if (person.spent > 0) {
+              · {{ person.name }} {{ money(person.spent) }}
+            }
+          }
+        </p>
+      }
+    </section>
 
     @if (expenses.loaded()) {
       @if (expenses.items().length) {
@@ -85,6 +115,35 @@
         </section>
 
         <section class="block ct-rise" style="--i: 5">
+          <h2 class="ct-display section-title">{{ 'expenses.byMonth' | transloco }}</h2>
+          <ul class="months ct-card">
+            @for (row of ledgerShown(); track row.month) {
+              <li>
+                <span class="month-head">
+                  <strong>{{ monthLabel(row.month) }}</strong>
+                  @if (row.current) {
+                    <span class="month-now">{{ 'expenses.thisMonth' | transloco }}</span>
+                  }
+                </span>
+                <span class="month-line">
+                  {{ 'expenses.monthIn' | transloco: { amount: money(row.income) } }} ·
+                  {{ 'expenses.monthOut' | transloco: { amount: money(row.spent) } }}
+                </span>
+                <span class="month-balance" [class.low]="row.balance < 0">
+                  {{ row.balance < 0 ? '−' : '+' }}{{ money(row.balance < 0 ? -row.balance : row.balance) }}
+                  <small>{{ (row.current ? 'expenses.monthNow' : 'expenses.monthLeft') | transloco }}</small>
+                </span>
+              </li>
+            }
+          </ul>
+          @if (ledger().length > 6) {
+            <button class="more" type="button" (click)="showAllMonths.set(!showAllMonths())">
+              {{ (showAllMonths() ? 'expenses.showLess' : 'expenses.showAll') | transloco }}
+            </button>
+          }
+        </section>
+
+        <section class="block ct-rise" style="--i: 6">
           <h2 class="ct-display section-title">{{ 'expenses.recent' | transloco }}</h2>
           <ul class="rows">
             @for (expense of expenses.newest().slice(0, 20); track expense.id) {

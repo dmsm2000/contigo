@@ -141,50 +141,8 @@
   }
 }
 
-.allowance {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 12px;
-  padding: 14px 16px;
-}
 
-.allowance-text {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
 
-  strong {
-    font-size: 16px;
-  }
-
-  small {
-    font-size: 13px;
-    color: var(--ct-mu);
-  }
-}
-
-.allowance-btn {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0 18px;
-  border: none;
-  border-radius: 22px;
-  background: var(--ct-acs);
-  color: var(--ct-act);
-  font: 700 15px var(--ion-font-family);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-
-  &:focus-visible {
-    outline: 2px solid var(--ct-ac);
-    outline-offset: 2px;
-  }
-}
 
 .block {
   margin-top: 24px;
@@ -323,17 +281,7 @@
   margin-top: 12px;
 }
 
-a.allowance {
-  color: var(--ct-tx);
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
-}
 
-.allowance-chev {
-  flex: none;
-  font-size: 20px;
-  color: var(--ct-mu);
-}
 
 // A despesa inteira é um botão: tocar abre-a para corrigir.
 .expense-body {
@@ -347,5 +295,166 @@ a.allowance {
   color: var(--ct-tx);
   font: inherit;
   text-align: left;
+  cursor: pointer;
+}
+
+// O dinheiro dos dois: o que cada um põe por mês, o total e o que já se gastou.
+.pot {
+  margin-top: 12px;
+  padding: 16px;
+}
+
+.pot-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pot-people {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pot-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  color: var(--ct-tx);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pot-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.pot-amount {
+  font-size: 16px;
+  font-weight: 700;
+
+  small {
+    margin-left: 3px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ct-mu);
+  }
+}
+
+.pot-chev {
+  flex: none;
+  width: 20px;
+  font-size: 20px;
+  color: var(--ct-mu);
+}
+
+.pot-sum {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ct-ln);
+  font-size: 14px;
+  color: var(--ct-mu);
+
+  strong {
+    font: 600 22px var(--ct-font-display);
+    color: var(--ct-tx);
+
+    small {
+      margin-left: 3px;
+      font: 500 12px var(--ion-font-family);
+      color: var(--ct-mu);
+    }
+  }
+}
+
+.pot-spent {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ct-mu);
+}
+
+// Mês a mês: entrou, gastou-se e o que ficou (a cebola a crescer).
+.months {
+  list-style: none;
+  margin: 0;
+  padding: 4px 16px;
+
+  li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 12px;
+    row-gap: 2px;
+    padding: 12px 0;
+
+    & + li {
+      border-top: 1px solid var(--ct-ln);
+    }
+  }
+}
+
+.month-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  strong {
+    font-size: 15px;
+  }
+}
+
+.month-now {
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--ct-acs);
+  color: var(--ct-act);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.month-line {
+  grid-column: 1;
+  font-size: 13px;
+  color: var(--ct-mu);
+}
+
+.month-balance {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  text-align: right;
+  font: 600 18px var(--ct-font-display);
+
+  small {
+    display: block;
+    font: 500 11px var(--ion-font-family);
+    color: var(--ct-mu);
+  }
+
+  &.low {
+    color: #d64545;
+  }
+}
+
+:host-context(.ion-palette-dark) .month-balance.low {
+  color: #ff8a8a;
+}
+
+.more {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: var(--ct-ac);
+  font: 600 14px var(--ion-font-family);
   cursor: pointer;
 }

@@ -1,10 +1,12 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AlertController, IonContent, IonIcon, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { add, chevronBackOutline, chevronForwardOutline, receiptOutline, trashOutline } from 'ionicons/icons';
-import { Expense, totalOf } from '../../core/expenses.logic';
+import { AuthService } from '../../core/auth.service';
+import { todayIso } from '../../core/availability.logic';
+import { Expense, monthlyLedger, spentByPerson, totalOf } from '../../core/expenses.logic';
 import { ExpensesService } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
 import { ProfileService } from '../../core/profile.service';
@@ -13,11 +15,12 @@ import { TripsService } from '../../core/trips.service';
 import { TripFlowService } from '../../features/trips/trip-flow.service';
 import { TripLabels } from '../../features/trips/trip-labels.service';
 import { AuditLineComponent } from '../../features/audit/audit-line.component';
+import { AvatarComponent } from '../../features/profile/avatar.component';
 
 /** Quanto se gastou, por viagem e por categoria, e a cebola: o que sobra das dotações. */
 @Component({
   selector: 'app-expenses',
-  imports: [IonContent, IonIcon, RouterLink, TranslocoPipe, AuditLineComponent],
+  imports: [IonContent, IonIcon, RouterLink, TranslocoPipe, AuditLineComponent, AvatarComponent],
   templateUrl: './expenses.page.html',
   styleUrl: './expenses.page.scss',
 })
@@ -32,7 +35,27 @@ export class ExpensesPage {
   protected readonly trips = inject(TripsService);
   protected readonly labels = inject(TripLabels);
 
+  private readonly auth = inject(AuthService);
   protected readonly cebola = this.expenses.cebola;
+
+  /** Os dois, com o que cada um põe por mês e o que gastou este mês. */
+  protected readonly pot = computed(() => {
+    const month = todayIso().slice(0, 7);
+    const spent = spentByPerson(this.expenses.items(), month);
+    const me = this.auth.userId();
+    return this.profile.people().map((person) => ({
+      id: person.id,
+      name: person.id === me ? this.transloco.translate('wish.you') : person.name || this.transloco.translate('wish.theOther'),
+      mine: person.id === me,
+      allowance: Number(person.monthly_allowance),
+      spent: spent.get(person.id) ?? 0,
+    }));
+  });
+
+  /** Mês a mês: o que entrou, o que se gastou e o que ficou. Mostram-se os 6 mais recentes até se pedir o resto. */
+  protected readonly showAllMonths = signal(false);
+  protected readonly ledger = computed(() => monthlyLedger(this.expenses.items(), this.profile.incomeFor, todayIso()));
+  protected readonly ledgerShown = computed(() => (this.showAllMonths() ? this.ledger() : this.ledger().slice(0, 6)));
   protected readonly total = computed(() => totalOf(this.expenses.items()));
   protected readonly myAllowance = computed(() => Number(this.profile.profile()?.monthly_allowance ?? 0));
 
@@ -69,6 +92,13 @@ export class ExpensesPage {
 
   protected money(amount: number): string {
     return formatCost(amount, this.language());
+  }
+
+  /** "novembro de 2026", com a inicial em maiúscula. */
+  protected monthLabel(month: string): string {
+    const locale = { pt: 'pt-PT', es: 'es-ES', en: 'en-GB' }[this.language()];
+    const text = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(new Date(`${month}-01T12:00:00`));
+    return text.charAt(0).toUpperCase() + text.slice(1);
   }
 
   protected tripName(expense: Expense): string {

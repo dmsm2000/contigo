@@ -100,6 +100,36 @@ export function monthsInclusive(fromMonth: string, toMonth: string): number {
   return Math.max(0, (toYear - fromYear) * 12 + (to - from) + 1);
 }
 
+/** O que entra num mês: um valor fixo, ou uma função do mês ("2026-11") quando as dotações mudaram ao longo do tempo. */
+export type Income = number | ((month: string) => number);
+
+function incomeOf(income: Income, month: string): number {
+  return typeof income === 'number' ? income : income(month);
+}
+
+export interface AllowanceChange {
+  userId: string;
+  /** "2026-11": vale a partir deste mês. "2000-01" é a dotação desde sempre. */
+  month: string;
+  amount: number;
+}
+
+/**
+ * O que os dois põem num mês: para cada pessoa, a dotação da mudança mais recente até esse mês (a de antes da primeira
+ * mudança é a primeira que se conhece), somadas. Sem histórico, devolve `fallback` (a dotação de hoje).
+ */
+export function monthlyIncome(history: readonly AllowanceChange[], userIds: readonly string[], month: string, fallback: number): number {
+  if (!history.length) return fallback;
+  let total = 0;
+  for (const userId of userIds) {
+    const own = history.filter((change) => change.userId === userId).sort((a, b) => a.month.localeCompare(b.month));
+    if (!own.length) continue;
+    const applicable = own.filter((change) => change.month <= month);
+    total += (applicable.length ? applicable[applicable.length - 1] : own[0]).amount;
+  }
+  return roundCents(total);
+}
+
 export interface Cebola {
   /** A cebola: o que sobrou dos meses que já acabaram e passa para o mês de hoje. Pode ser negativa. */
   amount: number;
@@ -121,8 +151,9 @@ export interface Cebola {
  * gasta-se da dotação deste mês e da cebola que veio de trás. Conta a partir do mês do primeiro gasto (antes disso a
  * app não sabe o que se gastou, e não inventa).
  */
-export function cebola(expenses: readonly Expense[], monthly: number, today: string): Cebola {
+export function cebola(expenses: readonly Expense[], income: Income, today: string): Cebola {
   const thisMonth = today.slice(0, 7);
+  const monthly = incomeOf(income, thisMonth);
   const spentThisMonth = totalOf(expenses.filter((expense) => expense.spentOn.startsWith(thisMonth)));
   if (!expenses.length) return { amount: 0, since: null, months: 0, monthly, spentThisMonth, available: roundCents(monthly - spentThisMonth) };
 
@@ -136,7 +167,8 @@ export function cebola(expenses: readonly Expense[], monthly: number, today: str
   const closedMonths = Math.max(0, monthsInclusive(since, thisMonth) - 1);
   let amount = 0;
   for (let index = 0; index < closedMonths; index++) {
-    amount += monthly - (spentByMonth.get(addMonth(since, index)) ?? 0);
+    const month = addMonth(since, index);
+    amount += incomeOf(income, month) - (spentByMonth.get(month) ?? 0);
   }
   amount = roundCents(amount);
   return { amount, since, months: closedMonths, monthly, spentThisMonth, available: roundCents(monthly + amount - spentThisMonth) };
@@ -151,4 +183,56 @@ function addMonth(month: string, count: number): string {
 
 function roundCents(value: number): number {
   return Math.round(value * 100) / 100;
+}
+
+export interface LedgerMonth {
+  /** "2026-11". */
+  month: string;
+  /** O que entrou neste mês: as dotações dos dois. */
+  income: number;
+  /** O que se gastou neste mês. */
+  spent: number;
+  /** A cebola que vinha de trás quando o mês começou. */
+  carried: number;
+  /** O que ficou no fim do mês (ou o que há agora, se for o mês de hoje): a cebola que passa ao seguinte. */
+  balance: number;
+  /** É o mês de hoje (ainda a decorrer). */
+  current: boolean;
+}
+
+/**
+ * O dinheiro dos dois mês a mês, do primeiro gasto até hoje, com o mais recente primeiro. Cada mês recebe a dotação
+ * dos dois, gasta-se dela e o que sobra (ou falta) passa ao mês seguinte: é a cebola a crescer.
+ */
+export function monthlyLedger(expenses: readonly Expense[], income: Income, today: string): LedgerMonth[] {
+  const thisMonth = today.slice(0, 7);
+  if (!expenses.length) return [];
+  const since = expenses.map((expense) => expense.spentOn.slice(0, 7)).sort()[0];
+  const spentByMonth = new Map<string, number>();
+  for (const expense of expenses) {
+    const month = expense.spentOn.slice(0, 7);
+    spentByMonth.set(month, (spentByMonth.get(month) ?? 0) + expense.amount);
+  }
+  const rows: LedgerMonth[] = [];
+  let carried = 0;
+  const count = monthsInclusive(since, thisMonth);
+  for (let index = 0; index < count; index++) {
+    const month = addMonth(since, index);
+    const spent = roundCents(spentByMonth.get(month) ?? 0);
+    const entered = incomeOf(income, month);
+    const balance = roundCents(carried + entered - spent);
+    rows.push({ month, income: entered, spent, carried, balance, current: month === thisMonth });
+    carried = balance;
+  }
+  return rows.reverse();
+}
+
+/** Quanto cada pessoa gastou (quem registou a despesa) num mês ("2026-11"); sem mês, no total. */
+export function spentByPerson(expenses: readonly Expense[], month?: string): Map<string | null, number> {
+  const totals = new Map<string | null, number>();
+  for (const expense of expenses) {
+    if (month && !expense.spentOn.startsWith(month)) continue;
+    totals.set(expense.userId, roundCents((totals.get(expense.userId) ?? 0) + expense.amount));
+  }
+  return totals;
 }

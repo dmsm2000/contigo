@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   cebola,
+  monthlyIncome,
+  monthlyLedger,
+  spentByPerson,
   cleanExpenseNote,
   Expense,
   monthsInclusive,
@@ -112,5 +115,78 @@ describe('cebola', () => {
     expect(monthsInclusive('2026-11', '2026-11')).toBe(1);
     expect(monthsInclusive('2026-11', '2027-02')).toBe(4);
     expect(monthsInclusive('2026-12', '2026-11')).toBe(0);
+  });
+});
+
+describe('monthlyLedger', () => {
+  const at = (id: string, amount: number, spentOn: string, userId = 'u1') => expense(id, amount, { spentOn, userId });
+
+  it('sem despesas não há meses', () => {
+    expect(monthlyLedger([], 400, '2026-11-14')).toEqual([]);
+  });
+
+  it('cada mês recebe a dotação e passa o que sobra ao seguinte, com o mais recente primeiro', () => {
+    const rows = monthlyLedger([at('a', 100, '2026-09-10'), at('b', 500, '2026-10-02'), at('c', 50, '2026-11-03')], 400, '2026-11-14');
+    expect(rows.map((row) => row.month)).toEqual(['2026-11', '2026-10', '2026-09']);
+    expect(rows[2]).toMatchObject({ income: 400, spent: 100, carried: 0, balance: 300, current: false });
+    expect(rows[1]).toMatchObject({ spent: 500, carried: 300, balance: 200 });
+    expect(rows[0]).toMatchObject({ spent: 50, carried: 200, balance: 550, current: true });
+  });
+
+  it('um mês sem gastos também conta, e bate certo com a cebola', () => {
+    const list = [at('a', 100, '2026-09-10'), at('b', 50, '2026-11-03')];
+    const rows = monthlyLedger(list, 400, '2026-11-14');
+    expect(rows[1]).toMatchObject({ month: '2026-10', spent: 0, carried: 300, balance: 700 });
+    // A cebola é o que passou dos meses fechados; o saldo do mês de hoje é a cebola mais a dotação menos o gasto.
+    expect(rows[0].balance).toBe(cebola(list, 400, '2026-11-14').available);
+  });
+});
+
+describe('spentByPerson', () => {
+  it('soma por quem registou', () => {
+    const list = [expense('a', 10, { userId: 'u1' }), expense('b', 5, { userId: 'u2' }), expense('c', 2.5, { userId: 'u1' })];
+    expect([...spentByPerson(list)]).toEqual([['u1', 12.5], ['u2', 5]]);
+  });
+
+  it('só do mês pedido', () => {
+    const list = [expense('a', 10, { spentOn: '2026-10-05' }), expense('b', 5, { spentOn: '2026-11-05' })];
+    expect([...spentByPerson(list, '2026-11')]).toEqual([['u1', 5]]);
+  });
+});
+
+describe('monthlyIncome', () => {
+  const history = [
+    { userId: 'a', month: '2000-01', amount: 200 },
+    { userId: 'a', month: '2026-10', amount: 250 },
+    { userId: 'b', month: '2000-01', amount: 200 },
+  ];
+
+  it('cada mês usa a dotação que valia nessa altura', () => {
+    expect(monthlyIncome(history, ['a', 'b'], '2026-09', 999)).toBe(400);
+    expect(monthlyIncome(history, ['a', 'b'], '2026-10', 999)).toBe(450);
+    expect(monthlyIncome(history, ['a', 'b'], '2027-01', 999)).toBe(450);
+  });
+
+  it('antes da primeira mudança conhecida vale a primeira', () => {
+    expect(monthlyIncome([{ userId: 'a', month: '2026-10', amount: 300 }], ['a'], '2026-01', 0)).toBe(300);
+  });
+
+  it('sem histórico usa o valor de hoje', () => {
+    expect(monthlyIncome([], ['a', 'b'], '2026-09', 400)).toBe(400);
+  });
+
+  it('o cebola e o mês a mês usam o que entrou em cada mês', () => {
+    const list = [expense('x', 100, { spentOn: '2026-09-10' })];
+    const income = (month: string) => monthlyIncome(history, ['a', 'b'], month, 400);
+    const rows = monthlyLedger(list, income, '2026-11-14');
+    expect(rows.map((row) => [row.month, row.income, row.balance])).toEqual([
+      ['2026-11', 450, 300 + 450 + 450],
+      ['2026-10', 450, 300 + 450],
+      ['2026-09', 400, 300],
+    ]);
+    const c = cebola(list, income, '2026-11-14');
+    expect(c.amount).toBe(750);
+    expect(c.monthly).toBe(450);
+    expect(c.available).toBe(rows[0].balance);
   });
 });

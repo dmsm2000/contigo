@@ -21,7 +21,7 @@ export class ExpensesService {
   readonly newest = computed(() => newestFirst(this.items()));
   readonly byTrip = computed(() => totalsByTrip(this.items()));
   readonly byCategory = computed(() => totalsByCategory(this.items()));
-  readonly cebola = computed(() => cebola(this.items(), this.profile.monthlyTotal(), todayIso()));
+  readonly cebola = computed(() => cebola(this.items(), this.profile.incomeFor, todayIso()));
 
   constructor() {
     effect(() => {
