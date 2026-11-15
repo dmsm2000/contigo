@@ -17,6 +17,31 @@
       </section>
     }
 
+    <section class="meetings ct-rise" style="--i: 1">
+      <h2 class="meetings-title">{{ 'meeting.listTitle' | transloco }}</h2>
+      @if (meetings.upcoming().length) {
+        <ul class="type-list">
+          @for (meeting of meetings.upcoming(); track meeting.id) {
+            <li>
+              <button class="type-row" type="button" (click)="openMeeting(meeting.id)">
+                <span class="type-row-text">
+                  <strong>{{ 'meeting.at.' + meeting.place | transloco }}</strong>
+                  <small>{{ meetingDate(meeting) }}@if (meeting.note) { · {{ meeting.note }} }</small>
+                </span>
+                <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="meetings-empty">{{ 'meeting.listEmpty' | transloco }}</p>
+      }
+      <button class="ct-btn ct-btn--ghost add-type" type="button" (click)="openMeeting(null)">
+        <ion-icon name="add" aria-hidden="true"></ion-icon>
+        {{ 'meeting.add' | transloco }}
+      </button>
+    </section>
+
     <section class="calendar ct-card ct-rise" style="--i: 1">
       <header class="month">
         <button class="ct-icon-btn nav" type="button" (click)="go(-1)" [disabled]="!canGoBack()" [attr.aria-label]="'dates.previous' | transloco">

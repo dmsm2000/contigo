@@ -22,7 +22,8 @@
     "pastTrip": "Viagem já feita",
     "place": "Sítio para ir",
     "idea": "Ideia",
-    "planTrip": "Planear uma viagem"
+    "planTrip": "Planear uma viagem",
+    "meeting": "Marcar um encontro"
   },
   "common": {
     "cancel": "Cancelar",
@@ -331,11 +332,19 @@
     "tomorrow": "amanhã",
     "inDays_one": "daqui a {{count}} dia",
     "inDays_other": "daqui a {{count}} dias",
+    "leafDay_one": "dia",
+    "leafDay_other": "dias",
+    "dayOf": "Dia {{day}} de {{total}}",
+    "nothingYet": "ainda nada definido",
+    "pendingNudge": "Datas por decidir. Já podiam começar a pensar nisso!",
     "viewAvailability": "Ver disponibilidade",
     "onionSeeExpenses": "Ver despesas",
     "onionAvailable": "Para gastar este mês: {{amount}}",
     "discover": "Para descobrir",
-    "discoverAdd": "Juntar à lista"
+    "discoverAdd": "Juntar à lista",
+    "nextMeeting": "Próximo encontro",
+    "viewMeeting": "Ver encontro",
+    "addMeeting": "Marcar encontro"
   },
   "map": {
     "title": "Mapa",
@@ -825,6 +834,32 @@
       "stars": "estrelas",
       "months": "altura ideal",
       "location": "localização"
+    }
+  },
+  "meeting": {
+    "title": "Marcar um encontro",
+    "editTitle": "Encontro",
+    "intro": "Os dias em que estão juntos sem ser uma viagem: quando um vai ter com o outro, seja para um lado ou para o outro.",
+    "where": "Onde se encontram?",
+    "at": {
+      "porto": "No Porto",
+      "madrid": "Em Madrid",
+      "other": "Noutro sítio"
+    },
+    "when": "Quando?",
+    "toOptional": "Até (opcional)",
+    "note": "Nota (opcional)",
+    "notePlaceholder": "Ex.: fim de semana, jantar de anos…",
+    "save": "Guardar encontro",
+    "delete": "Apagar encontro",
+    "deleteTitle": "Apagar este encontro?",
+    "deleteText": "Deixa de contar no Início.",
+    "listTitle": "Encontros",
+    "listEmpty": "Ainda não há encontros marcados.",
+    "add": "Marcar encontro",
+    "errors": {
+      "start": "Escolhe o dia em que começa.",
+      "save": "Não foi possível guardar agora. Tenta outra vez."
     }
   }
 }

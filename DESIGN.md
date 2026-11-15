@@ -160,3 +160,23 @@ O protótipo usa ilustrações provisórias. Na app entram as vossas fotos verda
 **Sítios por completar para o sorteio (feito, 15 nov, migração `20261115140000_best_months.sql`):** um sítio por ir está *pronto* quando tem duração mínima, estrelas dos dois, **altura ideal** (campo novo `places.best_months`, os meses 1–12; os 12 = "o ano todo") e coordenadas; o custo estimado é opcional e nunca conta (`wish-readiness.logic.ts`). O sorteio é **equilibrado**: os incompletos continuam a poder sair, mas com metade do peso (`INCOMPLETE_WEIGHT` em `buildPool`). A altura ideal **só informa**: aparece no cartão ("Melhor em abril a junho") e não pesa no sorteio; mas se o sorteado cai fora dela, o resultado avisa e oferece **"Sortear outro (não gasta o veto)"**, que apaga essa viagem, deixa a opção de fora e sorteia outra (as opções postas de lado valem só enquanto o ecrã está aberto). O assistente **Preencher** (`complete-wishes.modal`) passa pelos sítios a que falta algo, um de cada vez e só com o que falta: duração, as minhas estrelas (as da outra pessoa só ela as dá: aparece "à espera de …"), meses (`app-month-picker`, também no formulário de juntar um sítio) e localização (pesquisa no geocoder). Abre-se por um aviso no topo do Por ir ("N sítios por completar · Preencher"), pela linha "Falta: …" de cada cartão, pelo sorteio (linha no resumo da rotação e "Completar este sítio" no resultado).
 
 **Ecrã de arranque, ajuste (15 nov):** as imagens que dependiam do tema (`prefers-color-scheme` no `media`) não resultaram no iPhone, por isso ficou só a versão **escura**, sem condição de tema, para 12 tamanhos (agora também os "mini", 360×780). Quem tem a app em tema claro vê um arranque escuro. É preciso apagar a app do ecrã principal e adicioná-la outra vez.
+
+## Contagem decrescente no Início
+
+Com uma viagem sorteada e datas confirmadas, a folha do cartão grande deixa de mostrar o mês/dia e passa a mostrar a contagem: "12 dias" (o número grande, "dias" na faixa). Durante a viagem mostra "DIA 2" e o texto "Dia 2 de 4". A data continua escrita por baixo do nome. Lógica em `tripCountdown` (`trips.logic.ts`). Sem viagem sorteada, a folha mostra a próxima janela livre como antes.
+
+## Splash (ajuste final)
+
+O `#splash` ultrapassa 120 px o ecrã em cima e em baixo (cobre a zona do indicador de início), `html`/`body` ficam escuros desde o primeiro desenho e o `background_color` do manifest é escuro.
+
+## Contagem decrescente no Início
+
+Com uma viagem sorteada e datas confirmadas, a folha do cartão grande deixa de mostrar o mês/dia e passa a mostrar a contagem: "12 dias" (o número grande, "dias" na faixa). Durante a viagem mostra "DIA 2" e o texto "Dia 2 de 4". A data continua escrita por baixo do nome. Lógica em `tripCountdown` (`trips.logic.ts`). Sem viagem sorteada, a folha mostra a próxima janela livre como antes.
+
+## Splash (ajuste final)
+
+O `#splash` ultrapassa 120 px o ecrã em cima e em baixo (cobre a zona do indicador de início), `html`/`body` ficam escuros desde o primeiro desenho e o `background_color` do manifest é escuro.
+
+## Encontros (visitas sem ser viagem)
+
+Tabela `meetings` (`20261115150000_meetings.sql`): dias em que estão juntos sem ser uma viagem. Tem `at_place` (`porto`, `madrid`, `other`), por isso serve nos dois sentidos (ela vem ao Porto ou ele vai a Madrid) e lê-se bem a partir dos dois telemóveis. O contador do Início conta para o próximo momento juntos: o que estiver a decorrer ou o que começar primeiro entre os encontros e a viagem sorteada (só com datas confirmadas); `nextEncounter` em `meetings.logic.ts`. Marcar: menu "+", botão no cartão do Início e secção "Encontros" na página Datas. Sem nada marcado, a folha mostra "dias ?".

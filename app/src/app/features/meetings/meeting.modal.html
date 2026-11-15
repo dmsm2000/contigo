@@ -1,0 +1,59 @@
+<ion-content>
+  <div class="sheet">
+    <header class="head">
+      <h1 class="ct-display title">{{ (meetingId ? 'meeting.editTitle' : 'meeting.title') | transloco }}</h1>
+      <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+    <p class="hint intro">{{ 'meeting.intro' | transloco }}</p>
+
+    <form id="meeting-form" (ngSubmit)="save()" novalidate>
+      <section class="block ct-rise" style="--i: 0">
+        <span class="label" id="meeting-where">{{ 'meeting.where' | transloco }}</span>
+        <div class="pills" role="group" aria-labelledby="meeting-where">
+          @for (option of places; track option) {
+            <button class="pill" type="button" [class.on]="place() === option" [attr.aria-pressed]="place() === option" (click)="place.set(option)">
+              {{ 'meeting.at.' + option | transloco }}
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="block ct-rise" style="--i: 1">
+        <span class="label">{{ 'meeting.when' | transloco }}</span>
+        <div class="row-dates">
+          <label class="date">
+            <span class="date-label">{{ 'plan.form.from' | transloco }}</span>
+            <input name="start" type="date" [min]="meetingId ? null : today" [(ngModel)]="start" (ngModelChange)="onStart()" />
+          </label>
+          <label class="date">
+            <span class="date-label">{{ 'meeting.toOptional' | transloco }}</span>
+            <input name="end" type="date" [min]="start || today" [(ngModel)]="end" (ngModelChange)="error.set(null)" />
+          </label>
+        </div>
+      </section>
+
+      <section class="block ct-rise" style="--i: 2">
+        <label class="label" for="meeting-note">{{ 'meeting.note' | transloco }}</label>
+        <input id="meeting-note" name="note" type="text" maxlength="500" [placeholder]="'meeting.notePlaceholder' | transloco" [(ngModel)]="note" />
+      </section>
+
+      @if (error(); as key) {
+        <p class="error" role="alert">{{ key | transloco }}</p>
+      }
+
+      @if (meetingId) {
+        <button class="remove" type="button" (click)="confirmDelete()">
+          <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>{{ 'meeting.delete' | transloco }}
+        </button>
+      }
+    </form>
+  </div>
+</ion-content>
+
+<ion-footer class="form-footer">
+  <button class="ct-btn save" type="submit" form="meeting-form" [disabled]="saving()">
+    {{ (saving() ? 'trip.form.saving' : 'meeting.save') | transloco }}
+  </button>
+</ion-footer>

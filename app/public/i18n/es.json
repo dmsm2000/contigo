@@ -22,7 +22,8 @@
     "pastTrip": "Viaje ya hecho",
     "place": "Sitio al que ir",
     "idea": "Idea",
-    "planTrip": "Planear un viaje"
+    "planTrip": "Planear un viaje",
+    "meeting": "Marcar un encuentro"
   },
   "common": {
     "cancel": "Cancelar",
@@ -331,11 +332,19 @@
     "tomorrow": "mañana",
     "inDays_one": "dentro de {{count}} día",
     "inDays_other": "dentro de {{count}} días",
+    "leafDay_one": "día",
+    "leafDay_other": "días",
+    "dayOf": "Día {{day}} de {{total}}",
+    "nothingYet": "aún nada definido",
+    "pendingNudge": "Fechas por decidir. ¡Ya podríais empezar a pensarlo!",
     "viewAvailability": "Ver disponibilidad",
     "onionSeeExpenses": "Ver gastos",
     "onionAvailable": "Para gastar este mes: {{amount}}",
     "discover": "Para descubrir",
-    "discoverAdd": "Añadir a la lista"
+    "discoverAdd": "Añadir a la lista",
+    "nextMeeting": "Próximo encuentro",
+    "viewMeeting": "Ver encuentro",
+    "addMeeting": "Marcar encuentro"
   },
   "map": {
     "title": "Mapa",
@@ -825,6 +834,32 @@
       "stars": "estrellas",
       "months": "mejor época",
       "location": "ubicación"
+    }
+  },
+  "meeting": {
+    "title": "Marcar un encuentro",
+    "editTitle": "Encuentro",
+    "intro": "Los días en que estáis juntos sin ser un viaje: cuando uno va a ver al otro, en un sentido o en el otro.",
+    "where": "¿Dónde os encontráis?",
+    "at": {
+      "porto": "En Oporto",
+      "madrid": "En Madrid",
+      "other": "En otro sitio"
+    },
+    "when": "¿Cuándo?",
+    "toOptional": "Hasta (opcional)",
+    "note": "Nota (opcional)",
+    "notePlaceholder": "Ej.: fin de semana, cena de cumpleaños…",
+    "save": "Guardar encuentro",
+    "delete": "Borrar encuentro",
+    "deleteTitle": "¿Borrar este encuentro?",
+    "deleteText": "Deja de contar en el Inicio.",
+    "listTitle": "Encuentros",
+    "listEmpty": "Aún no hay encuentros marcados.",
+    "add": "Marcar encuentro",
+    "errors": {
+      "start": "Elige el día en que empieza.",
+      "save": "No se pudo guardar ahora. Inténtalo otra vez."
     }
   }
 }

@@ -18,6 +18,10 @@ import {
 import { AvailabilityService } from '../../core/availability.service';
 import { LanguageService } from '../../core/language.service';
 import { ProfileService } from '../../core/profile.service';
+import { formatTripDate } from '../../core/trips.logic';
+import { Meeting, meetingSpan } from '../../core/meetings.logic';
+import { MeetingsService } from '../../core/meetings.service';
+import { TripFlowService } from '../../features/trips/trip-flow.service';
 import { ShiftTypeModal } from '../../features/availability/shift-type.modal';
 
 /** Quantos meses para a frente se pode marcar (a app só guarda em memória pouco mais de um ano). */
@@ -48,6 +52,8 @@ interface Cell {
 })
 export class DatesPage {
   private readonly modals = inject(ModalController);
+  private readonly flow = inject(TripFlowService);
+  protected readonly meetings = inject(MeetingsService);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(LanguageService).language;
@@ -196,5 +202,13 @@ export class DatesPage {
   private async toast(key: string): Promise<void> {
     const toast = await this.toasts.create({ message: this.transloco.translate(key), duration: 2200, position: 'top' });
     await toast.present();
+  }
+
+  protected meetingDate(meeting: Meeting): string {
+    return formatTripDate(meetingSpan(meeting), this.language());
+  }
+
+  protected openMeeting(id: string | null): void {
+    void this.flow.openMeeting(id);
   }
 }

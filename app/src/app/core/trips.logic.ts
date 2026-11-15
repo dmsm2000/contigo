@@ -300,3 +300,24 @@ export function groupByYear<T extends Pick<Trip, 'startDate' | 'createdAt'>>(tri
   }
   return groups;
 }
+
+/** Onde estamos em relação a uma viagem: ainda faltam dias, está a decorrer (dia X de N) ou já acabou. */
+export type TripCountdown =
+  | { phase: 'before'; days: number }
+  | { phase: 'during'; day: number; total: number }
+  | { phase: 'after' };
+
+/** `today` e as datas da viagem são "AAAA-MM-DD". A viagem só de mês conta a partir do dia 1. */
+export function tripCountdown(
+  trip: Pick<Trip, 'startDate' | 'endDate' | 'datePrecision'>,
+  today: string,
+): TripCountdown {
+  const dayMs = 86_400_000;
+  const toMs = (value: string) => parseDay(value).getTime();
+  const days = Math.round((toMs(trip.startDate) - toMs(today)) / dayMs);
+  if (days > 0) return { phase: 'before', days };
+  const last = lastDayOf(trip);
+  if (today > last) return { phase: 'after' };
+  const total = Math.round((toMs(last) - toMs(trip.startDate)) / dayMs) + 1;
+  return { phase: 'during', day: -days + 1, total };
+}

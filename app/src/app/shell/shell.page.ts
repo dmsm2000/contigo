@@ -101,6 +101,7 @@ export class ShellPage {
     const sheet = await this.actionSheets.create({
       header: t('add.title'),
       buttons: [
+        { text: t('add.meeting'), icon: 'heart-outline', handler: () => void this.flow.openMeeting() },
         { text: t('add.planTrip'), icon: 'airplane-outline', handler: () => void this.flow.openPlanTrip() },
         { text: t('add.pastTrip'), icon: 'images-outline', handler: () => void this.flow.openPastTrip() },
         { text: t('add.expense'), icon: 'cash-outline', handler: () => void this.addExpense() },

@@ -60,15 +60,28 @@
         <!-- Com data: a folha do calendário à esquerda e o texto ao lado dela, tudo na mesma linha de leitura. -->
         <div class="hero-row">
           <span class="leaf" aria-hidden="true">
-            <span class="leaf-month">{{ date.leaf.month }}</span>
+            <span class="leaf-month">{{ date.leaf.translate ? (date.leaf.month | transloco) : date.leaf.month }}</span>
             <span class="leaf-day">{{ date.leaf.day }}</span>
           </span>
           <div class="hero-main">
-            @if (draws.active(); as active) {
+            @if (encounter(); as enc) {
+              @if (enc.kind === 'meeting') {
+                <p class="eyebrow">{{ 'home.nextMeeting' | transloco }} · {{ date.countdown.key | transloco: date.countdown.params }}</p>
+                <h1 class="ct-display hero-title hero-title--window">{{ 'meeting.at.' + enc.meeting.place | transloco }}</h1>
+                <p class="hero-text">{{ meetingDate(enc.meeting) }}@if (enc.meeting.note) { · {{ enc.meeting.note }} }</p>
+              } @else {
+                <p class="eyebrow">{{ 'home.nextMeeting' | transloco }} · {{ date.countdown.key | transloco: date.countdown.params }}</p>
+                <h1 class="ct-display hero-title hero-title--window">{{ enc.trip.place.name }}</h1>
+                <p class="hero-text">
+                  {{ labels.date(enc.trip) }}
+                  @if (stageKey(enc.trip); as key) { · {{ key | transloco }} }
+                </p>
+              }
+            } @else if (draws.active(); as active) {
               <p class="eyebrow">{{ 'home.nextTrip' | transloco }} · {{ date.countdown.key | transloco: date.countdown.params }}</p>
               <h1 class="ct-display hero-title hero-title--window">{{ active.place.name }}</h1>
               <p class="hero-text">
-                {{ active.datesConfirmed ? labels.date(active) : ('plan.dates.pending' | transloco) }}
+                {{ active.datesConfirmed ? labels.date(active) : ('home.pendingNudge' | transloco) }}
                 @if (stageKey(active); as key) { · {{ key | transloco }} }
               </p>
             } @else if (nextWindow(); as window) {
@@ -82,19 +95,43 @@
           </div>
         </div>
         <div class="hero-actions">
-          @if (draws.active(); as active) {
+          @if (encounter(); as enc) {
+            @if (enc.kind === 'meeting') {
+              <button class="ct-btn ct-btn--light" type="button" (click)="openMeeting(enc.meeting.id)">{{ 'home.viewMeeting' | transloco }}</button>
+              @if (draws.active(); as active) {
+                <button class="draw-link" type="button" (click)="open(active)">{{ active.place.name }}@if (!active.datesConfirmed) { · ? }</button>
+              } @else {
+                <button class="draw-link" type="button" (click)="openDraw()">{{ 'home.drawNow' | transloco }}</button>
+              }
+            } @else {
+              <button class="ct-btn ct-btn--light" type="button" (click)="open(enc.trip)">{{ 'home.viewTrip' | transloco }}</button>
+              <button class="draw-link" type="button" (click)="addMeeting()">{{ 'home.addMeeting' | transloco }}</button>
+            }
+          } @else if (draws.active(); as active) {
             <button class="ct-btn ct-btn--light" type="button" (click)="open(active)">{{ 'home.viewTrip' | transloco }}</button>
+            <button class="draw-link" type="button" (click)="addMeeting()">{{ 'home.addMeeting' | transloco }}</button>
           } @else {
             <a class="ct-btn ct-btn--light" routerLink="/availability">{{ 'home.viewAvailability' | transloco }}</a>
             <button class="draw-link" type="button" (click)="openDraw()">{{ 'home.drawNow' | transloco }}</button>
           }
         </div>
       } @else {
-        <span class="dice" aria-hidden="true"><i></i><i></i><i></i></span>
-        <p class="eyebrow">{{ 'home.nextWindow' | transloco }}</p>
-        <h1 class="ct-display hero-title">{{ 'home.noWindowTitle' | transloco }}</h1>
-        <p class="hero-text">{{ 'home.noWindowText' | transloco }}</p>
-        <a class="ct-btn ct-btn--light" routerLink="/availability">{{ 'home.markAvailability' | transloco }}</a>
+        <!-- Sem nada definido o contador também aparece, com "?", para lembrar os dois de que está na hora de pensar nisso. -->
+        <div class="hero-row">
+          <span class="leaf" aria-hidden="true">
+            <span class="leaf-month">{{ 'home.leafDay_other' | transloco }}</span>
+            <span class="leaf-day">?</span>
+          </span>
+          <div class="hero-main">
+            <p class="eyebrow">{{ 'home.nextMeeting' | transloco }} · {{ 'home.nothingYet' | transloco }}</p>
+            <h1 class="ct-display hero-title hero-title--window">{{ 'home.noWindowTitle' | transloco }}</h1>
+            <p class="hero-text">{{ 'home.noWindowText' | transloco }}</p>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="ct-btn ct-btn--light" type="button" (click)="addMeeting()">{{ 'home.addMeeting' | transloco }}</button>
+          <button class="draw-link" type="button" (click)="openDraw()">{{ 'home.drawNow' | transloco }}</button>
+        </div>
       }
     </section>
 

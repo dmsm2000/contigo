@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  tripCountdown,
   groupByYear,
   byRecentlyAdded,
   isDone,
@@ -229,5 +230,31 @@ describe('groupByYear', () => {
 
   it('sem viagens não há grupos', () => {
     expect(groupByYear([])).toEqual([]);
+  });
+});
+
+describe('tripCountdown', () => {
+  const trip = { startDate: '2026-12-05', endDate: '2026-12-08', datePrecision: 'day' as const };
+
+  it('conta os dias que faltam', () => {
+    expect(tripCountdown(trip, '2026-11-23')).toEqual({ phase: 'before', days: 12 });
+    expect(tripCountdown(trip, '2026-12-04')).toEqual({ phase: 'before', days: 1 });
+  });
+
+  it('no primeiro dia já está a decorrer', () => {
+    expect(tripCountdown(trip, '2026-12-05')).toEqual({ phase: 'during', day: 1, total: 4 });
+    expect(tripCountdown(trip, '2026-12-08')).toEqual({ phase: 'during', day: 4, total: 4 });
+  });
+
+  it('depois do último dia já acabou', () => {
+    expect(tripCountdown(trip, '2026-12-09')).toEqual({ phase: 'after' });
+  });
+
+  it('uma viagem de um dia só tem o dia 1 de 1', () => {
+    expect(tripCountdown({ startDate: '2026-12-05', endDate: null, datePrecision: 'day' }, '2026-12-05')).toEqual({
+      phase: 'during',
+      day: 1,
+      total: 1,
+    });
   });
 });

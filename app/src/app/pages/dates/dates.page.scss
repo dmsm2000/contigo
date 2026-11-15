@@ -475,3 +475,19 @@
   margin-bottom: 8px;
   border-radius: 20px;
 }
+
+.meetings {
+  margin: 16px 0;
+}
+
+.meetings-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.meetings-empty {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--ct-mu);
+}

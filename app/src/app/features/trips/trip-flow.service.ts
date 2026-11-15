@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { Expense } from '../../core/expenses.logic';
 import { Idea } from '../../core/ideas.logic';
 import { Suggestion } from '../../core/suggestions';
+import { MeetingModal } from '../meetings/meeting.modal';
 import { DrawModal } from '../draw/draw.modal';
 import { ExpenseModal } from '../expenses/expense.modal';
 import { IdeaModal } from '../ideas/idea.modal';
@@ -21,6 +22,11 @@ import { TripDetailModal } from './trip-detail.modal';
 export class TripFlowService {
   private readonly modals = inject(ModalController);
   private opening = false;
+
+  /** Marcar um encontro (ou, com o id, mudar um que já existe). */
+  async openMeeting(meetingId: string | null = null): Promise<void> {
+    await this.present(() => this.modals.create({ component: MeetingModal, componentProps: { meetingId }, cssClass: 'ct-modal' }));
+  }
 
   async openPastTrip(): Promise<void> {
     await this.present(() => this.modals.create({ component: PastTripModal, cssClass: 'ct-modal' }));

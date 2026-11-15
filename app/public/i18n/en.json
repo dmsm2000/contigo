@@ -22,7 +22,8 @@
     "pastTrip": "Past trip",
     "place": "Place to go",
     "idea": "Idea",
-    "planTrip": "Plan a trip"
+    "planTrip": "Plan a trip",
+    "meeting": "Mark a meet-up"
   },
   "common": {
     "cancel": "Cancel",
@@ -331,11 +332,19 @@
     "tomorrow": "tomorrow",
     "inDays_one": "in {{count}} day",
     "inDays_other": "in {{count}} days",
+    "leafDay_one": "day",
+    "leafDay_other": "days",
+    "dayOf": "Day {{day}} of {{total}}",
+    "nothingYet": "nothing planned yet",
+    "pendingNudge": "Dates still to decide. Time to start thinking about it!",
     "viewAvailability": "View availability",
     "onionSeeExpenses": "See expenses",
     "onionAvailable": "To spend this month: {{amount}}",
     "discover": "To discover",
-    "discoverAdd": "Add to the list"
+    "discoverAdd": "Add to the list",
+    "nextMeeting": "Next meet-up",
+    "viewMeeting": "View meet-up",
+    "addMeeting": "Mark a meet-up"
   },
   "map": {
     "title": "Map",
@@ -825,6 +834,32 @@
       "stars": "stars",
       "months": "best time",
       "location": "location"
+    }
+  },
+  "meeting": {
+    "title": "Mark a meet-up",
+    "editTitle": "Meet-up",
+    "intro": "The days you are together that are not a trip: when one visits the other, in either direction.",
+    "where": "Where do you meet?",
+    "at": {
+      "porto": "In Porto",
+      "madrid": "In Madrid",
+      "other": "Somewhere else"
+    },
+    "when": "When?",
+    "toOptional": "Until (optional)",
+    "note": "Note (optional)",
+    "notePlaceholder": "E.g. weekend, birthday dinner…",
+    "save": "Save meet-up",
+    "delete": "Delete meet-up",
+    "deleteTitle": "Delete this meet-up?",
+    "deleteText": "It stops counting on Home.",
+    "listTitle": "Meet-ups",
+    "listEmpty": "No meet-ups marked yet.",
+    "add": "Mark a meet-up",
+    "errors": {
+      "start": "Pick the day it starts.",
+      "save": "Could not save right now. Try again."
     }
   }
 }

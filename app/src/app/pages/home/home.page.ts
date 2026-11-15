@@ -7,12 +7,14 @@ import { add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, s
 import { daysUntil, formatWeekdays, formatWindow, leafParts, monthInitials, todayIso } from '../../core/availability.logic';
 import { AvailabilityService } from '../../core/availability.service';
 import { DrawService } from '../../core/draw.service';
+import { meetingSpan, nextEncounter, Meeting } from '../../core/meetings.logic';
+import { MeetingsService } from '../../core/meetings.service';
 import { ExpensesService } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
 import { StoriesService } from '../../core/stories.service';
 import { ProfileService } from '../../core/profile.service';
 import { ThemeService } from '../../core/theme.service';
-import { byRecentlyAdded, formatCost, placeSubtitle, tileColors, Trip, yearStats } from '../../core/trips.logic';
+import { byRecentlyAdded, formatCost, formatTripDate, placeSubtitle, tileColors, Trip, tripCountdown, yearStats } from '../../core/trips.logic';
 import { TripsService } from '../../core/trips.service';
 import { Suggestion } from '../../core/suggestions';
 import { averageStars, nearestOrigin, WishlistItem } from '../../core/wishlist.logic';
@@ -50,6 +52,7 @@ export class HomePage {
   protected readonly expenses = inject(ExpensesService);
   private readonly availability = inject(AvailabilityService);
   protected readonly draws = inject(DrawService);
+  private readonly meetings = inject(MeetingsService);
   private readonly language = inject(LanguageService).language;
 
   protected readonly year = new Date().getFullYear();
@@ -90,10 +93,33 @@ export class HomePage {
     return trip.status === 'planned' ? 'plan.stage.planning' : trip.status === 'prepared' ? 'plan.stage.prepared' : trip.status === 'ongoing' ? 'plan.stage.ongoing' : null;
   }
 
+  /** O próximo momento em que estão juntos: um encontro ou a viagem sorteada (se já tem datas). */
+  protected readonly encounter = computed(() => nextEncounter(this.meetings.items(), this.draws.active(), todayIso()));
+
   protected readonly heroDate = computed(() => {
+    const encounter = this.encounter();
     const active = this.draws.active();
-    // Uma viagem com as datas ainda em avaliação não tem dia para contar.
-    if (active && !active.datesConfirmed) return { leaf: { month: '·', day: '?' }, countdown: { key: 'plan.dates.pendingShort', params: {} } };
+    // A folha é a contagem: o número de dias que faltam (ou o dia do encontro/da viagem).
+    if (encounter) {
+      const count = tripCountdown(encounter.kind === 'meeting' ? meetingSpan(encounter.meeting) : encounter.trip, todayIso());
+      if (count.phase === 'before') {
+        const key = count.days === 1 ? 'home.tomorrow' : 'home.inDays_other';
+        return {
+          leaf: { month: count.days === 1 ? 'home.leafDay_one' : 'home.leafDay_other', day: count.days, translate: true },
+          countdown: { key, params: { count: count.days } },
+        };
+      }
+      if (count.phase === 'during') {
+        return {
+          leaf: { month: 'home.leafDay_one', day: count.day, translate: true },
+          countdown: { key: 'home.dayOf', params: { day: count.day, total: count.total } },
+        };
+      }
+    }
+    // Uma viagem com as datas ainda em avaliação não tem dia para contar: fica o "?".
+    if (active && !active.datesConfirmed) {
+      return { leaf: { month: 'home.leafDay_other', day: '?', translate: true }, countdown: { key: 'plan.dates.pendingShort', params: {} } };
+    }
     const start = active ? active.startDate : this.availability.next()?.start;
     if (!start) return null;
     const days = daysUntil(start, todayIso());
@@ -104,7 +130,7 @@ export class HomePage {
         : count === 1
           ? { key: 'home.tomorrow', params: {} }
           : { key: 'home.inDays_other', params: { count } };
-    return { leaf: leafParts(start, this.language()), countdown };
+    return { leaf: { ...leafParts(start, this.language()), translate: false }, countdown };
   });
   /** Os 12 meses do ano: a viagem desse mês (se houve), para o cartão do ano mostrar as capas. */
   protected readonly yearMonths = computed(() => {
@@ -147,6 +173,18 @@ export class HomePage {
   protected suggestionTile(name: string): string {
     const { from, to } = tileColors(name);
     return `linear-gradient(135deg, ${from}, ${to})`;
+  }
+
+  protected meetingDate(meeting: Meeting): string {
+    return formatTripDate(meetingSpan(meeting), this.language());
+  }
+
+  protected addMeeting(): void {
+    void this.flow.openMeeting();
+  }
+
+  protected openMeeting(id: string): void {
+    void this.flow.openMeeting(id);
   }
 
   protected addPastTrip(): void {
