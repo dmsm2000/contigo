@@ -5,9 +5,9 @@ CH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 ICON="$PWD/public/icons/icon-512x512.png"
 OUT="$PWD/public/splash"
 SP=$(mktemp -d)
-for size in 1320x2868 1206x2622 1290x2796 1179x2556 1284x2778 1170x2532 1125x2436 1242x2688 828x1792 1242x2208 750x1334; do
+for size in 1080x2340 1320x2868 1206x2622 1290x2796 1179x2556 1284x2778 1170x2532 1125x2436 1242x2688 828x1792 1242x2208 750x1334; do
   w=${size%x*}; h=${size#*x}
-  for mode in light dark; do
+  for mode in dark; do
     if [ $mode = dark ]; then bg="#0e0c11"; fg="#ffffff"; mu="#a39ba8"; else bg="#ffffff"; fg="#1d1520"; mu="#8a8190"; fi
     u=$((w/10))   # unidade proporcional à largura
     cat > $SP/s.html <<H
