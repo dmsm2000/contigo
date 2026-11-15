@@ -37,7 +37,8 @@
       /* Splash: aparece logo no primeiro desenho, antes de o Angular arrancar, e some quando a app está pronta. */
       #splash {
         position: fixed;
-        inset: 0;
+        /* Sobra para lá do ecrã em cima e em baixo: no iPhone a zona do indicador de início (em baixo) ficava de fora e deixava ver o fundo branco. */
+        inset: -120px 0;
         z-index: 99999;
         display: flex;
         flex-direction: column;
@@ -54,7 +55,7 @@
       }
       /* Antes de o script correr (ou sem ele), segue o tema do telemóvel: nunca um clarão branco no escuro. */
       @media (prefers-color-scheme: dark) {
-        html { background: #0e0c11; }
+        html, body { background: #0e0c11; }
         #splash:not(.light) { background: #0e0c11; color: #f4eef1; }
       }
       #splash.out {
@@ -113,7 +114,7 @@
         var pref = localStorage.getItem('contigo.theme') || 'system';
         var dark = pref.indexOf('dark') > -1 || (pref.indexOf('light') === -1 && matchMedia('(prefers-color-scheme: dark)').matches);
         document.getElementById('splash').className = dark ? 'dark' : 'light';
-        document.documentElement.style.background = dark ? '#0e0c11' : '#ffffff';
+        document.documentElement.style.background = document.body.style.background = dark ? '#0e0c11' : '#ffffff';
       } catch (e) {}
     </script>
     <app-root></app-root>
