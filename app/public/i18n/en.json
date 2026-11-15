@@ -89,6 +89,7 @@
       "delete": "Delete trip",
       "deleteTitle": "Delete this trip?",
       "deleteText": "{{place}} will no longer appear in your memories. This can't be undone.",
+      "deleteDrawnText": "{{place}} leaves the draw and the plan. You can draw again. This can't be undone.",
       "deleted": "Trip deleted.",
       "deleteError": "Couldn't delete. Try again.",
       "notFound": "This trip no longer exists.",
@@ -158,6 +159,12 @@
       "more": "Show {{count}} more",
       "less": "Show less",
       "none": "You've already visited or saved all our suggestions."
+    },
+    "months": {
+      "title": "Best time to go",
+      "allYear": "All year",
+      "to": "to",
+      "best": "Best in {{months}}"
     }
   },
   "draw": {
@@ -197,7 +204,14 @@
     "vetoDone": "Veto used. You can draw again.",
     "vetoError": "Couldn't use the veto. Try again.",
     "saveFailed": "The draw came out but wasn't saved.",
-    "retrySave": "Save again"
+    "retrySave": "Save again",
+    "incompleteOne": "1 place to complete (comes up less often)",
+    "incompleteMany": "{{count}} places to complete (come up less often)",
+    "offSeason": "Outside the best time: this place is better in {{months}}.",
+    "rerollOffSeason": "Draw another (keeps your veto)",
+    "completeThis": "Complete this place",
+    "rerollError": "Couldn't draw another. Try again.",
+    "rerollNone": "There are no more options to draw."
   },
   "ideas": {
     "title": "Ideas",
@@ -784,5 +798,33 @@
     "error": "Couldn't save the image. Try again.",
     "done": "Image updated.",
     "change": "Change the image"
+  },
+  "complete": {
+    "title": "Fill in",
+    "nothingTitle": "Everything is filled in",
+    "nothingText": "Nothing left to complete in your places.",
+    "doneTitle": "Done!",
+    "doneText": "You filled in {{count}} places.",
+    "progress": "{{current}} of {{total}}",
+    "hint": "Just what's missing to really join the draw",
+    "location": "Where is it?",
+    "search": "Search",
+    "locationSet": "Location: {{name}}",
+    "waiting": "{{name}} hasn't given this place stars yet: only they can.",
+    "close": "Close",
+    "skip": "Skip",
+    "save": "Save and next",
+    "saveLast": "Save",
+    "bannerOne": "1 place to complete",
+    "bannerMany": "{{count}} places to complete",
+    "bannerHint": "They come up less often in the draw until they're ready.",
+    "fill": "Fill in",
+    "missing": "Missing",
+    "field": {
+      "duration": "length of stay",
+      "stars": "stars",
+      "months": "best time",
+      "location": "location"
+    }
   }
 }

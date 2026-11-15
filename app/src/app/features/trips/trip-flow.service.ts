@@ -10,6 +10,7 @@ import { AddPhotosModal } from '../photos/add-photos.modal';
 import { PhotoViewerModal } from '../photos/photo-viewer.modal';
 import { StoriesModal } from '../stories/stories.modal';
 import { AddWishModal } from '../wishlist/add-wish.modal';
+import { CompleteWishesModal } from '../wishlist/complete-wishes.modal';
 import { PlaceImageModal } from '../places/place-image.modal';
 import { PastTripModal } from './past-trip.modal';
 import { PlanTripModal } from './plan-trip.modal';
@@ -23,6 +24,11 @@ export class TripFlowService {
 
   async openPastTrip(): Promise<void> {
     await this.present(() => this.modals.create({ component: PastTripModal, cssClass: 'ct-modal' }));
+  }
+
+  /** O assistente "Preencher": completa o que falta nos sítios por ir (ou só num, se se der o id). */
+  async openCompleteWishes(placeId?: string): Promise<void> {
+    await this.present(() => this.modals.create({ component: CompleteWishesModal, componentProps: { placeId: placeId ?? null }, cssClass: 'ct-modal' }));
   }
 
   /** Escolher a imagem de um sítio (as sugestões, uma foto vossa ou nenhuma). */

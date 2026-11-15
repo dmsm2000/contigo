@@ -3,10 +3,12 @@ import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
 import { PlaceCandidate } from './geocoder';
 import { PlaceImageService } from './place-image.service';
+import { ProfileService } from './profile.service';
 import { attachPlaceImage, reuseKnownPlace } from './places.service';
 import { SupabaseService } from './supabase.service';
 import { MinStay, Suggestion, SUGGESTIONS } from './suggestions';
 import { TripsService } from './trips.service';
+import { incompleteIds, WishMissing, wishMissing } from './wish-readiness.logic';
 import { freshSuggestions, sortWishlist, toWishlistItem, WishlistItem, WishlistRow } from './wishlist.logic';
 import { readStored, writeStored } from './storage';
 
@@ -17,6 +19,7 @@ export interface WishInput {
   note: string | null;
   link: string | null;
   minStay: MinStay | null;
+  bestMonths?: number[] | null;
 }
 
 const SURPRISES_KEY = 'contigo.surprises';
@@ -28,6 +31,7 @@ export class WishlistService {
   private readonly supabase = inject(SupabaseService).client;
   private readonly auth = inject(AuthService);
   private readonly trips = inject(TripsService);
+  private readonly profile = inject(ProfileService);
   private channel: RealtimeChannel | null = null;
 
   readonly items = signal<WishlistItem[]>([]);
@@ -36,6 +40,16 @@ export class WishlistService {
 
   /** Do mais desejado para o menos. */
   readonly sorted = computed(() => sortWishlist(this.items()));
+
+  /** Quem vai (eu e a outra pessoa): serve para ver o que falta preencher em cada sítio. */
+  readonly readinessUserIds = computed(() => [this.auth.userId(), this.profile.partner()?.id].filter((id): id is string => !!id));
+  /** Os sítios a que ainda falta algo para estarem prontos para o sorteio. */
+  readonly incompleteIds = computed(() => incompleteIds(this.items(), this.readinessUserIds()));
+  readonly incompleteCount = computed(() => this.incompleteIds().size);
+
+  missingOf(item: WishlistItem): WishMissing[] {
+    return wishMissing(item, this.readinessUserIds());
+  }
 
   /** As sugestões ainda novidade: sem os sítios já visitados nem os que já estão na lista. */
   readonly suggestions = computed<Suggestion[]>(() => {
@@ -102,6 +116,7 @@ export class WishlistService {
     if (input.note) row['note'] = input.note;
     if (input.link) row['link'] = input.link;
     if (input.minStay) row['min_stay'] = input.minStay;
+    if (input.bestMonths?.length) row['best_months'] = input.bestMonths;
 
     const query = place.osmRef
       ? this.supabase.from('places').upsert(row, { onConflict: 'osm_ref' })
@@ -121,6 +136,21 @@ export class WishlistService {
 
   async setMyStars(item: WishlistItem, stars: Stars): Promise<void> {
     await this.writeStars(item.place.id, stars);
+    await this.load();
+  }
+
+  /** Preenche o que faltava num sítio (duração, altura ideal, localização). Só se mudam os campos dados. */
+  async completePlace(placeId: string, fields: { minStay?: MinStay; bestMonths?: number[]; lat?: number; lng?: number }): Promise<void> {
+    const row: Record<string, unknown> = {};
+    if (fields.minStay !== undefined) row['min_stay'] = fields.minStay;
+    if (fields.bestMonths !== undefined) row['best_months'] = fields.bestMonths;
+    if (fields.lat !== undefined && fields.lng !== undefined) {
+      row['lat'] = fields.lat;
+      row['lng'] = fields.lng;
+    }
+    if (!Object.keys(row).length) return;
+    const { error } = await this.supabase.from('places').update(row).eq('id', placeId);
+    if (error) throw error;
     await this.load();
   }
 

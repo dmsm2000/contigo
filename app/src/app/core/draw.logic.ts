@@ -1,6 +1,7 @@
 // Lógica pura do sorteio do mês: sem Angular nem rede, para se testar facilmente.
 import { addDays, FreeWindow, fitsWindow } from './availability.logic';
 import { Suggestion } from './suggestions';
+import { incompleteIds } from './wish-readiness.logic';
 import { buildPool, DEFAULT_SURPRISE_SHARE, normalize, PoolEntry, WishlistItem } from './wishlist.logic';
 
 /** O primeiro dia do mês de `today` ("2026-11-13" → "2026-11-01"): é a chave dos vetos, um por pessoa e por mês. */
@@ -39,6 +40,8 @@ export interface DrawOptions {
   /** As opções já vetadas este mês (por qualquer um dos dois). */
   vetoed: ReadonlySet<string>;
   surpriseShare?: number;
+  /** Quem vai (os ids das pessoas): serve para ver que sítios ainda estão por completar. */
+  userIds?: readonly string[];
 }
 
 /**
@@ -54,6 +57,7 @@ export function drawPool(wishlist: readonly WishlistItem[], suggestions: readonl
     {
       includeSuggestions: options.includeSuggestions,
       exclude: options.vetoed,
+      incomplete: incompleteIds(wishlist, options.userIds ?? []),
       surpriseShare: options.surpriseShare ?? DEFAULT_SURPRISE_SHARE,
     },
   );

@@ -13,6 +13,70 @@
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   touch-action: none;
+  perspective: 900px;
+  background: #000000;
+}
+
+// Cada viagem é um painel; ao mudar de viagem o novo gira para dentro, como o cubo do Instagram,
+// e o avatar e o nome fazem um pequeno salto para se perceber que é outra viagem.
+.panel {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+
+  &.enter-next {
+    animation: ct-story-in-next 380ms var(--ct-ease-out, cubic-bezier(0.22, 1, 0.36, 1)) both;
+  }
+
+  &.enter-previous {
+    transform-origin: right center;
+    animation: ct-story-in-previous 380ms var(--ct-ease-out, cubic-bezier(0.22, 1, 0.36, 1)) both;
+  }
+
+  &.enter-next .avatar,
+  &.enter-previous .avatar {
+    animation: ct-story-avatar 520ms var(--ct-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) 120ms both;
+  }
+}
+
+@keyframes ct-story-in-next {
+  from {
+    transform: translateX(55%) rotateY(-55deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes ct-story-in-previous {
+  from {
+    transform: translateX(-55%) rotateY(55deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes ct-story-avatar {
+  from {
+    transform: scale(0.4);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel.enter-next,
+  .panel.enter-previous,
+  .panel.enter-next .avatar,
+  .panel.enter-previous .avatar {
+    animation: none;
+  }
 }
 
 .media {

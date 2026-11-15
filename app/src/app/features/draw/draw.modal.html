@@ -68,6 +68,12 @@
               </span>
             </div>
           </div>
+          @if (wishlist.incompleteCount() > 0) {
+            <button class="incomplete" type="button" (click)="completeAll()">
+              <span>{{ (wishlist.incompleteCount() === 1 ? 'draw.incompleteOne' : 'draw.incompleteMany') | transloco: { count: wishlist.incompleteCount() } }}</span>
+              <strong>{{ 'complete.fill' | transloco }}</strong>
+            </button>
+          }
           <button
             class="switch-row"
             type="button"
@@ -150,9 +156,24 @@
           }
         </ul>
 
+        @if (offSeason(); as months) {
+          <p class="season ct-rise" style="--i: 3" role="status">{{ 'draw.offSeason' | transloco: { months: months } }}</p>
+        }
+
         <div class="result-actions ct-rise" style="--i: 4">
           @if (result.trip) {
             <button class="ct-btn ct-btn--light" type="button" (click)="close()">{{ 'draw.gotIt' | transloco }}</button>
+
+            @if (offSeason()) {
+              <button class="ghost" type="button" [disabled]="busy()" (click)="rerollOffSeason()">
+                <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+                {{ 'draw.rerollOffSeason' | transloco }}
+              </button>
+            }
+
+            @if (drawnIncomplete()) {
+              <button class="ghost" type="button" (click)="completeDrawn()">{{ 'draw.completeThis' | transloco }}</button>
+            }
 
             @if (place.kind === 'suggestion' && place.placeId && !onWishlist()) {
               <button class="ghost" type="button" (click)="addToWishlist()">

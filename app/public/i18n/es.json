@@ -89,6 +89,7 @@
       "delete": "Borrar viaje",
       "deleteTitle": "¿Borrar este viaje?",
       "deleteText": "{{place}} deja de aparecer en vuestros recuerdos. Esto no se puede deshacer.",
+      "deleteDrawnText": "{{place}} sale del sorteo y del plan. Podéis volver a sortear. Esto no se puede deshacer.",
       "deleted": "Viaje borrado.",
       "deleteError": "No se ha podido borrar. Inténtalo otra vez.",
       "notFound": "Este viaje ya no existe.",
@@ -158,6 +159,12 @@
       "more": "Ver {{count}} más",
       "less": "Ver menos",
       "none": "Ya habéis visitado o guardado todas nuestras sugerencias."
+    },
+    "months": {
+      "title": "Mejor época",
+      "allYear": "Todo el año",
+      "to": "a",
+      "best": "Mejor en {{months}}"
     }
   },
   "draw": {
@@ -197,7 +204,14 @@
     "vetoDone": "Veto usado. Podéis sortear otra vez.",
     "vetoError": "No se ha podido usar el veto. Inténtalo otra vez.",
     "saveFailed": "El sorteo salió, pero no se guardó.",
-    "retrySave": "Guardar otra vez"
+    "retrySave": "Guardar otra vez",
+    "incompleteOne": "1 sitio por completar (sale menos veces)",
+    "incompleteMany": "{{count}} sitios por completar (salen menos veces)",
+    "offSeason": "Fuera de la mejor época: este sitio es mejor en {{months}}.",
+    "rerollOffSeason": "Sortear otro (no gasta el veto)",
+    "completeThis": "Completar este sitio",
+    "rerollError": "No se pudo sortear otro. Inténtalo otra vez.",
+    "rerollNone": "Ya no quedan más opciones para sortear."
   },
   "ideas": {
     "title": "Ideas",
@@ -784,5 +798,33 @@
     "error": "No se pudo guardar la imagen. Inténtalo de nuevo.",
     "done": "Imagen actualizada.",
     "change": "Cambiar la imagen"
+  },
+  "complete": {
+    "title": "Completar",
+    "nothingTitle": "Todo está completo",
+    "nothingText": "No queda nada por completar en vuestros sitios.",
+    "doneTitle": "¡Hecho!",
+    "doneText": "Has completado {{count}} sitios.",
+    "progress": "{{current}} de {{total}}",
+    "hint": "Solo lo que falta para entrar de verdad en el sorteo",
+    "location": "¿Dónde está?",
+    "search": "Buscar",
+    "locationSet": "Ubicación: {{name}}",
+    "waiting": "{{name}} aún no ha dado estrellas a este sitio: solo esa persona puede darlas.",
+    "close": "Cerrar",
+    "skip": "Saltar",
+    "save": "Guardar y siguiente",
+    "saveLast": "Guardar",
+    "bannerOne": "1 sitio por completar",
+    "bannerMany": "{{count}} sitios por completar",
+    "bannerHint": "Salen menos veces en el sorteo hasta que estén listos.",
+    "fill": "Completar",
+    "missing": "Falta",
+    "field": {
+      "duration": "duración",
+      "stars": "estrellas",
+      "months": "mejor época",
+      "location": "ubicación"
+    }
   }
 }

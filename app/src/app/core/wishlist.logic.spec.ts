@@ -23,6 +23,7 @@ const item = (id: string, name: string, total: number): WishlistItem => ({
   note: null,
   link: null,
   minStay: null,
+  bestMonths: null,
   stars: {},
   total,
 });

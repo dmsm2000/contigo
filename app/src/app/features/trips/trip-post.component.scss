@@ -136,10 +136,14 @@
   padding: 0 14px;
 }
 
+// Três zonas: o "voltávamos" à esquerda, as bolinhas ao meio (nunca por cima dele) e o custo à direita.
 .like {
+  flex: 1 1 0;
+  min-width: 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
   font-size: 13px;
   font-weight: 700;
   color: var(--ct-mu);
@@ -158,11 +162,9 @@
 }
 
 .dots {
-  position: absolute;
-  left: 50%;
+  flex: none;
   display: flex;
   gap: 5px;
-  transform: translateX(-50%);
 
   i {
     width: 6px;
@@ -179,7 +181,10 @@
 }
 
 .cost {
-  margin-left: auto;
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: right;
+  white-space: nowrap;
   font-size: 13px;
   font-weight: 600;
   color: var(--ct-mu);

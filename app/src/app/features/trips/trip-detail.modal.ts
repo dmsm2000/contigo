@@ -202,7 +202,7 @@ export class TripDetailModal implements OnInit {
     const t = (key: string, params?: Record<string, string>) => this.transloco.translate(key, params);
     const alert = await this.alerts.create({
       header: t('trip.detail.deleteTitle'),
-      message: t('trip.detail.deleteText', { place: trip.place.name }),
+      message: t(this.isDrawn(trip) ? 'trip.detail.deleteDrawnText' : 'trip.detail.deleteText', { place: trip.place.name }),
       buttons: [
         { text: t('common.cancel'), role: 'cancel' },
         { text: t('trip.detail.delete'), role: 'destructive', handler: () => void this.delete(trip) },

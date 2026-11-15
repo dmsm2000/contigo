@@ -36,7 +36,14 @@ export class TripPostComponent implements AfterViewInit, OnDestroy {
 
   protected readonly page = signal(0);
   protected readonly photos = computed(() => this.photosService.photosOf(this.trip().id));
-  protected readonly dots = computed(() => (this.photos().length > 1 ? this.photos().map((_, i) => i) : []));
+  /** No máximo 7 bolinhas, a janela acompanha a foto atual (como no Instagram), para nunca taparem o resto da linha. */
+  protected readonly dots = computed(() => {
+    const total = this.photos().length;
+    if (total < 2) return [];
+    const shown = Math.min(total, 7);
+    const from = Math.max(0, Math.min(this.page() - Math.floor(shown / 2), total - shown));
+    return Array.from({ length: shown }, (_, i) => from + i);
+  });
 
   /** Quem registou a viagem ("Tu" para quem está a usar a app). */
   protected readonly author = computed(() => {

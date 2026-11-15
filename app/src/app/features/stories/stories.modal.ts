@@ -41,6 +41,8 @@ export class StoriesModal implements OnInit {
 
   protected readonly at = signal<StoryPosition>({ group: 0, slide: 0 });
   protected readonly held = signal(false);
+  /** Ao mudar de viagem: de onde entra a nova (null enquanto se fica na mesma, ou na primeira). */
+  protected readonly entering = signal<'next' | 'previous' | null>(null);
 
   private readonly stories = inject(StoriesService);
   private pressedAt = 0;
@@ -115,12 +117,19 @@ export class StoriesModal implements OnInit {
 
   protected next(): void {
     const target = nextPosition(this.at(), this.counts());
-    if (target) this.at.set(target);
+    if (target) this.move(target);
     else this.close();
   }
 
   protected previous(): void {
-    this.at.set(previousPosition(this.at(), this.counts()));
+    this.move(previousPosition(this.at(), this.counts()));
+  }
+
+  /** Muda de ecrã; se mudar de viagem, a nova entra de lado (como no Instagram) em vez de aparecer de repente. */
+  private move(target: StoryPosition): void {
+    const from = this.at().group;
+    this.entering.set(target.group === from ? null : target.group > from ? 'next' : 'previous');
+    this.at.set(target);
   }
 
   /** O ecrã de uma barra de progresso: já passou, está a correr ou ainda vem. */

@@ -132,12 +132,11 @@
             </button>
           }
         </section>
-      } @else {
-        <button class="ct-btn ct-btn--ghost danger ct-rise" style="--i: 5" type="button" [disabled]="deleting()" (click)="confirmDelete(t)">
-          <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
-          {{ 'trip.detail.delete' | transloco }}
-        </button>
       }
+      <button class="ct-btn ct-btn--ghost danger ct-rise" style="--i: 6" type="button" [disabled]="deleting()" (click)="confirmDelete(t)">
+        <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+        {{ 'trip.detail.delete' | transloco }}
+      </button>
     </div>
   } @else {
     <div class="body gone">

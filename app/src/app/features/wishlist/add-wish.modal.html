@@ -49,6 +49,13 @@
       </section>
 
       <section class="block ct-rise" style="--i: 3">
+        <span class="label">
+          {{ 'wish.months.title' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
+        </span>
+        <app-month-picker [(months)]="bestMonths" />
+      </section>
+
+      <section class="block ct-rise" style="--i: 3">
         <label class="label" for="wish-link">
           {{ 'wish.form.link' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em>
         </label>

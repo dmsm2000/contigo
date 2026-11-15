@@ -11,12 +11,13 @@ import { MinStay, Suggestion } from '../../core/suggestions';
 import { MIN_STAYS, nearestOrigin, normalizeLink } from '../../core/wishlist.logic';
 import { Stars, WishlistService } from '../../core/wishlist.service';
 import { PlacePickerComponent } from '../places/place-picker.component';
+import { MonthPickerComponent } from './month-picker.component';
 import { StarsComponent } from './stars.component';
 
 /** Juntar um sítio à lista "Por ir". Pode vir já preenchido com uma sugestão. */
 @Component({
   selector: 'app-add-wish-modal',
-  imports: [IonContent, IonFooter, IonIcon, FormsModule, TranslocoPipe, PlacePickerComponent, StarsComponent],
+  imports: [IonContent, IonFooter, IonIcon, FormsModule, TranslocoPipe, PlacePickerComponent, StarsComponent, MonthPickerComponent],
   templateUrl: './add-wish.modal.html',
   styleUrl: './add-wish.modal.scss',
 })
@@ -35,6 +36,7 @@ export class AddWishModal implements OnInit {
   protected readonly stars = signal<Stars>(2);
   protected readonly minStay = signal<MinStay | null>(null);
   protected readonly minStays = MIN_STAYS;
+  protected readonly bestMonths = signal<number[] | null>(null);
   protected link = '';
   protected note = '';
 
@@ -98,6 +100,7 @@ export class AddWishModal implements OnInit {
         note: this.note.trim() || null,
         link,
         minStay: this.minStay(),
+        bestMonths: this.bestMonths(),
       });
     } catch {
       this.saving.set(false);

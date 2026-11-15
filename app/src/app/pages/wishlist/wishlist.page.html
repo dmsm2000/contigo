@@ -10,6 +10,16 @@
       </button>
     </header>
 
+    @if (wishlist.incompleteCount() > 0) {
+      <button class="complete-banner ct-rise" style="--i: 1" type="button" (click)="complete()">
+        <span class="complete-text">
+          <strong>{{ (wishlist.incompleteCount() === 1 ? 'complete.bannerOne' : 'complete.bannerMany') | transloco: { count: wishlist.incompleteCount() } }}</strong>
+          <small>{{ 'complete.bannerHint' | transloco }}</small>
+        </span>
+        <span class="complete-go">{{ 'complete.fill' | transloco }}</span>
+      </button>
+    }
+
     @if (wishlist.sorted().length) {
       <ul class="list">
         @for (item of wishlist.sorted(); track item.place.id; let i = $index) {
@@ -35,8 +45,11 @@
               </button>
             </div>
 
-            @if (item.minStay || distance(item)) {
+            @if (item.minStay || distance(item) || item.bestMonths) {
               <ul class="chips">
+                @if (item.bestMonths) {
+                  <li class="chip">{{ 'wish.months.best' | transloco: { months: months(item) } }}</li>
+                }
                 @if (item.minStay) {
                   <li class="chip">{{ 'wish.minStay.' + item.minStay | transloco }}</li>
                 }
@@ -44,6 +57,15 @@
                   <li class="chip chip--muted">{{ 'wish.distance' | transloco: { km: far.km, origin: far.origin } }}</li>
                 }
               </ul>
+            }
+
+            @if (missing(item).length) {
+              <button class="missing" type="button" (click)="complete()">
+                {{ 'complete.missing' | transloco }}:
+                @for (field of missing(item); track field; let last = $last) {
+                  {{ 'complete.field.' + field | transloco }}{{ last ? '' : ', ' }}
+                }
+              </button>
             }
 
             @if (item.note) {

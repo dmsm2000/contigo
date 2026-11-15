@@ -89,6 +89,7 @@
       "delete": "Apagar viagem",
       "deleteTitle": "Apagar esta viagem?",
       "deleteText": "{{place}} deixa de aparecer nas vossas memórias. Isto não se pode desfazer.",
+      "deleteDrawnText": "{{place}} sai do sorteio e do plano. Podem sortear outra vez. Isto não se pode desfazer.",
       "deleted": "Viagem apagada.",
       "deleteError": "Não foi possível apagar. Tenta outra vez.",
       "notFound": "Esta viagem já não existe.",
@@ -158,6 +159,12 @@
       "more": "Ver mais {{count}}",
       "less": "Ver menos",
       "none": "Já visitaram ou guardaram todas as nossas sugestões."
+    },
+    "months": {
+      "title": "Altura ideal",
+      "allYear": "O ano todo",
+      "to": "a",
+      "best": "Melhor em {{months}}"
     }
   },
   "draw": {
@@ -197,7 +204,14 @@
     "vetoDone": "Veto usado. Podem sortear outra vez.",
     "vetoError": "Não foi possível usar o veto. Tenta outra vez.",
     "saveFailed": "O sorteio saiu, mas não ficou guardado.",
-    "retrySave": "Guardar outra vez"
+    "retrySave": "Guardar outra vez",
+    "incompleteOne": "1 sítio por completar (sai menos vezes)",
+    "incompleteMany": "{{count}} sítios por completar (saem menos vezes)",
+    "offSeason": "Fora da altura ideal: este sítio é melhor em {{months}}.",
+    "rerollOffSeason": "Sortear outro (não gasta o veto)",
+    "completeThis": "Completar este sítio",
+    "rerollError": "Não foi possível sortear outro. Tenta outra vez.",
+    "rerollNone": "Já não há mais opções para sortear."
   },
   "ideas": {
     "title": "Ideias",
@@ -784,5 +798,33 @@
     "error": "Não foi possível guardar a imagem. Tenta outra vez.",
     "done": "Imagem atualizada.",
     "change": "Mudar a imagem"
+  },
+  "complete": {
+    "title": "Preencher",
+    "nothingTitle": "Está tudo preenchido",
+    "nothingText": "Não há nada por completar nos vossos sítios.",
+    "doneTitle": "Feito!",
+    "doneText": "Preencheste {{count}} sítios.",
+    "progress": "{{current}} de {{total}}",
+    "hint": "Só o que falta para entrar a sério no sorteio",
+    "location": "Onde fica?",
+    "search": "Procurar",
+    "locationSet": "Localização: {{name}}",
+    "waiting": "{{name}} ainda não deu estrelas a este sítio: só essa pessoa as pode dar.",
+    "close": "Fechar",
+    "skip": "Saltar",
+    "save": "Guardar e seguinte",
+    "saveLast": "Guardar",
+    "bannerOne": "1 sítio por completar",
+    "bannerMany": "{{count}} sítios por completar",
+    "bannerHint": "Saem menos vezes no sorteio até estarem prontos.",
+    "fill": "Preencher",
+    "missing": "Falta",
+    "field": {
+      "duration": "duração",
+      "stars": "estrelas",
+      "months": "altura ideal",
+      "location": "localização"
+    }
   }
 }

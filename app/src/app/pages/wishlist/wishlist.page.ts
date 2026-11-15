@@ -8,6 +8,7 @@ import { ProfileService } from '../../core/profile.service';
 import { Suggestion } from '../../core/suggestions';
 import { initialOf, placeSubtitle, tileColors } from '../../core/trips.logic';
 import { nearestOrigin, WishlistItem } from '../../core/wishlist.logic';
+import { formatMonths, WishMissing } from '../../core/wish-readiness.logic';
 import { Stars, WishlistService } from '../../core/wishlist.service';
 import { TripFlowService } from '../../features/trips/trip-flow.service';
 import { TripLabels } from '../../features/trips/trip-labels.service';
@@ -48,6 +49,22 @@ export class WishlistPage {
 
   constructor() {
     addIcons({ add, chevronBackOutline, imageOutline, linkOutline, locationOutline, sparklesOutline, trashOutline });
+  }
+
+  protected complete(): void {
+    void this.flow.openCompleteWishes();
+  }
+
+  protected missing(item: WishlistItem): WishMissing[] {
+    return this.wishlist.missingOf(item);
+  }
+
+  /** "abril a junho" / "o ano todo", para o cartão. */
+  protected months(item: WishlistItem): string {
+    const language = this.language();
+    return item.bestMonths
+      ? formatMonths(item.bestMonths, language, this.transloco.translate('wish.months.allYear').toLowerCase(), this.transloco.translate('wish.months.to'))
+      : '';
   }
 
   protected changeImage(item: WishlistItem): void {

@@ -1,0 +1,111 @@
+<ion-content>
+  <div class="sheet">
+    <header class="head">
+      <h1 class="ct-display title">{{ 'complete.title' | transloco }}</h1>
+      <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    @if (finished()) {
+      <div class="done ct-rise" style="--i: 0">
+        <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+        <h2 class="ct-display">{{ (total() === 0 ? 'complete.nothingTitle' : 'complete.doneTitle') | transloco }}</h2>
+        <p>{{ (total() === 0 ? 'complete.nothingText' : 'complete.doneText') | transloco: { count: filled() } }}</p>
+      </div>
+    } @else if (item(); as wish) {
+      <ol class="progress" aria-hidden="true">
+        @for (n of queue(); track n; let i = $index) {
+          <li [class.on]="i <= index()"></li>
+        }
+      </ol>
+      <p class="count">{{ 'complete.progress' | transloco: { current: index() + 1, total: total() } }}</p>
+
+      <div class="place ct-rise" style="--i: 0">
+        @if (photo(); as url) {
+          <span class="thumb" [style.background]="'center / cover no-repeat url(&quot;' + url + '&quot;)'" role="img" [attr.aria-label]="wish.place.name"></span>
+        } @else {
+          <span class="thumb" [style.background]="tile()" aria-hidden="true">{{ wish.place.name.charAt(0) }}</span>
+        }
+        <span class="place-text">
+          <strong>{{ wish.place.name }}</strong>
+          <small>{{ 'complete.hint' | transloco }}</small>
+        </span>
+      </div>
+
+      @if (missing().includes('duration')) {
+        <section class="block ct-rise" style="--i: 1">
+          <span class="label" id="c-stay">{{ 'wish.form.minStay' | transloco }}</span>
+          <div class="pills" role="group" aria-labelledby="c-stay">
+            @for (option of minStays; track option) {
+              <button class="pill" type="button" [class.on]="minStay() === option" [attr.aria-pressed]="minStay() === option" (click)="toggleMinStay(option)">
+                {{ 'wish.minStay.' + option | transloco }}
+              </button>
+            }
+          </div>
+        </section>
+      }
+
+      @if (missing().includes('stars')) {
+        <section class="block ct-rise" style="--i: 2">
+          <span class="label">{{ 'wish.form.stars' | transloco }}</span>
+          <div class="stars-row">
+            <app-stars [value]="stars() ?? 0" [editable]="true" (picked)="stars.set($event)" />
+            @if (stars(); as chosen) {
+              <span class="stars-text">{{ 'wish.stars.' + chosen | transloco }}</span>
+            }
+          </div>
+        </section>
+      }
+
+      @if (missing().includes('months')) {
+        <section class="block ct-rise" style="--i: 3">
+          <span class="label">{{ 'wish.months.title' | transloco }}</span>
+          <app-month-picker [(months)]="months" />
+        </section>
+      }
+
+      @if (missing().includes('location')) {
+        <section class="block ct-rise" style="--i: 4">
+          <label class="label" for="c-where">{{ 'complete.location' | transloco }}</label>
+          <form class="search" (submit)="$event.preventDefault(); search()">
+            <input id="c-where" name="where" type="search" [(ngModel)]="query" autocomplete="off" />
+            <button class="go" type="submit" [disabled]="searching()" [attr.aria-label]="'complete.search' | transloco">
+              <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+            </button>
+          </form>
+          @if (coords(); as chosen) {
+            <p class="picked"><ion-icon name="location-outline" aria-hidden="true"></ion-icon>{{ 'complete.locationSet' | transloco: { name: chosen.label } }}</p>
+          }
+          <ul class="results">
+            @for (candidate of results(); track $index) {
+              <li>
+                <button type="button" (click)="pickLocation(candidate)">
+                  <strong>{{ candidate.name }}</strong>
+                  <small>{{ where(candidate) }}</small>
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      @if (waitingForPartner()) {
+        <p class="waiting ct-rise" style="--i: 5">{{ 'complete.waiting' | transloco: { name: partnerName() } }}</p>
+      }
+    }
+  </div>
+</ion-content>
+
+<ion-footer class="form-footer">
+  @if (finished()) {
+    <button class="ct-btn" type="button" (click)="close()">{{ 'complete.close' | transloco }}</button>
+  } @else {
+    <div class="footer-row">
+      <button class="skip" type="button" [disabled]="saving()" (click)="next()">{{ 'complete.skip' | transloco }}</button>
+      <button class="ct-btn" type="button" [disabled]="!hasChanges() || saving()" (click)="saveAndNext()">
+        {{ (isLast() ? 'complete.saveLast' : 'complete.save') | transloco }}
+      </button>
+    </div>
+  }
+</ion-footer>

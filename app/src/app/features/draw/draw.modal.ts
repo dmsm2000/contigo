@@ -2,7 +2,7 @@ import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { AlertController, IonContent, IonFooter, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, closeOutline, diceOutline, heartOutline, sparklesOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline, closeOutline, diceOutline, heartOutline, refreshOutline, sparklesOutline } from 'ionicons/icons';
 import { FreeWindow, formatWeekdays, formatWindow } from '../../core/availability.logic';
 import { AvailabilityService } from '../../core/availability.service';
 import { drawPool, reelDelays, reelFrames, summarizePool } from '../../core/draw.logic';
@@ -16,6 +16,9 @@ import { SUGGESTIONS } from '../../core/suggestions';
 import { formatTripDate, initialOf, placeSubtitle, tileColors, Trip } from '../../core/trips.logic';
 import { nearestOrigin, pick, PoolEntry } from '../../core/wishlist.logic';
 import { WishlistService } from '../../core/wishlist.service';
+import { TripsService } from '../../core/trips.service';
+import { fitsMonth, formatMonths, monthOf } from '../../core/wish-readiness.logic';
+import { CompleteWishesModal } from '../wishlist/complete-wishes.modal';
 import { TripDetailModal } from '../trips/trip-detail.modal';
 
 type Phase = 'setup' | 'rolling' | 'result';
@@ -60,6 +63,9 @@ export class DrawModal implements OnDestroy {
   protected readonly draws = inject(DrawService);
   private readonly images = inject(PlaceImageService);
   private readonly supabase = inject(SupabaseService).client;
+  private readonly trips = inject(TripsService);
+  /** As opções postas de lado neste ecrã por cairem fora da altura ideal (não gastam o veto). */
+  private readonly skipped = signal<ReadonlySet<string>>(new Set());
   /** A imagem encontrada para o sítio sorteado (ainda por guardar), enquanto a viagem não a tem. */
   private readonly foundImage = signal<string | null>(null);
 
@@ -93,7 +99,8 @@ export class DrawModal implements OnDestroy {
     drawPool(this.wishlist.items(), this.wishlist.suggestions(), {
       window: this.window(),
       includeSuggestions: this.wishlist.includeSuggestions(),
-      vetoed: this.draws.vetoedEntries(),
+      vetoed: new Set([...this.draws.vetoedEntries(), ...this.skipped()]),
+      userIds: this.wishlist.readinessUserIds(),
     }),
   );
   protected readonly summary = computed(() => summarizePool(this.pool()));
@@ -128,6 +135,23 @@ export class DrawModal implements OnDestroy {
       placeId: outcome.trip?.placeId ?? null,
     };
   });
+  /** O sítio sorteado, se vem da lista "Por ir" (tem altura ideal e o que falta preencher). */
+  private readonly drawnWish = computed(() => {
+    const placeId = this.outcome()?.trip?.placeId;
+    return placeId ? (this.wishlist.items().find((item) => item.place.id === placeId) ?? null) : null;
+  });
+  /** A viagem cai fora da altura ideal do sítio? Só avisa; não obriga a nada. */
+  protected readonly offSeason = computed(() => {
+    const wish = this.drawnWish();
+    const trip = this.outcome()?.trip;
+    if (!wish || !trip || fitsMonth(wish.bestMonths, monthOf(trip.startDate)) !== false) return null;
+    const language = this.language();
+    return formatMonths(wish.bestMonths!, language, this.transloco.translate('wish.months.allYear').toLowerCase(), this.transloco.translate('wish.months.to'));
+  });
+  protected readonly drawnIncomplete = computed(() => {
+    const wish = this.drawnWish();
+    return wish ? this.wishlist.missingOf(wish).length > 0 : false;
+  });
   /** Se o sítio sorteado já está na lista "Por ir" (ou acabou de ir para lá). */
   protected readonly onWishlist = computed(() => {
     const placeId = this.shown()?.placeId;
@@ -135,7 +159,7 @@ export class DrawModal implements OnDestroy {
   });
 
   constructor() {
-    addIcons({ checkmarkCircleOutline, closeOutline, diceOutline, heartOutline, sparklesOutline });
+    addIcons({ checkmarkCircleOutline, closeOutline, diceOutline, heartOutline, refreshOutline, sparklesOutline });
   }
 
   ngOnDestroy(): void {
@@ -199,6 +223,42 @@ export class DrawModal implements OnDestroy {
     if (suggestion) return suggestion;
     const wish = this.wishlist.items().find((item) => `wish:${item.place.id}` === entry.id);
     return wish ? wish.place : { name: entry.name, lat: null, lng: null };
+  }
+
+  protected async completeDrawn(): Promise<void> {
+    const placeId = this.outcome()?.trip?.placeId;
+    if (!placeId) return;
+    const modal = await this.modalCtrl.create({ component: CompleteWishesModal, componentProps: { placeId }, cssClass: 'ct-modal' });
+    await modal.present();
+  }
+
+  protected async completeAll(): Promise<void> {
+    const modal = await this.modalCtrl.create({ component: CompleteWishesModal, componentProps: { placeId: null }, cssClass: 'ct-modal' });
+    await modal.present();
+  }
+
+  /** Fora da altura ideal: deita fora este sorteio (sem gastar o veto) e sorteia outro, sem esta opção. */
+  protected async rerollOffSeason(): Promise<void> {
+    const outcome = this.outcome();
+    if (!outcome?.trip || this.busy()) return;
+    this.busy.set(true);
+    try {
+      await this.trips.remove(outcome.trip);
+    } catch {
+      this.busy.set(false);
+      await this.toast('draw.rerollError');
+      return;
+    }
+    this.skipped.update((set) => new Set([...set, outcome.entry.id]));
+    this.outcome.set(null);
+    this.confetti.set([]);
+    this.busy.set(false);
+    if (!this.pool().length) {
+      this.phase.set('setup');
+      await this.toast('draw.rerollNone');
+      return;
+    }
+    await this.roll();
   }
 
   protected async retrySave(): Promise<void> {

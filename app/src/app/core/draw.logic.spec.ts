@@ -8,6 +8,7 @@ const item = (id: string, name: string, total: number, minStay: WishlistItem['mi
   note: null,
   link: null,
   minStay,
+  bestMonths: null,
   stars: {},
   total,
 });

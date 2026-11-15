@@ -17,6 +17,7 @@ export interface WishlistRow extends PlaceRow {
   note: string | null;
   link: string | null;
   min_stay: MinStay | null;
+  best_months: number[] | null;
   place_wishes: WishRow[];
 }
 
@@ -25,6 +26,8 @@ export interface WishlistItem {
   note: string | null;
   link: string | null;
   minStay: MinStay | null;
+  /** Os meses (1 a 12) em que vale mais a pena ir; `null` enquanto não se preencheu. */
+  bestMonths: number[] | null;
   /** As estrelas (1 a 3) que cada pessoa deu, pelo id da pessoa. */
   stars: Record<string, number>;
   /** A soma das estrelas dos dois: é o peso do sítio no sorteio. */
@@ -39,6 +42,7 @@ export function toWishlistItem(row: WishlistRow): WishlistItem {
     note: row.note,
     link: row.link,
     minStay: row.min_stay,
+    bestMonths: row.best_months ?? null,
     stars,
     total: Object.values(stars).reduce((sum, value) => sum + value, 0),
   };
@@ -108,9 +112,14 @@ export interface PoolOptions {
   includeSuggestions?: boolean;
   /** Opções a deixar de fora (vetadas, ou que não cabem na janela). */
   exclude?: ReadonlySet<string>;
+  /** Os sítios da wishlist por completar (ids de sítio): saem com menos peso, mas saem. */
+  incomplete?: ReadonlySet<string>;
 }
 
 export const DEFAULT_SURPRISE_SHARE = 0.25;
+
+/** Um sítio incompleto continua a poder sair, mas com metade do peso (sorteio "equilibrado"). */
+export const INCOMPLETE_WEIGHT = 0.5;
 
 /**
  * A rotação do sorteio: os sítios da wishlist (com mais peso os mais desejados) e as sugestões, cada fonte
@@ -131,7 +140,9 @@ export function buildPool(
   const surpriseShare = !surprises.length ? 0 : !wishes.length ? 1 : requested;
   const wishShare = 1 - surpriseShare;
 
-  const wishTotal = wishes.reduce((sum, item) => sum + Math.max(item.total, 1), 0);
+  const incomplete = options.incomplete ?? new Set<string>();
+  const weightOf = (item: WishlistItem) => Math.max(item.total, 1) * (incomplete.has(item.place.id) ? INCOMPLETE_WEIGHT : 1);
+  const wishTotal = wishes.reduce((sum, item) => sum + weightOf(item), 0);
   const pool: PoolEntry[] = [];
   if (wishShare > 0) {
     for (const item of wishes) {
@@ -139,7 +150,7 @@ export function buildPool(
         id: `wish:${item.place.id}`,
         kind: 'wishlist',
         name: item.place.name,
-        weight: (wishShare * Math.max(item.total, 1)) / wishTotal,
+        weight: (wishShare * weightOf(item)) / wishTotal,
       });
     }
   }
