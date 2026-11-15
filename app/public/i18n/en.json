@@ -483,7 +483,13 @@
     },
     "seenAgo": "Last here {{when}}",
     "seenNow": "Here right now",
-    "seenNever": "No record yet of when they last came in"
+    "seenNever": "No record yet of when they last came in",
+    "togetherDays_one": "day together in {{year}}",
+    "togetherDays_other": "days together in {{year}}",
+    "togetherSince_one": "You last met yesterday",
+    "togetherSince_other": "You last met {{count}} days ago",
+    "togetherNow": "You are together now",
+    "togetherNever": "Mark your meet-ups to count the days together."
   },
   "login": {
     "title": "Hello again",

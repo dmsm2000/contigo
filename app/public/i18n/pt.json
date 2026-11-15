@@ -483,7 +483,13 @@
     },
     "seenAgo": "Esteve aqui {{when}}",
     "seenNow": "Está aqui agora",
-    "seenNever": "Ainda sem registo de quando entrou"
+    "seenNever": "Ainda sem registo de quando entrou",
+    "togetherDays_one": "dia juntos em {{year}}",
+    "togetherDays_other": "dias juntos em {{year}}",
+    "togetherSince_one": "O último encontro foi ontem",
+    "togetherSince_other": "O último encontro foi há {{count}} dias",
+    "togetherNow": "Estão juntos agora",
+    "togetherNever": "Marquem os encontros para contar os dias juntos."
   },
   "login": {
     "title": "Olá de novo",

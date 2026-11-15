@@ -44,6 +44,24 @@
       </div>
     }
 
+    @if (meetings.loaded() && trips.loaded()) {
+      <div class="ct-card together ct-rise" style="--i: 3">
+        <p class="together-days">
+          <strong class="ct-display">{{ together().daysThisYear }}</strong>
+          {{ (together().daysThisYear === 1 ? 'us.togetherDays_one' : 'us.togetherDays_other') | transloco: { year } }}
+        </p>
+        <p class="together-since">
+          @if (together().daysSince === null) {
+            {{ 'us.togetherNever' | transloco }}
+          } @else if (together().daysSince === 0) {
+            {{ 'us.togetherNow' | transloco }}
+          } @else {
+            {{ (together().daysSince === 1 ? 'us.togetherSince_one' : 'us.togetherSince_other') | transloco: { count: together().daysSince } }}
+          }
+        </p>
+      </div>
+    }
+
     <h2 class="links-title ct-rise" style="--i: 3">{{ 'us.together' | transloco }}</h2>
 
     <a class="ct-card link-row ct-rise" style="--i: 3" routerLink="/wishlist">

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Meeting, nextEncounter, upcomingMeetings } from './meetings.logic';
+import { Meeting, nextEncounter, togetherStats, upcomingMeetings } from './meetings.logic';
 import { Trip } from './trips.logic';
 
 const meeting = (id: string, startDate: string, endDate: string | null = null): Meeting => ({
@@ -50,5 +50,40 @@ describe('nextEncounter', () => {
   it('o que está a decorrer passa à frente do que vem aí', () => {
     const next = nextEncounter([meeting('a', '2026-11-14', '2026-11-16'), meeting('b', '2026-11-20')], null, today);
     expect(next).toMatchObject({ kind: 'meeting', meeting: { id: 'a' } });
+  });
+});
+
+describe('togetherStats', () => {
+  const today = '2026-11-15';
+  const past = (startDate: string, endDate: string | null, extra: Partial<Trip> = {}) =>
+    ({ status: 'past', withPartner: true, datePrecision: 'day', startDate, endDate, ...extra }) as Trip;
+
+  it('sem nada, zero dias e sem último encontro', () => {
+    expect(togetherStats([], [], today)).toEqual({ daysThisYear: 0, daysSince: null });
+  });
+
+  it('soma os dias dos encontros e das viagens, sem contar duas vezes os que se sobrepõem', () => {
+    const stats = togetherStats([meeting('a', '2026-11-01', '2026-11-03')], [past('2026-11-03', '2026-11-05')], today);
+    expect(stats.daysThisYear).toBe(5);
+    expect(stats.daysSince).toBe(10);
+  });
+
+  it('ignora o que ainda vem aí, as viagens sem o outro e as só com o mês', () => {
+    const stats = togetherStats(
+      [meeting('a', '2026-12-01', '2026-12-03')],
+      [past('2026-05-01', '2026-05-04', { withPartner: false }), past('2026-06-01', null, { datePrecision: 'month' })],
+      today,
+    );
+    expect(stats).toEqual({ daysThisYear: 0, daysSince: null });
+  });
+
+  it('só conta os dias do ano em curso', () => {
+    const stats = togetherStats([meeting('a', '2025-12-30', '2026-01-02')], [], today);
+    expect(stats.daysThisYear).toBe(2);
+  });
+
+  it('um encontro a decorrer conta até hoje e o último foi hoje', () => {
+    const stats = togetherStats([meeting('a', '2026-11-14', '2026-11-18')], [], today);
+    expect(stats).toEqual({ daysThisYear: 2, daysSince: 0 });
   });
 });

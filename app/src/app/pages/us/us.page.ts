@@ -6,6 +6,10 @@ import { addIcons } from 'ionicons';
 import { bulbOutline, cameraOutline, chevronForwardOutline, heartOutline, settingsOutline, walletOutline } from 'ionicons/icons';
 import { AuthService } from '../../core/auth.service';
 import { relativeTime } from '../../core/audit.logic';
+import { todayIso } from '../../core/availability.logic';
+import { togetherStats } from '../../core/meetings.logic';
+import { MeetingsService } from '../../core/meetings.service';
+import { TripsService } from '../../core/trips.service';
 import { LanguageService } from '../../core/language.service';
 import { IdeasService } from '../../core/ideas.service';
 import { ProfileService } from '../../core/profile.service';
@@ -24,6 +28,12 @@ export class UsPage {
   protected readonly profile = inject(ProfileService);
   protected readonly ideas = inject(IdeasService);
   private readonly language = inject(LanguageService).language;
+  private readonly meetings = inject(MeetingsService);
+  private readonly trips = inject(TripsService);
+
+  protected readonly year = new Date().getFullYear();
+  /** Os dias juntos este ano e há quanto tempo foi o último encontro. */
+  protected readonly together = computed(() => togetherStats(this.meetings.items(), this.trips.trips(), todayIso()));
 
   /** Quando o outro entrou pela última vez: "há 2 horas", ou "agora" se foi há menos de 2 minutos. */
   protected readonly partnerSeen = computed(() => {

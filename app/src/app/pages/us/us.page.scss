@@ -189,3 +189,27 @@
     box-shadow: 0 0 0 3px rgba(63, 168, 100, 0.25);
   }
 }
+
+.together {
+  margin-top: 12px;
+  padding: 16px 18px;
+}
+
+.together-days {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ct-mu);
+
+  strong {
+    margin-right: 6px;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--ct-tx);
+  }
+}
+
+.together-since {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--ct-mu);
+}

@@ -180,3 +180,7 @@ O `#splash` ultrapassa 120 px o ecrã em cima e em baixo (cobre a zona do indica
 ## Encontros (visitas sem ser viagem)
 
 Tabela `meetings` (`20261115150000_meetings.sql`): dias em que estão juntos sem ser uma viagem. Tem `at_place` (`porto`, `madrid`, `other`), por isso serve nos dois sentidos (ela vem ao Porto ou ele vai a Madrid) e lê-se bem a partir dos dois telemóveis. O contador do Início conta para o próximo momento juntos: o que estiver a decorrer ou o que começar primeiro entre os encontros e a viagem sorteada (só com datas confirmadas); `nextEncounter` em `meetings.logic.ts`. Marcar: menu "+", botão no cartão do Início e secção "Encontros" na página Datas. Sem nada marcado, a folha mostra "dias ?".
+
+## Dias juntos (página Nós)
+
+Cartão entre o cartão do outro e os atalhos: "23 dias juntos em 2026" e "O último encontro foi há 9 dias". `togetherStats` (`meetings.logic.ts`) junta os dias dos encontros e das viagens feitas a dois com o dia exato (as só com o mês ficam de fora), sem duplicar sobreposições, só até hoje e só do ano em curso. Sem nada marcado mostra 0 e um convite a marcar encontros.
