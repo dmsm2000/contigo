@@ -60,6 +60,10 @@
         <button class="ct-btn save" type="button" (click)="findImages()" [disabled]="backfill.running() || backfill.missing() === 0">
           {{ (backfill.running() ? 'settings.imagesSearching' : 'settings.imagesFind') | transloco }}
         </button>
+        @if ((backfill.automatic() ?? 0) > 0) {
+          <button class="ct-btn ct-btn--ghost redo" type="button" (click)="findImages(true)" [disabled]="backfill.running()">{{ 'settings.imagesRedo' | transloco }}</button>
+          <p class="hint">{{ 'settings.imagesRedoHint' | transloco }}</p>
+        }
       </div>
     </section>
 

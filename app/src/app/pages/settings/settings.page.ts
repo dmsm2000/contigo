@@ -78,8 +78,8 @@ export class SettingsPage {
     return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(amount);
   }
 
-  protected findImages(): void {
-    void this.backfill.run();
+  protected findImages(redo = false): void {
+    void this.backfill.run(redo);
   }
 
   protected setLanguage(language: Language): void {

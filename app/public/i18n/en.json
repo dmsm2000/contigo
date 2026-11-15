@@ -457,7 +457,10 @@
       "wishlist": "The places we want to visit",
       "expenses": "The onion and what was spent",
       "settings": "Contribution, stories, language, account"
-    }
+    },
+    "seenAgo": "Last here {{when}}",
+    "seenNow": "Here right now",
+    "seenNever": "No record yet of when they last came in"
   },
   "login": {
     "title": "Hello again",
@@ -591,7 +594,9 @@
     "imagesFind": "Find images",
     "imagesSearching": "Searching…",
     "imagesRunning": "Searching… {{done}} of {{total}} · {{found}} found",
-    "imagesDone": "Done: {{found}} images found across {{total}} places. The rest have no good photo on Wikipedia."
+    "imagesDone": "Done: {{found}} images found across {{total}} places. The rest have no good photo on Wikipedia.",
+    "imagesRedo": "Redo the automatic images",
+    "imagesRedoHint": "Searches again for the images the app picked by itself. The ones you chose or uploaded stay as they are."
   },
   "plan": {
     "form": {
@@ -767,5 +772,17 @@
       "needFirst": "You can approve once the dates, the stay and how you get there are set.",
       "resetHint": "If the dates, the stay or how you get there change, the approvals go back to zero."
     }
+  },
+  "placeImage": {
+    "title": "Place image",
+    "own": "Use our own photo",
+    "remove": "No image",
+    "suggestions": "Suggestions",
+    "use": "Use this image",
+    "hint": "Photos from Wikimedia Commons. Tap one to use it.",
+    "none": "We couldn't find good photos. You can use one of your own.",
+    "error": "Couldn't save the image. Try again.",
+    "done": "Image updated.",
+    "change": "Change the image"
   }
 }

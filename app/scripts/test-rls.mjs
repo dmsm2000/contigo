@@ -419,6 +419,17 @@ try {
   await a.from('trips').delete().eq('id', gTrip.data.id);
   await a.from('places').delete().eq('id', gPlace.data.id);
 
+  // Último acesso: cada um regista o seu (com a hora do servidor) e o outro vê.
+  const seenBefore = await b.from('profiles').select('last_seen_at').eq('id', created[0]).single();
+  const touchA = await a.rpc('touch_last_seen');
+  const seenAfter = await b.from('profiles').select('last_seen_at').eq('id', created[0]).single();
+  check('A regista que entrou e B vê a hora', !touchA.error && seenBefore.data?.last_seen_at === null && Boolean(seenAfter.data?.last_seen_at), touchA.error?.message);
+  const touchB = await b.rpc('touch_last_seen');
+  const aStill = await b.from('profiles').select('last_seen_at').eq('id', created[0]).single();
+  check('B só regista o seu acesso, nunca o de A', !touchB.error && aStill.data?.last_seen_at === seenAfter.data?.last_seen_at);
+  const touchAnon = await anon.rpc('touch_last_seen');
+  check('sem sessão não se regista acessos', Boolean(touchAnon.error));
+
   // Imagens dos sítios: partilhadas pelos dois, públicas para ler, só ficheiros com o id de um sítio no nome.
   const placeFile = `${crypto.randomUUID()}.jpg`;
   const imgA = await a.storage.from('place-images').upload(placeFile, jpeg, { contentType: 'image/jpeg', upsert: true });
@@ -433,6 +444,10 @@ try {
   check('só se aceita JPEG nas imagens dos sítios', Boolean(imgPng.error));
   const imgPublic = await fetch(a.storage.from('place-images').getPublicUrl(placeFile).data.publicUrl);
   check('qualquer um lê a imagem do sítio pelo endereço público', imgPublic.ok);
+  const versioned = `${crypto.randomUUID()}-${Date.now()}.jpg`;
+  const imgVersioned = await a.storage.from('place-images').upload(versioned, jpeg, { contentType: 'image/jpeg' });
+  check('a imagem de um sítio pode ter um número de versão no nome', !imgVersioned.error, imgVersioned.error?.message);
+  await a.storage.from('place-images').remove([versioned]);
   await a.storage.from('place-images').remove([placeFile]);
 } finally {
   for (const id of created) await admin.auth.admin.deleteUser(id);

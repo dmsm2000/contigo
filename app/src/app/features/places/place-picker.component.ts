@@ -132,12 +132,12 @@ export class PlacePickerComponent implements AfterViewInit, OnDestroy {
     const request = new AbortController();
     this.imageRequest = request;
     this.findingImage.set(true);
-    const url = await this.images.find(candidate, this.language(), request.signal);
+    const found = await this.images.find(candidate, this.language(), request.signal);
     if (request.signal.aborted) return;
     this.findingImage.set(false);
     // O sítio pode ter mudado entretanto: só se junta a imagem se ainda for este.
     const current = this.place();
-    if (current && current.name === candidate.name && current.osmRef === candidate.osmRef) this.place.set({ ...current, imageUrl: url });
+    if (current && current.name === candidate.name && current.osmRef === candidate.osmRef) this.place.set({ ...current, imageUrl: found?.url ?? null, imageCredit: found?.credit ?? null });
   }
 
   protected chooseTyped(name: string): void {

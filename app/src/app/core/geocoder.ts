@@ -15,6 +15,8 @@ export interface PlaceCandidate {
   population?: number;
   /** A imagem encontrada para o sítio (endereço do Wikimedia). Só para guardar; não faz parte do sítio. */
   imageUrl?: string | null;
+  /** De quem é essa foto (autor, licença e fonte). */
+  imageCredit?: string | null;
 }
 
 // A pesquisa devolve de tudo (paragens de comboio, ruas, lojas). Só interessa o que é destino de uma visita.

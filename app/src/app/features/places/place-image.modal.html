@@ -1,0 +1,66 @@
+<ion-content>
+  <div class="sheet">
+    <header class="head">
+      <h1 class="ct-display title">{{ 'placeImage.title' | transloco }}</h1>
+      <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+
+    @if (place(); as p) {
+      <p class="sub">{{ p.name }}</p>
+
+      @if (current(); as url) {
+        <figure class="current ct-rise" style="--i: 0">
+          <img [src]="url" [alt]="p.name" />
+          @if (p.image_credit) {
+            <figcaption>{{ p.image_credit }}</figcaption>
+          }
+        </figure>
+      }
+
+      <div class="actions ct-rise" style="--i: 1">
+        <label class="own" [class.busy]="busy() === 'own'">
+          <ion-icon name="camera-outline" aria-hidden="true"></ion-icon>
+          {{ 'placeImage.own' | transloco }}
+          <input class="ct-visually-hidden" type="file" accept="image/*" (change)="pickOwn($event)" />
+        </label>
+        @if (current()) {
+          <button class="none" type="button" [disabled]="!!busy()" (click)="remove()">
+            <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+            {{ 'placeImage.remove' | transloco }}
+          </button>
+        }
+      </div>
+
+      @if (failed()) {
+        <p class="error" role="alert">{{ 'placeImage.error' | transloco }}</p>
+      }
+
+      <h2 class="group ct-rise" style="--i: 2">{{ 'placeImage.suggestions' | transloco }}</h2>
+      @if (loading()) {
+        <ul class="grid" aria-hidden="true">
+          @for (n of [1, 2, 3, 4]; track n) {
+            <li><span class="thumb ct-skeleton"></span></li>
+          }
+        </ul>
+      } @else if (candidates().length) {
+        <ul class="grid">
+          @for (item of candidates(); track item.url; let i = $index) {
+            <li class="ct-rise" [style.--i]="3 + i">
+              <button class="thumb" type="button" [class.working]="busy() === item.url" [disabled]="!!busy()" (click)="choose(item)" [attr.aria-label]="('placeImage.use' | transloco) + ': ' + item.title">
+                <img [src]="item.url" alt="" loading="lazy" />
+                @if (busy() === item.url) {
+                  <span class="spinner" aria-hidden="true"></span>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+        <p class="hint">{{ 'placeImage.hint' | transloco }}</p>
+      } @else {
+        <p class="hint">{{ 'placeImage.none' | transloco }}</p>
+      }
+    }
+  </div>
+</ion-content>

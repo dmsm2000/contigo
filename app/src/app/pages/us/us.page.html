@@ -32,6 +32,14 @@
           @if (partner.home) {
             <small>{{ 'us.homes.' + partner.home | transloco }}</small>
           }
+          @if (partnerSeen(); as seen) {
+            <small class="seen" [class.online]="seen.online" [attr.title]="seen.exact">
+              <i aria-hidden="true"></i>
+              {{ (seen.online ? 'us.seenNow' : 'us.seenAgo') | transloco: { when: seen.ago } }}
+            </small>
+          } @else {
+            <small class="seen">{{ 'us.seenNever' | transloco }}</small>
+          }
         </span>
       </div>
     }

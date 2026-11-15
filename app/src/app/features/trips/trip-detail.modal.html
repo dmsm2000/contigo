@@ -4,6 +4,11 @@
       <button class="ct-icon-btn close" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
         <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
       </button>
+      @if (live(t)) {
+        <button class="ct-icon-btn edit" type="button" (click)="changeImage(t)" [attr.aria-label]="'placeImage.change' | transloco">
+          <ion-icon name="image-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
       @if (!live(t)) {
         <button class="ct-icon-btn edit" type="button" (click)="edit(t)" [attr.aria-label]="'trip.detail.edit' | transloco">
           <ion-icon name="create-outline" aria-hidden="true"></ion-icon>

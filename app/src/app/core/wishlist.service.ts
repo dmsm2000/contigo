@@ -108,7 +108,7 @@ export class WishlistService {
       : this.supabase.from('places').insert(row);
     const { data, error } = await query.select('id').single<{ id: string }>();
     if (error || !data) throw error ?? new Error('Não foi possível guardar o sítio.');
-    await attachPlaceImage(this.supabase, this.placeImages, data.id, place.imageUrl);
+    await attachPlaceImage(this.supabase, this.placeImages, data.id, place.imageUrl ? { url: place.imageUrl, credit: place.imageCredit ?? null } : null);
     await this.writeStars(data.id, input.stars);
     await this.load();
   }

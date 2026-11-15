@@ -64,9 +64,9 @@ export class AddWishModal implements OnInit {
     });
     this.minStay.set(suggestion.minStay);
     // Uma sugestão também ganha a sua imagem.
-    void this.images.find(suggestion, this.language()).then((url) => {
+    void this.images.find(suggestion, this.language()).then((found) => {
       const current = this.place();
-      if (current && current.name === suggestion.name) this.place.set({ ...current, imageUrl: url });
+      if (current && current.name === suggestion.name) this.place.set({ ...current, imageUrl: found?.url ?? null, imageCredit: found?.credit ?? null });
     });
   }
 

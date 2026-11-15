@@ -2,7 +2,7 @@ import { Component, Input, OnInit, effect, inject, signal, untracked } from '@an
 import { AlertController, IonContent, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { addOutline, closeOutline, createOutline, trashOutline } from 'ionicons/icons';
+import { addOutline, closeOutline, createOutline, imageOutline, trashOutline } from 'ionicons/icons';
 import { Expense, totalOf } from '../../core/expenses.logic';
 import { ExpensesService } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
@@ -18,6 +18,7 @@ import { isLive } from '../../core/trip-plan.logic';
 import { AuditLineComponent } from '../audit/audit-line.component';
 import { TripPlanComponent } from './plan/trip-plan.component';
 import { ExpenseModal } from '../expenses/expense.modal';
+import { PlaceImageModal } from '../places/place-image.modal';
 import { PastTripModal } from './past-trip.modal';
 import { AddPhotosModal } from '../photos/add-photos.modal';
 import { PhotoImgComponent } from '../photos/photo-img.component';
@@ -74,13 +75,18 @@ export class TripDetailModal implements OnInit {
     await modal.present();
   }
 
+  protected async changeImage(trip: Trip): Promise<void> {
+    const modal = await this.modalCtrl.create({ component: PlaceImageModal, componentProps: { placeId: trip.placeId }, cssClass: 'ct-modal' });
+    await modal.present();
+  }
+
   protected async edit(trip: Trip): Promise<void> {
     const modal = await this.modalCtrl.create({ component: PastTripModal, componentProps: { trip }, cssClass: 'ct-modal' });
     await modal.present();
   }
 
   constructor() {
-    addIcons({ addOutline, closeOutline, createOutline, trashOutline });
+    addIcons({ addOutline, closeOutline, createOutline, imageOutline, trashOutline });
 
     // Quando chegam fotos (as minhas ou as do outro), pedem-se os links das miniaturas e da capa.
     effect(() => {

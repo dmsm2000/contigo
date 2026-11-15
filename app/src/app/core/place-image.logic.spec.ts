@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isWikimediaUrl, pickImage, WikiPage } from './place-image.logic';
+import { pickWikidataImage, creditOf, isWikimediaUrl, nameWords, pickCommons, pickImage, WikiPage, CommonsFile } from './place-image.logic';
 
 const photo = (name: string) => `https://upload.wikimedia.org/wikipedia/commons/a/ab/${name}.jpg`;
 const page = (title: string, image: string | null, lat?: number, lon?: number, index = 1): WikiPage => ({
@@ -50,5 +50,84 @@ describe('pickImage', () => {
     expect(isWikimediaUrl('http://upload.wikimedia.org/x.jpg')).toBe(false);
     expect(isWikimediaUrl('não é um endereço')).toBe(false);
     expect(pickImage([page('Sintra', 'https://evil.example.com/a.jpg', 38.8, -9.38)], sintra)).toBeNull();
+  });
+});
+
+const file = (title: string, width = 3000, height = 2000, over: Partial<CommonsFile> = {}): CommonsFile => ({
+  title: `File:${title}`,
+  index: 1,
+  mime: 'image/jpeg',
+  width,
+  height,
+  thumbUrl: `https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/${encodeURIComponent(title)}/1000px-x.jpg`,
+  artist: '<a href="//x">Zarateman</a>',
+  license: 'CC BY-SA 3.0',
+  ...over,
+});
+
+describe('pickCommons', () => {
+  it('escolhe fotografias grandes, na horizontal, com o nome do sítio no título', () => {
+    const files = [
+      file('Cáceres - Torre de San Francisco Javier.jpg'),
+      file('Castillo de Trujillo, Cáceres.jpg', 7000, 4000),
+      file('Outra coisa qualquer.jpg'),
+      file('Cáceres vertical.jpg', 2000, 3000),
+      file('Cáceres pequena.jpg', 800, 600),
+      file('Cáceres.png', 3000, 2000, { mime: 'image/png' }),
+    ];
+    expect(pickCommons(files, { name: 'Cáceres' }, 'quality').map((c) => c.title)).toEqual(['Cáceres - Torre de San Francisco Javier.jpg', 'Castillo de Trujillo, Cáceres.jpg']);
+  });
+
+  it('as que não são de qualidade têm de ser ainda maiores', () => {
+    expect(pickCommons([file('Sintra a.jpg', 1800, 1200)], { name: 'Sintra' }, 'quality')).toHaveLength(1);
+    expect(pickCommons([file('Sintra a.jpg', 1800, 1200)], { name: 'Sintra' }, 'commons')).toHaveLength(0);
+  });
+
+  it('não repete séries do mesmo autor e respeita o limite', () => {
+    const files = ['Salamanca - BC 02.jpg', 'Salamanca - BC 03.jpg', 'Salamanca - BC 04.jpg', 'Salamanca, Plaza Mayor.jpg'].map((t, i) => file(t, 3000, 2000, { index: i }));
+    expect(pickCommons(files, { name: 'Salamanca' }, 'quality').map((c) => c.title)).toEqual(['Salamanca - BC 02.jpg', 'Salamanca, Plaza Mayor.jpg']);
+    expect(pickCommons(files, { name: 'Salamanca' }, 'quality', 1)).toHaveLength(1);
+  });
+
+  it('recusa bandeiras e mapas mesmo com o nome certo', () => {
+    expect(pickCommons([file('Bandera de Salamanca.jpg'), file('Salamanca locator map.jpg')], { name: 'Salamanca' }, 'quality')).toEqual([]);
+  });
+
+  it('deixa de fora carros, animais e portas', () => {
+    const files = ['Audi Q5 Amarante Rally de Portugal 2016.jpg', 'Door knocker in Coimbra 01.jpg', 'Red macaw Guimarães.jpg'].map((t) => file(t));
+    expect(pickCommons(files, { name: 'Amarante' }, 'quality')).toEqual([]);
+    expect(pickCommons([file('Coimbra November 2012-7.jpg')], { name: 'Coimbra' }, 'quality')).toHaveLength(1);
+  });
+
+  it('limpa o crédito e junta a licença', () => {
+    expect(creditOf('<a href="//x">Zarateman</a>', 'CC BY-SA 3.0')).toBe('Foto: Zarateman · CC BY-SA 3.0 · Wikimedia Commons');
+    expect(creditOf(null, null)).toBe('Foto · Wikimedia Commons');
+  });
+
+  it('as palavras do nome para o título', () => {
+    expect(nameWords('San Lorenzo de El Escorial')).toEqual(['san', 'lorenzo']);
+    expect(nameWords('Porto Covo')).toEqual(['porto', 'covo']);
+    expect(nameWords('Évora')).toEqual(['evora']);
+  });
+});
+
+describe('pickWikidataImage', () => {
+  const braga = { name: 'Braga', lat: 41.55, lng: -8.42 };
+  const item = (label: string, image: string | null, lat = 41.55, lng = -8.42) => ({ label, image, lat, lng });
+
+  it('devolve a imagem principal do item com o nome certo e perto', () => {
+    expect(pickWikidataImage([item('Braga', 'Arco da porta nova Braga.jpg')], braga)).toBe('Arco da porta nova Braga.jpg');
+  });
+
+  it('salta itens sem imagem, de outro sítio ou longe (a Braga de outro país)', () => {
+    expect(pickWikidataImage([item('Braga', null), item('Braga', 'Longe.jpg', -2, 40), item('Brago', 'Outro.jpg'), item('Braga', 'Certa.jpg')], braga)).toBe('Certa.jpg');
+  });
+
+  it('só aceita JPEG, PNG ou WebP (nada de SVG)', () => {
+    expect(pickWikidataImage([item('Braga', 'Brasao.svg')], braga)).toBeNull();
+  });
+
+  it('sem coordenadas do sítio não arrisca', () => {
+    expect(pickWikidataImage([item('Braga', 'A.jpg')], { name: 'Braga', lat: null, lng: null })).toBeNull();
   });
 });

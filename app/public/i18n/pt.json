@@ -457,7 +457,10 @@
       "wishlist": "Os sítios que queremos conhecer",
       "expenses": "A cebola e o que se gastou",
       "settings": "Dotação, histórias, língua, conta"
-    }
+    },
+    "seenAgo": "Esteve aqui {{when}}",
+    "seenNow": "Está aqui agora",
+    "seenNever": "Ainda sem registo de quando entrou"
   },
   "login": {
     "title": "Olá de novo",
@@ -591,7 +594,9 @@
     "imagesFind": "Procurar imagens",
     "imagesSearching": "A procurar…",
     "imagesRunning": "A procurar… {{done}} de {{total}} · {{found}} encontradas",
-    "imagesDone": "Feito: {{found}} imagens encontradas em {{total}} sítios. Os que ficaram sem imagem não têm foto boa na Wikipédia."
+    "imagesDone": "Feito: {{found}} imagens encontradas em {{total}} sítios. Os que ficaram sem imagem não têm foto boa na Wikipédia.",
+    "imagesRedo": "Refazer as imagens automáticas",
+    "imagesRedoHint": "Procura outra vez as imagens que a app escolheu sozinha. As que escolheram ou enviaram vocês ficam como estão."
   },
   "plan": {
     "form": {
@@ -767,5 +772,17 @@
       "needFirst": "Só se aprova depois de definirem as datas, o alojamento e como chegam.",
       "resetHint": "Se mudarem as datas, o alojamento ou como chegam, as aprovações voltam a zero."
     }
+  },
+  "placeImage": {
+    "title": "Imagem do sítio",
+    "own": "Usar uma foto nossa",
+    "remove": "Sem imagem",
+    "suggestions": "Sugestões",
+    "use": "Usar esta imagem",
+    "hint": "Fotografias do Wikimedia Commons. Toca numa para a usar.",
+    "none": "Não encontrámos fotografias boas. Podes usar uma foto vossa.",
+    "error": "Não foi possível guardar a imagem. Tenta outra vez.",
+    "done": "Imagem atualizada.",
+    "change": "Mudar a imagem"
   }
 }

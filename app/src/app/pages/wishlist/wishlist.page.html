@@ -27,6 +27,9 @@
                   <p class="where">{{ subtitle(item) }}</p>
                 }
               </div>
+              <button class="ct-icon-btn" type="button" (click)="changeImage(item)" [attr.aria-label]="'placeImage.change' | transloco">
+                <ion-icon name="image-outline" aria-hidden="true"></ion-icon>
+              </button>
               <button class="ct-icon-btn remove" type="button" (click)="confirmRemove(item)" [attr.aria-label]="'wish.remove' | transloco">
                 <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
               </button>

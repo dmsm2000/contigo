@@ -170,3 +170,22 @@
   width: 120px;
   border-radius: 8px;
 }
+
+// A última vez que o outro entrou: um ponto verde quando está na app agora.
+.seen {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ct-ln);
+  }
+
+  &.online i {
+    background: #3fa864;
+    box-shadow: 0 0 0 3px rgba(63, 168, 100, 0.25);
+  }
+}

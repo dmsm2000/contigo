@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { AlertController, IonContent, IonIcon, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { add, chevronBackOutline, linkOutline, locationOutline, sparklesOutline, trashOutline } from 'ionicons/icons';
+import { add, chevronBackOutline, imageOutline, linkOutline, locationOutline, sparklesOutline, trashOutline } from 'ionicons/icons';
 import { LanguageService } from '../../core/language.service';
 import { ProfileService } from '../../core/profile.service';
 import { Suggestion } from '../../core/suggestions';
@@ -47,7 +47,11 @@ export class WishlistPage {
   protected readonly hiddenCount = computed(() => Math.max(0, this.nearestFirst().length - SUGGESTIONS_SHOWN));
 
   constructor() {
-    addIcons({ add, chevronBackOutline, linkOutline, locationOutline, sparklesOutline, trashOutline });
+    addIcons({ add, chevronBackOutline, imageOutline, linkOutline, locationOutline, sparklesOutline, trashOutline });
+  }
+
+  protected changeImage(item: WishlistItem): void {
+    void this.flow.openPlaceImage(item.place.id);
   }
 
   protected add(): void {

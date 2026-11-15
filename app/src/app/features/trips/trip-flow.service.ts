@@ -10,6 +10,7 @@ import { AddPhotosModal } from '../photos/add-photos.modal';
 import { PhotoViewerModal } from '../photos/photo-viewer.modal';
 import { StoriesModal } from '../stories/stories.modal';
 import { AddWishModal } from '../wishlist/add-wish.modal';
+import { PlaceImageModal } from '../places/place-image.modal';
 import { PastTripModal } from './past-trip.modal';
 import { PlanTripModal } from './plan-trip.modal';
 import { TripDetailModal } from './trip-detail.modal';
@@ -22,6 +23,11 @@ export class TripFlowService {
 
   async openPastTrip(): Promise<void> {
     await this.present(() => this.modals.create({ component: PastTripModal, cssClass: 'ct-modal' }));
+  }
+
+  /** Escolher a imagem de um sítio (as sugestões, uma foto vossa ou nenhuma). */
+  async openPlaceImage(placeId: string): Promise<void> {
+    await this.present(() => this.modals.create({ component: PlaceImageModal, componentProps: { placeId }, cssClass: 'ct-modal' }));
   }
 
   /** Planear uma viagem à mão. Ao criar, abre logo o plano dela. */

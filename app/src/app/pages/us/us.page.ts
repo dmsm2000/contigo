@@ -1,10 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { bulbOutline, cameraOutline, chevronForwardOutline, heartOutline, settingsOutline, walletOutline } from 'ionicons/icons';
 import { AuthService } from '../../core/auth.service';
+import { relativeTime } from '../../core/audit.logic';
+import { LanguageService } from '../../core/language.service';
 import { IdeasService } from '../../core/ideas.service';
 import { ProfileService } from '../../core/profile.service';
 import { LastUpdateComponent } from '../../features/audit/last-update.component';
@@ -21,12 +23,25 @@ export class UsPage {
   protected readonly auth = inject(AuthService);
   protected readonly profile = inject(ProfileService);
   protected readonly ideas = inject(IdeasService);
+  private readonly language = inject(LanguageService).language;
+
+  /** Quando o outro entrou pela última vez: "há 2 horas", ou "agora" se foi há menos de 2 minutos. */
+  protected readonly partnerSeen = computed(() => {
+    const at = this.profile.partner()?.last_seen_at;
+    if (!at) return null;
+    const online = Date.now() - new Date(at).getTime() < 2 * 60 * 1000;
+    return { online, ago: relativeTime(at, this.language()), exact: new Date(at).toLocaleString(this.language()) };
+  });
 
   protected readonly avatarBusy = signal(false);
   protected readonly avatarFailed = signal(false);
 
   constructor() {
     addIcons({ bulbOutline, cameraOutline, chevronForwardOutline, heartOutline, settingsOutline, walletOutline });
+    // A hora a que o outro entrou muda enquanto estás aqui: lê-se ao abrir Nós, e volta a ler-se de minuto a minuto.
+    void this.profile.refreshPeople();
+    const timer = setInterval(() => void this.profile.refreshPeople(), 60_000);
+    inject(DestroyRef).onDestroy(() => clearInterval(timer));
   }
 
   /** A foto escolhida (da galeria ou da câmara) passa a ser a minha foto de perfil. */

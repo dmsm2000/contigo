@@ -183,7 +183,7 @@ export class DrawModal implements OnDestroy {
     const found = await lookup;
     if (this.destroyed) return;
     if (found && trip && !trip.place.imagePath) {
-      this.foundImage.set(found);
+      this.foundImage.set(found.url);
       void attachPlaceImage(this.supabase, this.images, trip.placeId, found);
     }
 

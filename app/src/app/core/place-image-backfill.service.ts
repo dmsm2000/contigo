@@ -11,10 +11,11 @@ interface MissingPlace {
   name: string;
   lat: number | null;
   lng: number | null;
+  country_code: string | null;
 }
 
 /** Uma pausa entre sítios, para não sobrecarregar a Wikipédia (é um serviço gratuito). */
-const PAUSE_MS = 250;
+const PAUSE_MS = 1200;
 
 /**
  * Procura imagens para os sítios que já existiam antes de a app as guardar. Corre quando alguém pede (nas Definições)
@@ -33,21 +34,30 @@ export class PlaceImageBackfillService {
   readonly running = signal(false);
   readonly progress = signal<{ done: number; total: number; found: number } | null>(null);
 
+  /** Quantos sítios têm uma imagem automática (que se pode refazer; as escolhidas por nós não). */
+  readonly automatic = signal<number | null>(null);
+
   async count(): Promise<void> {
-    const { count } = await this.supabase.from('places').select('id', { count: 'exact', head: true }).is('image_path', null);
-    this.missing.set(count ?? 0);
+    const [missing, auto] = await Promise.all([
+      this.supabase.from('places').select('id', { count: 'exact', head: true }).is('image_path', null),
+      this.supabase.from('places').select('id', { count: 'exact', head: true }).not('image_path', 'is', null).eq('image_source', 'auto'),
+    ]);
+    this.missing.set(missing.count ?? 0);
+    this.automatic.set(auto.count ?? 0);
   }
 
-  async run(): Promise<void> {
+  /** Procura imagens para os sítios sem imagem; com `redo`, refaz também as automáticas (nunca as escolhidas à mão). */
+  async run(redo = false): Promise<void> {
     if (this.running()) return;
     this.running.set(true);
     try {
-      const { data } = await this.supabase.from('places').select('id, name, lat, lng').is('image_path', null).returns<MissingPlace[]>();
+      const query = this.supabase.from('places').select('id, name, lat, lng, country_code');
+      const { data } = await (redo ? query.eq('image_source', 'auto') : query.is('image_path', null)).returns<MissingPlace[]>();
       const places = data ?? [];
       this.progress.set({ done: 0, total: places.length, found: 0 });
       for (const place of places) {
-        const url = await this.images.find(place, this.language());
-        const saved = url ? await attachPlaceImage(this.supabase, this.images, place.id, url) : false;
+        const found = await this.images.find({ ...place, countryCode: place.country_code }, this.language());
+        const saved = found ? await attachPlaceImage(this.supabase, this.images, place.id, found, { replace: redo }) : false;
         this.progress.update((state) => (state ? { ...state, done: state.done + 1, found: state.found + (saved ? 1 : 0) } : state));
         await new Promise((resolve) => setTimeout(resolve, PAUSE_MS));
       }
