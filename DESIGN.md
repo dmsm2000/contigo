@@ -196,3 +196,5 @@ O `UpdateService` já não recarrega a página quando acha uma versão nova a me
 ## Splash: passagem para a app
 
 Medido a gravar o arranque no simulador (capturas seguidas): o splash da página animava a entrada (logótipo a saltar, nome a subir), saía antes de a primeira página estar desenhada (ficava um ecrã em branco) e a página de entrada repetia a animação do logótipo, parecendo um segundo splash. Agora o splash da página é parado (igual à imagem de arranque do iOS), só sai quando a primeira navegação acabou e foi desenhada (`firstPageDrawn` em `main.ts`, com limite de 4 s) e esmorece só com opacidade; o logótipo da página de entrada já não "salta".
+
+O "piscar" na troca da imagem de arranque do iOS para a página tinha duas causas prováveis: o ícone do splash era um ficheiro à parte (aparecia depois do fundo) e o fundo escuro dependia de um script. Agora o ícone vai inline (`data:`) no `index.html` e `@media (display-mode: standalone)` põe o fundo e o splash escuros logo no primeiro desenho, sem esperar pelo script.
