@@ -188,3 +188,11 @@ Cartão entre o cartão do outro e os atalhos: "23 dias juntos em 2026" e "O úl
 ## Splash sem salto
 
 A imagem de arranque do iOS (grande: ícone a 30% da largura, nome a 11%, legenda a 4%) e o `#splash` da página tinham tamanhos diferentes, e o da página entrava com animação a partir de opacidade 0: o logótipo parecia desaparecer e voltar. Agora o `#splash` usa as mesmas proporções (em `vw`, com limite em ecrãs largos) e, na app instalada (`navigator.standalone` ou `display-mode: standalone`), fica escuro e parado, igual à imagem, e só depois esmorece. No browser normal mantém a animação de entrada.
+
+## Atualizações sem interromper
+
+O `UpdateService` já não recarrega a página quando acha uma versão nova a meio do uso (o que fazia o splash aparecer outra vez por cima da app). Procura ao abrir e ao voltar ao primeiro plano, só regista que há versão nova, e aplica-a (recarrega) apenas no momento em que a app volta ao primeiro plano, antes de lhe tocarem: parece uma abertura normal.
+
+## Splash: passagem para a app
+
+Medido a gravar o arranque no simulador (capturas seguidas): o splash da página animava a entrada (logótipo a saltar, nome a subir), saía antes de a primeira página estar desenhada (ficava um ecrã em branco) e a página de entrada repetia a animação do logótipo, parecendo um segundo splash. Agora o splash da página é parado (igual à imagem de arranque do iOS), só sai quando a primeira navegação acabou e foi desenhada (`firstPageDrawn` em `main.ts`, com limite de 4 s) e esmorece só com opacidade; o logótipo da página de entrada já não "salta".
