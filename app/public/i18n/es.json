@@ -857,15 +857,16 @@
     "note": "Nota (opcional)",
     "notePlaceholder": "Ej.: fin de semana, cena de cumpleaños…",
     "save": "Guardar encuentro",
-    "delete": "Borrar encuentro",
-    "deleteTitle": "¿Borrar este encuentro?",
-    "deleteText": "Deja de contar en el Inicio.",
+    "delete": "Cancelar encuentro",
+    "deleteTitle": "¿Cancelar este encuentro?",
+    "deleteText": "Deja de contar en el Inicio y en los días juntos.",
     "listTitle": "Encuentros",
     "listEmpty": "Aún no hay encuentros marcados.",
     "add": "Marcar encuentro",
     "errors": {
       "start": "Elige el día en que empieza.",
       "save": "No se pudo guardar ahora. Inténtalo otra vez."
-    }
+    },
+    "keep": "Mantener"
   }
 }

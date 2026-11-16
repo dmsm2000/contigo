@@ -89,7 +89,7 @@ export class MeetingModal implements OnInit {
       header: t('meeting.deleteTitle'),
       message: t('meeting.deleteText'),
       buttons: [
-        { text: t('common.cancel'), role: 'cancel' },
+        { text: t('meeting.keep'), role: 'cancel' },
         {
           text: t('meeting.delete'),
           role: 'destructive',

@@ -857,15 +857,16 @@
     "note": "Note (optional)",
     "notePlaceholder": "E.g. weekend, birthday dinner…",
     "save": "Save meet-up",
-    "delete": "Delete meet-up",
-    "deleteTitle": "Delete this meet-up?",
-    "deleteText": "It stops counting on Home.",
+    "delete": "Cancel meet-up",
+    "deleteTitle": "Cancel this meet-up?",
+    "deleteText": "It stops counting on Home and in days together.",
     "listTitle": "Meet-ups",
     "listEmpty": "No meet-ups marked yet.",
     "add": "Mark a meet-up",
     "errors": {
       "start": "Pick the day it starts.",
       "save": "Could not save right now. Try again."
-    }
+    },
+    "keep": "Keep it"
   }
 }

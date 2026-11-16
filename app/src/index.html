@@ -63,15 +63,19 @@
         transform: scale(1.04);
         pointer-events: none;
       }
+      /* Mesmas proporções da imagem de arranque do iOS (scripts/make-splash.sh): 30% da largura o ícone, 11% o nome, 4% a legenda.
+         Assim, quando a página toma o lugar da imagem, nada se mexe. O limite (px) só vale em ecrãs largos. */
+      #splash { gap: 0; }
       #splash img {
-        width: 96px;
-        height: 96px;
-        border-radius: 26px;
+        width: min(30vw, 144px);
+        height: min(30vw, 144px);
+        border-radius: min(6.6vw, 32px);
         box-shadow: 0 14px 40px rgba(194, 48, 111, 0.28);
         animation: splash-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
       }
       #splash b {
-        font: 700 30px/1 system-ui, -apple-system, sans-serif;
+        margin-top: min(6vw, 28px);
+        font: 700 min(11vw, 50px) / 1 -apple-system, system-ui, sans-serif;
         letter-spacing: -0.02em;
         animation: splash-rise 0.6s 0.15s ease both;
       }
@@ -83,11 +87,18 @@
         color: transparent;
       }
       #splash small {
-        font: 500 13px/1 system-ui, -apple-system, sans-serif;
-        letter-spacing: 0.32em;
+        margin-top: min(4vw, 18px);
+        font: 500 min(4vw, 18px) / 1 -apple-system, system-ui, sans-serif;
+        letter-spacing: 0.22em;
         opacity: 0.55;
         animation: splash-rise 0.6s 0.3s ease both;
       }
+      /* Na app instalada o iOS já mostrou a imagem de arranque (escura): a página fica igual a ela, parada, e só depois some. */
+      #splash.still { background: #0e0c11; color: #ffffff; }
+      #splash.still img { box-shadow: none; animation: none; }
+      #splash.still b, #splash.still small { animation: none; }
+      #splash.still small { opacity: 1; color: #a39ba8; }
+      #splash.still.out { transform: none; }
       @keyframes splash-pop {
         from { opacity: 0; transform: scale(0.7) rotate(-8deg); }
         to { opacity: 1; transform: none; }
@@ -113,7 +124,10 @@
       try {
         var pref = localStorage.getItem('contigo.theme') || 'system';
         var dark = pref.indexOf('dark') > -1 || (pref.indexOf('light') === -1 && matchMedia('(prefers-color-scheme: dark)').matches);
-        document.getElementById('splash').className = dark ? 'dark' : 'light';
+        // Na app instalada (iOS) o sistema já mostrou a imagem de arranque, que é sempre escura: continua igual, sem animação.
+        var installed = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+        if (installed) dark = true;
+        document.getElementById('splash').className = (dark ? 'dark' : 'light') + (installed ? ' still' : '');
         document.documentElement.style.background = document.body.style.background = dark ? '#0e0c11' : '#ffffff';
       } catch (e) {}
     </script>

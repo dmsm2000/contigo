@@ -184,3 +184,7 @@ Tabela `meetings` (`20261115150000_meetings.sql`): dias em que estão juntos sem
 ## Dias juntos (página Nós)
 
 Cartão entre o cartão do outro e os atalhos: "23 dias juntos em 2026" e "O último encontro foi há 9 dias". `togetherStats` (`meetings.logic.ts`) junta os dias dos encontros e das viagens feitas a dois com o dia exato (as só com o mês ficam de fora), sem duplicar sobreposições, só até hoje e só do ano em curso. Sem nada marcado mostra 0 e um convite a marcar encontros.
+
+## Splash sem salto
+
+A imagem de arranque do iOS (grande: ícone a 30% da largura, nome a 11%, legenda a 4%) e o `#splash` da página tinham tamanhos diferentes, e o da página entrava com animação a partir de opacidade 0: o logótipo parecia desaparecer e voltar. Agora o `#splash` usa as mesmas proporções (em `vw`, com limite em ecrãs largos) e, na app instalada (`navigator.standalone` ou `display-mode: standalone`), fica escuro e parado, igual à imagem, e só depois esmorece. No browser normal mantém a animação de entrada.
