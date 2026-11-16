@@ -344,7 +344,10 @@
     "discoverAdd": "Add to the list",
     "nextMeeting": "Next meet-up",
     "viewMeeting": "View meet-up",
-    "addMeeting": "Mark a meet-up"
+    "addMeeting": "Mark a meet-up",
+    "leafClock": "in",
+    "inHours": "in {{h}} h {{m}} min",
+    "inMinutes": "in {{m}} min"
   },
   "map": {
     "title": "Map",
@@ -867,6 +870,8 @@
       "start": "Pick the day it starts.",
       "save": "Could not save right now. Try again."
     },
-    "keep": "Keep it"
+    "keep": "Keep it",
+    "time": "Time (optional)",
+    "timeHint": "With a time, Home counts the hours and minutes left."
   }
 }

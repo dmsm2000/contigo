@@ -12,6 +12,8 @@ create table public.meetings (
   created_by uuid default auth.uid() references auth.users (id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+  -- Quem mexeu por último: preenche-o set_updated_at() (como nas viagens).
+  updated_by uuid references auth.users (id) on delete set null,
   constraint meetings_dates_ordered check (end_date is null or end_date >= start_date)
 );
 

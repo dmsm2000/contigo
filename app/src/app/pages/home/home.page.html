@@ -59,7 +59,7 @@
       } @else if (heroDate(); as date) {
         <!-- Com data: a folha do calendário à esquerda e o texto ao lado dela, tudo na mesma linha de leitura. -->
         <div class="hero-row">
-          <span class="leaf" aria-hidden="true">
+          <span class="leaf" [class.leaf--clock]="date.leaf.clock" aria-hidden="true">
             <span class="leaf-month">{{ date.leaf.translate ? (date.leaf.month | transloco) : date.leaf.month }}</span>
             <span class="leaf-day">{{ date.leaf.day }}</span>
           </span>

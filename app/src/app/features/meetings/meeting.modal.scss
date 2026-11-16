@@ -20,7 +20,8 @@
 }
 
 // No iPhone o campo de data tem uma largura própria que o faz sair do ecrã: aqui obedece à coluna.
-input[type='date'] {
+input[type='date'],
+input[type='time'] {
   display: block;
   min-width: 0;
   max-width: 100%;

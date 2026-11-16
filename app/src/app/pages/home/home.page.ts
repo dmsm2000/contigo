@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -7,7 +7,7 @@ import { add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, s
 import { daysUntil, formatWeekdays, formatWindow, leafParts, monthInitials, todayIso } from '../../core/availability.logic';
 import { AvailabilityService } from '../../core/availability.service';
 import { DrawService } from '../../core/draw.service';
-import { meetingSpan, nextEncounter, Meeting } from '../../core/meetings.logic';
+import { clockParts, Meeting, meetingCountdown, meetingSpan, nextEncounter } from '../../core/meetings.logic';
 import { MeetingsService } from '../../core/meetings.service';
 import { ExpensesService } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
@@ -94,31 +94,45 @@ export class HomePage {
   }
 
   /** O próximo momento em que estão juntos: um encontro ou a viagem sorteada (se já tem datas). */
-  protected readonly encounter = computed(() => nextEncounter(this.meetings.items(), this.draws.active(), todayIso()));
+  /** "Agora", para o contador: avança de segundo a segundo quando faltam horas para um encontro, e de minuto a minuto no resto. */
+  private readonly now = signal(Date.now());
+  protected readonly encounter = computed(() => nextEncounter(this.meetings.items(), this.draws.active(), todayIso(new Date(this.now()))));
 
   protected readonly heroDate = computed(() => {
     const encounter = this.encounter();
     const active = this.draws.active();
-    // A folha é a contagem: o número de dias que faltam (ou o dia do encontro/da viagem).
+    // A folha é a contagem: os dias que faltam (ou, num encontro com hora a menos de 24 h, as horas), ou o dia do encontro/da viagem.
     if (encounter) {
-      const count = tripCountdown(encounter.kind === 'meeting' ? meetingSpan(encounter.meeting) : encounter.trip, todayIso());
+      const now = new Date(this.now());
+      const count = encounter.kind === 'meeting' ? meetingCountdown(encounter.meeting, now) : tripCountdown(encounter.trip, todayIso(now));
+      if (count.phase === 'soon') {
+        const { h, m, s } = clockParts(count.ms);
+        const two = (value: number) => String(value).padStart(2, '0');
+        return {
+          leaf: { month: 'home.leafClock', day: h >= 1 ? `${h}:${two(m)}:${two(s)}` : `${two(m)}:${two(s)}`, translate: true, clock: true },
+          countdown: { key: h >= 1 ? 'home.inHours' : 'home.inMinutes', params: { h, m } },
+          live: true,
+        };
+      }
       if (count.phase === 'before') {
         const key = count.days === 1 ? 'home.tomorrow' : 'home.inDays_other';
         return {
-          leaf: { month: count.days === 1 ? 'home.leafDay_one' : 'home.leafDay_other', day: count.days, translate: true },
+          leaf: { month: count.days === 1 ? 'home.leafDay_one' : 'home.leafDay_other', day: count.days, translate: true, clock: false },
           countdown: { key, params: { count: count.days } },
+          live: false,
         };
       }
       if (count.phase === 'during') {
         return {
-          leaf: { month: 'home.leafDay_one', day: count.day, translate: true },
+          leaf: { month: 'home.leafDay_one', day: `${count.day}/${count.total}`, translate: true, clock: false },
           countdown: { key: 'home.dayOf', params: { day: count.day, total: count.total } },
+          live: false,
         };
       }
     }
     // Uma viagem com as datas ainda em avaliação não tem dia para contar: fica o "?".
     if (active && !active.datesConfirmed) {
-      return { leaf: { month: 'home.leafDay_other', day: '?', translate: true }, countdown: { key: 'plan.dates.pendingShort', params: {} } };
+      return { leaf: { month: 'home.leafDay_other', day: '?', translate: true, clock: false }, countdown: { key: 'plan.dates.pendingShort', params: {} }, live: false };
     }
     const start = active ? active.startDate : this.availability.next()?.start;
     if (!start) return null;
@@ -130,7 +144,7 @@ export class HomePage {
         : count === 1
           ? { key: 'home.tomorrow', params: {} }
           : { key: 'home.inDays_other', params: { count } };
-    return { leaf: { ...leafParts(start, this.language()), translate: false }, countdown };
+    return { leaf: { ...leafParts(start, this.language()), translate: false, clock: false }, countdown, live: false };
   });
   /** Os 12 meses do ano: a viagem desse mês (se houve), para o cartão do ano mostrar as capas. */
   protected readonly yearMonths = computed(() => {
@@ -156,6 +170,16 @@ export class HomePage {
 
   constructor() {
     addIcons({ add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, sunnyOutline });
+    // O relógio do contador: de segundo a segundo só quando há horas a contar; senão, de minuto a minuto (para a data virar à meia-noite).
+    let lastMinute = 0;
+    const timer = setInterval(() => {
+      const t = Date.now();
+      if (this.heroDate()?.live || t - lastMinute >= 60_000) {
+        lastMinute = t;
+        this.now.set(t);
+      }
+    }, 1000);
+    inject(DestroyRef).onDestroy(() => clearInterval(timer));
   }
 
   protected toggleTheme(): void {
@@ -176,7 +200,8 @@ export class HomePage {
   }
 
   protected meetingDate(meeting: Meeting): string {
-    return formatTripDate(meetingSpan(meeting), this.language());
+    const date = formatTripDate(meetingSpan(meeting), this.language());
+    return meeting.startTime ? `${date} · ${meeting.startTime}` : date;
   }
 
   protected addMeeting(): void {

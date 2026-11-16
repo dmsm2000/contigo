@@ -31,6 +31,7 @@ export class MeetingModal implements OnInit {
   protected readonly place = signal<MeetingPlace>('porto');
   protected start = '';
   protected end = '';
+  protected time = '';
   protected note = '';
 
   protected readonly saving = signal(false);
@@ -46,6 +47,7 @@ export class MeetingModal implements OnInit {
     this.place.set(existing.place);
     this.start = existing.startDate;
     this.end = existing.endDate ?? '';
+    this.time = existing.startTime ?? '';
     this.note = existing.note ?? '';
   }
 
@@ -67,6 +69,7 @@ export class MeetingModal implements OnInit {
       startDate: this.start,
       endDate: this.end && this.end > this.start ? this.end : null,
       place: this.place(),
+      startTime: this.time || null,
       note: this.note.trim() || null,
     };
     this.saving.set(true);

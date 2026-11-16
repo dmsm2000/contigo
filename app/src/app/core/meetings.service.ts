@@ -10,6 +10,7 @@ export interface MeetingInput {
   endDate: string | null;
   place: MeetingPlace;
   note: string | null;
+  startTime: string | null;
 }
 
 /** Os encontros dos dois (visitas sem ser viagem). Atualiza-se sozinha quando o outro marca ou muda um. */
@@ -76,7 +77,7 @@ export class MeetingsService {
   }
 
   private toRow(input: MeetingInput) {
-    return { start_date: input.startDate, end_date: input.endDate, at_place: input.place, note: input.note };
+    return { start_date: input.startDate, end_date: input.endDate, at_place: input.place, note: input.note, start_time: input.startTime };
   }
 
   private listen(): void {

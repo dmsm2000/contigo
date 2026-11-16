@@ -205,7 +205,8 @@ export class DatesPage {
   }
 
   protected meetingDate(meeting: Meeting): string {
-    return formatTripDate(meetingSpan(meeting), this.language());
+    const date = formatTripDate(meetingSpan(meeting), this.language());
+    return meeting.startTime ? `${date} · ${meeting.startTime}` : date;
   }
 
   protected openMeeting(id: string | null): void {

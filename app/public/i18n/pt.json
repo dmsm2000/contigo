@@ -344,7 +344,10 @@
     "discoverAdd": "Juntar à lista",
     "nextMeeting": "Próximo encontro",
     "viewMeeting": "Ver encontro",
-    "addMeeting": "Marcar encontro"
+    "addMeeting": "Marcar encontro",
+    "leafClock": "faltam",
+    "inHours": "daqui a {{h}} h {{m}} min",
+    "inMinutes": "daqui a {{m}} min"
   },
   "map": {
     "title": "Mapa",
@@ -867,6 +870,8 @@
       "start": "Escolhe o dia em que começa.",
       "save": "Não foi possível guardar agora. Tenta outra vez."
     },
-    "keep": "Manter"
+    "keep": "Manter",
+    "time": "Hora (opcional)",
+    "timeHint": "Com hora, o Início conta as horas e os minutos que faltam."
   }
 }

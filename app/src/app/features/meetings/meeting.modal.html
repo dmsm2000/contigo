@@ -35,6 +35,12 @@
       </section>
 
       <section class="block ct-rise" style="--i: 2">
+        <label class="label" for="meeting-time">{{ 'meeting.time' | transloco }}</label>
+        <input id="meeting-time" name="time" type="time" [(ngModel)]="time" />
+        <p class="hint">{{ 'meeting.timeHint' | transloco }}</p>
+      </section>
+
+      <section class="block ct-rise" style="--i: 3">
         <label class="label" for="meeting-note">{{ 'meeting.note' | transloco }}</label>
         <input id="meeting-note" name="note" type="text" maxlength="500" [placeholder]="'meeting.notePlaceholder' | transloco" [(ngModel)]="note" />
       </section>

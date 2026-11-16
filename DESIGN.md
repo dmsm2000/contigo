@@ -200,3 +200,9 @@ Medido a gravar o arranque no simulador (capturas seguidas): o splash da página
 O "piscar" na troca da imagem de arranque do iOS para a página tinha duas causas prováveis: o ícone do splash era um ficheiro à parte (aparecia depois do fundo) e o fundo escuro dependia de um script. Agora o ícone vai inline (`data:`) no `index.html` e `@media (display-mode: standalone)` põe o fundo e o splash escuros logo no primeiro desenho, sem esperar pelo script.
 
 Visto num vídeo do iPhone (frames seguidas): na troca da imagem de arranque para o splash da página havia ~25 px de diferença na vertical (dois logótipos sobrepostos um instante), porque a altura que o iOS dá à página no primeiro desenho não é a final. Na app instalada o script fixa agora a altura do splash à do ecrã (`screen.height`, `top: 0`), que não muda, e o logótipo fica sempre no centro exato, onde a imagem de arranque o tem.
+
+## Hora nos encontros e contador ao vivo
+
+`meetings.start_time` (opcional, migração `20261116150000_meeting_time.sql`). Com hora e a menos de 24 h, a folha do Início vira um relógio ("FALTAM 2:26:55") que avança de segundo a segundo, e o texto diz "daqui a 2 h 26 min"; a 24 h ou mais conta dias de calendário, e depois da hora mostra "DIA 1/2". Sem hora, tudo como antes. O relógio da página só corre de segundo a segundo quando há horas a contar (senão, de minuto a minuto). A ordem dos encontros no mesmo dia usa a hora. `meetingCountdown` e `clockParts` em `meetings.logic.ts`.
+
+A tabela `meetings` ganhou `updated_by`: a função `set_updated_at()` (audit) escreve nessa coluna, e sem ela qualquer edição de um encontro falhava.
