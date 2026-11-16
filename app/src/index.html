@@ -116,7 +116,15 @@
         var dark = pref.indexOf('dark') > -1 || (pref.indexOf('light') === -1 && matchMedia('(prefers-color-scheme: dark)').matches);
         // Na app instalada (iOS) o sistema já mostrou a imagem de arranque, que é sempre escura: continua igual, sem animação.
         var installed = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
-        if (installed) dark = true;
+        if (installed) {
+          dark = true;
+          // No iOS a altura que a página vê no primeiro desenho não é a final (o splash nascia ~25px mais acima e depois descia).
+          // A altura do ecrã não muda: com ela fixa, o splash fica no centro exato, onde a imagem de arranque tem o logótipo.
+          if (innerHeight >= innerWidth) {
+            var box = document.getElementById('splash').style;
+            box.top = '0'; box.bottom = 'auto'; box.height = screen.height + 'px';
+          }
+        }
         document.getElementById('splash').className = (dark ? 'dark' : 'light') + (installed ? ' still' : '');
         document.documentElement.style.background = document.body.style.background = dark ? '#0e0c11' : '#ffffff';
       } catch (e) {}
