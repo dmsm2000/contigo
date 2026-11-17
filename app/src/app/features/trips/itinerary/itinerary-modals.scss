@@ -1,0 +1,59 @@
+@use '../../shared/form';
+
+.intro {
+  margin: 8px 0 0;
+}
+
+.wrap {
+  flex-wrap: wrap;
+
+  .pill {
+    flex: 1 1 auto;
+    padding: 0 14px;
+  }
+}
+
+.preview,
+.answer,
+.wants {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1.5px solid var(--ct-ln, transparent);
+  border-radius: 16px;
+  background: var(--ct-sf);
+  color: var(--ct-tx);
+  font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  resize: vertical;
+}
+
+// O que querem escreve-se à vontade, por isso com a letra normal da app.
+.wants {
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.preview {
+  color: var(--ct-mu);
+}
+
+.paste {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  color: var(--ct-ac);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.second {
+  margin-top: 8px;
+  width: 100%;
+}

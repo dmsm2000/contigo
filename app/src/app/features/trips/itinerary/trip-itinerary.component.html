@@ -1,0 +1,108 @@
+<section class="part ct-rise" style="--i: 5">
+  <h2>{{ 'itinerary.title' | transloco }}</h2>
+
+  @if (loaded()) {
+    @if (draft(); as d) {
+      <!-- O rascunho: o que veio do chat. Só passa a roteiro quando se aceita. -->
+      <div class="draft">
+        <p class="draft-badge"><ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>{{ 'itinerary.draftTitle' | transloco }}</p>
+        <p class="warn" role="note">{{ 'itinerary.draftWarning' | transloco }}</p>
+        @if (d.summary) {<p class="summary">{{ d.summary }}</p>}
+
+        <ng-container *ngTemplateOutlet="days; context: { groups: draftDays(), editable: true }"></ng-container>
+
+        @if (d.tips.length) {
+          <ng-container *ngTemplateOutlet="tips; context: { list: d.tips }"></ng-container>
+        }
+        <p class="total">{{ 'itinerary.estimated' | transloco: { amount: money(draftCost().total) } }}@if (draftCost().unpriced) { · {{ 'itinerary.unpriced' | transloco: { count: draftCost().unpriced } }} }</p>
+
+        <div class="actions">
+          <button class="ct-btn" type="button" (click)="accept()">{{ 'itinerary.accept' | transloco }}</button>
+          <button class="ct-btn ct-btn--ghost" type="button" (click)="import()">{{ 'itinerary.pasteAnother' | transloco }}</button>
+          <button class="link-btn" type="button" (click)="discard()">{{ 'itinerary.discard' | transloco }}</button>
+        </div>
+      </div>
+    }
+
+    @if (accepted(); as a) {
+      @if (a.summary) {<p class="summary">{{ a.summary }}</p>}
+      <ng-container *ngTemplateOutlet="days; context: { groups: acceptedDays(), editable: false }"></ng-container>
+      @if (a.tips.length) {
+        <ng-container *ngTemplateOutlet="tips; context: { list: a.tips }"></ng-container>
+      }
+
+      <div class="cost-card">
+        <strong class="cost-total">{{ 'itinerary.estimated' | transloco: { amount: money(cost().total) } }}</strong>
+        @if (cost().unpriced) {<small>{{ 'itinerary.unpriced' | transloco: { count: cost().unpriced } }}</small>}
+        <ul class="cost-rows">
+          @for (row of budgetRows(); track row.category) {
+            <li><span>{{ 'expenses.category.' + row.category | transloco }}</span><span>{{ row.text }}</span></li>
+          }
+        </ul>
+        <small class="cost-note">{{ 'itinerary.perPerson' | transloco }}</small>
+        @if (budgetRows().length) {
+          <button class="ct-btn ct-btn--ghost" type="button" (click)="useInBudget()">{{ 'itinerary.useInBudget' | transloco }}</button>
+        }
+      </div>
+
+      <div class="actions">
+        <button class="ct-btn ct-btn--ghost" type="button" (click)="request()">{{ 'itinerary.askAgain' | transloco }}</button>
+        <button class="link-btn" type="button" (click)="removeAccepted()">{{ 'itinerary.remove' | transloco }}</button>
+      </div>
+    }
+
+    @if (!draft() && !accepted()) {
+      <div class="empty">
+        <p>{{ 'itinerary.empty' | transloco }}</p>
+        <button class="ct-btn" type="button" (click)="request()">{{ 'itinerary.requestBtn' | transloco }}</button>
+        <button class="link-btn" type="button" (click)="import()">{{ 'itinerary.haveAnswer' | transloco }}</button>
+      </div>
+    }
+  }
+</section>
+
+<ng-template #days let-groups="groups" let-editable="editable">
+  @for (group of groups; track group.day) {
+    <div class="day">
+      <h3>{{ 'itinerary.day' | transloco: { day: group.day } }}@if (dateOf(group.day); as date) { <span class="day-date">· {{ date }}</span> }</h3>
+      <ul class="items">
+        @for (item of group.items; track item.id) {
+          <li class="item">
+            <span class="item-icon" aria-hidden="true"><ion-icon [name]="icon(item.category)"></ion-icon></span>
+            <div class="item-body">
+              <p class="item-head">
+                @if (time(item)) {<span class="item-time">{{ time(item) }}</span>}
+                <strong>{{ item.title }}</strong>
+              </p>
+              @if (item.description) {<p class="item-text">{{ item.description }}</p>}
+              @if (item.placeName || item.address) {
+                <p class="item-place">
+                  {{ item.placeName }}@if (item.placeName && item.address) { · }{{ item.address }}
+                  @if (mapUrl(item); as url) {<a class="map-link" [href]="url" target="_blank" rel="noopener"><ion-icon name="map-outline" aria-hidden="true"></ion-icon>{{ 'itinerary.map' | transloco }}</a>}
+                </p>
+              }
+              <p class="item-chips">
+                @if (item.costEur !== null) {<span class="chip">{{ item.costEur === 0 ? ('itinerary.free' | transloco) : money(item.costEur) }}</span>}
+                @if (item.booking) {<span class="chip chip--warn">{{ item.booking }}</span>}
+              </p>
+              @if (item.tip) {<p class="item-tip">{{ item.tip }}</p>}
+              @if (item.link) {<a class="map-link" [href]="item.link" target="_blank" rel="noopener">{{ 'itinerary.link' | transloco }}</a>}
+            </div>
+            @if (editable) {
+              <button class="item-remove" type="button" (click)="removeItem(item)" [attr.aria-label]="'itinerary.removeItem' | transloco"><ion-icon name="close-outline" aria-hidden="true"></ion-icon></button>
+            }
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</ng-template>
+
+<ng-template #tips let-list="list">
+  <div class="tips">
+    <h3>{{ 'itinerary.tips' | transloco }}</h3>
+    <ul>
+      @for (tip of list; track $index) {<li>{{ tip }}</li>}
+    </ul>
+  </div>
+</ng-template>

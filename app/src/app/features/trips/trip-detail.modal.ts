@@ -16,6 +16,7 @@ import { PhotosService } from '../../core/photos.service';
 import { formatCost, Trip } from '../../core/trips.logic';
 import { isLive } from '../../core/trip-plan.logic';
 import { AuditLineComponent } from '../audit/audit-line.component';
+import { TripItineraryComponent } from './itinerary/trip-itinerary.component';
 import { TripPlanComponent } from './plan/trip-plan.component';
 import { ExpenseModal } from '../expenses/expense.modal';
 import { PlaceImageModal } from '../places/place-image.modal';
@@ -27,7 +28,7 @@ import { TripLabels } from './trip-labels.service';
 
 @Component({
   selector: 'app-trip-detail-modal',
-  imports: [IonContent, IonIcon, TranslocoPipe, PhotoImgComponent, AuditLineComponent, TripPlanComponent],
+  imports: [IonContent, IonIcon, TranslocoPipe, PhotoImgComponent, AuditLineComponent, TripPlanComponent, TripItineraryComponent],
   templateUrl: './trip-detail.modal.html',
   styleUrl: './trip-detail.modal.scss',
 })
