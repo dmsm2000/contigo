@@ -132,3 +132,22 @@ describe('lista e preparação', () => {
     expect(planReadiness({ ...base, approvals: [{ userId: 'a' }], travellerIds: ['a'] }).ready).toBe(true);
   });
 });
+
+describe('ida e volta', () => {
+  it('soma a ida e a volta mais baratas de cada origem', () => {
+    const legs = [
+      { origin: 'Porto', direction: 'out' as const, priceEur: 60 },
+      { origin: 'Porto', direction: 'out' as const, priceEur: 40 },
+      { origin: 'Porto', direction: 'back' as const, priceEur: 50 },
+    ];
+    expect(suggestBudget(null, legs, 2)['transport']).toBe(90);
+  });
+
+  it('pede uma escolhida em cada sentido que tenha deslocações', () => {
+    const out = { origin: 'Porto', direction: 'out' as const, chosen: true };
+    const back = { origin: 'Porto', direction: 'back' as const, chosen: false };
+    expect(transportDecided([out])).toBe(true);
+    expect(transportDecided([out, back])).toBe(false);
+    expect(transportDecided([out, { ...back, chosen: true }])).toBe(true);
+  });
+});

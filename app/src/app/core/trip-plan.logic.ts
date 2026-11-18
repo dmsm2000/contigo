@@ -131,10 +131,15 @@ export function sortStays(stays: readonly Stay[]): Stay[] {
 export const LEG_MODES = ['car', 'train', 'bus', 'flight', 'other'] as const;
 export type LegMode = (typeof LEG_MODES)[number];
 
+export const LEG_DIRECTIONS = ['out', 'back'] as const;
+export type LegDirection = (typeof LEG_DIRECTIONS)[number];
+
 export interface Leg {
   id: string;
   tripId: string;
   origin: string;
+  /** Ida ou volta: cada sentido tem as suas alternativas e a sua escolhida. */
+  direction: LegDirection;
   mode: LegMode;
   minutes: number | null;
   priceEur: number | null;
@@ -147,6 +152,7 @@ export interface LegRow {
   id: string;
   trip_id: string;
   origin: string;
+  direction?: LegDirection;
   mode: LegMode;
   minutes: number | null;
   price_eur: number | string | null;
@@ -159,6 +165,7 @@ export function toLeg(row: LegRow): Leg {
     id: row.id,
     tripId: row.trip_id,
     origin: row.origin,
+    direction: row.direction ?? 'out',
     mode: row.mode,
     minutes: row.minutes,
     priceEur: row.price_eur === null ? null : Number(row.price_eur),
@@ -228,17 +235,27 @@ export function budgetTotals(lines: readonly Pick<BudgetLine, 'amountEur'>[], pe
  * Uma estimativa de partida a partir do que já se sabe: o alojamento escolhido dividido pelas pessoas e as deslocações
  * (cada origem é uma pessoa: a média das origens, com a forma mais barata de cada uma). O resto fica por preencher.
  */
-export function suggestBudget(stay: Pick<Stay, 'priceEur'> | null, legs: readonly Pick<Leg, 'origin' | 'priceEur'>[], people: number): Partial<Record<ExpenseCategory, number>> {
+/** A chave de um grupo de alternativas: a mesma origem e o mesmo sentido. */
+export function legKey(leg: Pick<Leg, 'origin'> & { direction?: LegDirection }): string {
+  return `${leg.origin.trim().toLowerCase()}|${leg.direction ?? 'out'}`;
+}
+
+export function suggestBudget(stay: Pick<Stay, 'priceEur'> | null, legs: readonly (Pick<Leg, 'origin' | 'priceEur'> & { direction?: LegDirection })[], people: number): Partial<Record<ExpenseCategory, number>> {
   const out: Partial<Record<ExpenseCategory, number>> = {};
   if (stay?.priceEur) out['stay'] = round2(stay.priceEur / people);
-  // Cada origem é uma pessoa, e as várias formas de chegar dessa origem são alternativas: conta a mais barata.
+  // Cada origem é uma pessoa; a ida e a volta somam-se, e as várias formas de fazer cada sentido são alternativas: conta a mais barata.
   const cheapest = new Map<string, number>();
   for (const leg of legs) {
     if (leg.priceEur === null) continue;
-    const key = leg.origin.trim().toLowerCase();
+    const key = legKey(leg);
     cheapest.set(key, Math.min(cheapest.get(key) ?? Infinity, leg.priceEur));
   }
-  if (cheapest.size) out['transport'] = round2([...cheapest.values()].reduce((sum, price) => sum + price, 0) / cheapest.size);
+  const perOrigin = new Map<string, number>();
+  for (const [key, price] of cheapest) {
+    const origin = key.split('|')[0];
+    perOrigin.set(origin, (perOrigin.get(origin) ?? 0) + price);
+  }
+  if (perOrigin.size) out['transport'] = round2([...perOrigin.values()].reduce((sum, price) => sum + price, 0) / perOrigin.size);
   return out;
 }
 
@@ -294,14 +311,14 @@ export function toPlanApproval(row: PlanApprovalRow): PlanApproval {
 }
 
 /** As origens que têm deslocações: cada uma precisa de uma escolhida. */
-function originsOf(legs: readonly Pick<Leg, 'origin'>[]): string[] {
-  return [...new Set(legs.map((leg) => leg.origin.trim().toLowerCase()))];
+function originsOf(legs: readonly (Pick<Leg, 'origin'> & { direction?: LegDirection })[]): string[] {
+  return [...new Set(legs.map(legKey))];
 }
 
 /** A deslocação está decidida quando há pelo menos uma escolhida e cada origem tem a sua. */
-export function transportDecided(legs: readonly Pick<Leg, 'origin' | 'chosen'>[]): boolean {
+export function transportDecided(legs: readonly (Pick<Leg, 'origin' | 'chosen'> & { direction?: LegDirection })[]): boolean {
   if (!legs.some((leg) => leg.chosen)) return false;
-  return originsOf(legs).every((origin) => legs.some((leg) => leg.chosen && leg.origin.trim().toLowerCase() === origin));
+  return originsOf(legs).every((origin) => legs.some((leg) => leg.chosen && legKey(leg) === origin));
 }
 
 export type Requirement = 'dates' | 'stay' | 'transport' | 'approval';
@@ -326,7 +343,7 @@ export interface PlanReadiness {
 export function planReadiness(input: {
   datesConfirmed: boolean;
   stays: readonly Pick<Stay, 'chosen'>[];
-  legs: readonly Pick<Leg, 'origin' | 'chosen'>[];
+  legs: readonly (Pick<Leg, 'origin' | 'chosen'> & { direction?: LegDirection })[];
   approvals: readonly Pick<PlanApproval, 'userId'>[];
   travellerIds: readonly string[];
 }): PlanReadiness {

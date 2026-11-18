@@ -708,7 +708,7 @@
         "flight": "Flight",
         "other": "Other"
       },
-      "empty": "No journeys yet. Add one for each origin (Porto, Madrid…).",
+      "empty": "No journeys yet. Add the outbound and the return (one per origin if you leave from different places).",
       "add": "Add a journey",
       "addTitle": "Getting there",
       "editTitle": "Change the journey",
@@ -717,14 +717,19 @@
       "mode": "How",
       "duration": "Duration",
       "price": "Price (€)",
-      "priceHint": "The price is per person (by car: tolls and charging).",
+      "priceHint": "The price is per person for this direction only (outbound and return add up). For a car, tolls and charging.",
       "notePlaceholder": "E.g. electric car; fast charger 3 km away",
       "errors": {
         "duration": "Enter the duration, for example 3h30 or 45."
       },
       "choose": "Choose this journey",
       "originHint": "Leave empty if it's the same for both. If you leave from different places, add one journey per origin.",
-      "everyone": "For both"
+      "everyone": "For both",
+      "direction": "Direction",
+      "directions": {
+        "out": "Outbound",
+        "back": "Return"
+      }
     },
     "stays": {
       "title": "Stay",

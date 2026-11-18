@@ -708,7 +708,7 @@
         "flight": "Avião",
         "other": "Outro"
       },
-      "empty": "Ainda não há deslocações. Junta uma por cada origem (Porto, Madrid…).",
+      "empty": "Ainda não há deslocações. Junta a ida e a volta (uma por origem, se partirem de sítios diferentes).",
       "add": "Juntar uma deslocação",
       "addTitle": "Como chegar",
       "editTitle": "Mudar a deslocação",
@@ -717,14 +717,19 @@
       "mode": "Como",
       "duration": "Duração",
       "price": "Preço (€)",
-      "priceHint": "O preço é por pessoa (num carro, o das portagens e da carga).",
+      "priceHint": "O preço é por pessoa e só deste sentido (a ida e a volta somam-se). Num carro, o das portagens e da carga.",
       "notePlaceholder": "Ex.: carro elétrico; carregador rápido a 3 km",
       "errors": {
         "duration": "Escreve a duração, por exemplo 3h30 ou 45."
       },
       "choose": "Escolher esta deslocação",
       "originHint": "Deixa vazio se for igual para os dois. Se partem de sítios diferentes, junta uma deslocação por origem.",
-      "everyone": "Para os dois"
+      "everyone": "Para os dois",
+      "direction": "Sentido",
+      "directions": {
+        "out": "Ida",
+        "back": "Volta"
+      }
     },
     "stays": {
       "title": "Alojamento",

@@ -56,7 +56,7 @@
             <small>
               @if (readiness().transport) {
                 @for (leg of chosenLegs(); track leg.id; let last = $last) {
-                  @if (leg.origin) { {{ leg.origin }}: }{{ 'plan.legs.modes.' + leg.mode | transloco }}@if (leg.minutes !== null) { {{ duration(leg.minutes) }} }@if (!last) { · }
+                  @if (leg.origin) { {{ leg.origin }}: }{{ 'plan.legs.directions.' + leg.direction | transloco }} {{ 'plan.legs.modes.' + leg.mode | transloco }}@if (leg.minutes !== null) { {{ duration(leg.minutes) }} }@if (!last) { · }
                 }
               } @else {
                 {{ 'plan.decisions.transportPending' | transloco }}
@@ -140,7 +140,7 @@
             <ion-icon [name]="leg.chosen ? 'checkmark-circle' : 'ellipse-outline'" aria-hidden="true"></ion-icon>
           </button>
           <button class="grow tap" type="button" (click)="editLeg(leg)">
-            <strong>{{ (leg.origin ? 'plan.legs.from' : 'plan.legs.everyone') | transloco: { origin: leg.origin } }}</strong>
+            <strong>{{ 'plan.legs.directions.' + leg.direction | transloco }} · {{ (leg.origin ? 'plan.legs.from' : 'plan.legs.everyone') | transloco: { origin: leg.origin } }}</strong>
             <small>
               <ion-icon class="mode" [name]="modeIcon(leg.mode)" aria-hidden="true"></ion-icon>
               {{ 'plan.legs.modes.' + leg.mode | transloco }}

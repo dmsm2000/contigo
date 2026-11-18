@@ -5,7 +5,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline, trashOutline } from 'ionicons/icons';
 import { parseAmount } from '../../../core/expenses.logic';
-import { DateOption, formatDuration, Leg, LEG_MODES, LegMode, parseDuration, Stay } from '../../../core/trip-plan.logic';
+import { DateOption, formatDuration, Leg, LEG_DIRECTIONS, LEG_MODES, LegDirection, LegMode, parseDuration, Stay } from '../../../core/trip-plan.logic';
 import { TripPlanService } from '../../../core/trip-plan.service';
 
 /** Os campos de texto de um euro (opcionais): vazio é nulo, inválido é 'invalid'. */
@@ -251,6 +251,14 @@ export class StayModal implements OnInit, AfterViewInit {
             <p class="hint">{{ 'plan.legs.originHint' | transloco }}</p>
           </section>
           <section class="block">
+            <span class="label" id="leg-direction">{{ 'plan.legs.direction' | transloco }}</span>
+            <div class="pills" role="group" aria-labelledby="leg-direction">
+              @for (option of directions; track option) {
+                <button class="pill" type="button" [class.on]="direction() === option" [attr.aria-pressed]="direction() === option" (click)="direction.set(option)">{{ 'plan.legs.directions.' + option | transloco }}</button>
+              }
+            </div>
+          </section>
+          <section class="block">
             <span class="label" id="leg-mode">{{ 'plan.legs.mode' | transloco }}</span>
             <div class="pills wrap" role="group" aria-labelledby="leg-mode">
               @for (option of modes; track option) {
@@ -293,6 +301,8 @@ export class LegModal implements OnInit, AfterViewInit {
   @Input() tripId = '';
   @Input() leg: Leg | null = null;
   protected readonly modes = LEG_MODES;
+  protected readonly directions = LEG_DIRECTIONS;
+  protected readonly direction = signal<LegDirection>('out');
   protected readonly mode = signal<LegMode>('car');
   protected origin = '';
   protected duration = '';
@@ -310,6 +320,7 @@ export class LegModal implements OnInit, AfterViewInit {
     if (!leg) return;
     this.origin = leg.origin;
     this.mode.set(leg.mode);
+    this.direction.set(leg.direction);
     this.duration = leg.minutes === null ? '' : formatDuration(leg.minutes);
     this.price = euros(leg.priceEur);
     this.note = leg.note ?? '';
@@ -331,7 +342,7 @@ export class LegModal implements OnInit, AfterViewInit {
     if (priceEur === 'invalid') return this.error.set('plan.errors.amount');
     this.saving.set(true);
     try {
-      await this.plan.saveLeg(this.tripId, { id: this.leg?.id, origin, mode: this.mode(), minutes, priceEur, note: this.note.trim() || null });
+      await this.plan.saveLeg(this.tripId, { id: this.leg?.id, origin, direction: this.direction(), mode: this.mode(), minutes, priceEur, note: this.note.trim() || null });
       await this.modalCtrl.dismiss({ saved: true });
     } catch {
       this.saving.set(false);

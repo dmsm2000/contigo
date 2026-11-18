@@ -708,7 +708,7 @@
         "flight": "Avión",
         "other": "Otro"
       },
-      "empty": "Aún no hay trayectos. Añade uno por cada origen (Oporto, Madrid…).",
+      "empty": "Aún no hay trayectos. Añade la ida y la vuelta (uno por origen, si salen de sitios distintos).",
       "add": "Añadir un trayecto",
       "addTitle": "Cómo llegar",
       "editTitle": "Cambiar el trayecto",
@@ -717,14 +717,19 @@
       "mode": "Cómo",
       "duration": "Duración",
       "price": "Precio (€)",
-      "priceHint": "El precio es por persona (en coche, peajes y carga).",
+      "priceHint": "El precio es por persona y solo de este sentido (la ida y la vuelta se suman). En coche, peajes y carga.",
       "notePlaceholder": "P. ej.: coche eléctrico; cargador rápido a 3 km",
       "errors": {
         "duration": "Escribe la duración, por ejemplo 3h30 o 45."
       },
       "choose": "Elegir este trayecto",
       "originHint": "Déjalo vacío si es igual para los dos. Si salen de sitios distintos, añade un trayecto por origen.",
-      "everyone": "Para los dos"
+      "everyone": "Para los dos",
+      "direction": "Sentido",
+      "directions": {
+        "out": "Ida",
+        "back": "Vuelta"
+      }
     },
     "stays": {
       "title": "Alojamiento",

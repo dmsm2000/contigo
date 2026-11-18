@@ -22,6 +22,8 @@ import {
   toChecklistItem,
   toDateOption,
   toLeg,
+  legKey,
+  LegDirection,
   toPlanApproval,
   toStay,
 } from './trip-plan.logic';
@@ -153,20 +155,20 @@ export class TripPlanService {
 
   // ------------------------------------------------------------ como chegar
 
-  async saveLeg(tripId: string, input: { id?: string; origin: string; mode: LegMode; minutes: number | null; priceEur: number | null; note: string | null }): Promise<void> {
-    const row = { origin: input.origin, mode: input.mode, minutes: input.minutes, price_eur: input.priceEur, note: input.note };
+  async saveLeg(tripId: string, input: { id?: string; origin: string; direction: LegDirection; mode: LegMode; minutes: number | null; priceEur: number | null; note: string | null }): Promise<void> {
+    const row = { origin: input.origin, direction: input.direction, mode: input.mode, minutes: input.minutes, price_eur: input.priceEur, note: input.note };
     if (input.id) await this.run(this.supabase.from('trip_legs').update(row).eq('id', input.id));
     else {
       // A primeira deslocação de uma origem fica escolhida (é a única); as outras entram como alternativas.
-      const origin = input.origin.trim().toLowerCase();
-      const first = !this.legsOf(tripId).some((leg) => leg.origin.trim().toLowerCase() === origin);
+      const key = legKey(input);
+      const first = !this.legsOf(tripId).some((leg) => legKey(leg) === key);
       await this.run(this.supabase.from('trip_legs').insert({ trip_id: tripId, ...row, chosen: first }));
     }
   }
 
   /** Escolhe a deslocação de uma origem (só uma por origem); voltar a tocar na escolhida tira-lhe a escolha. */
-  async chooseLeg(tripId: string, leg: Pick<Leg, 'id' | 'origin'>, chosen: boolean): Promise<void> {
-    const sameOrigin = this.legsOf(tripId).filter((item) => item.origin.trim().toLowerCase() === leg.origin.trim().toLowerCase());
+  async chooseLeg(tripId: string, leg: Pick<Leg, 'id' | 'origin' | 'direction'>, chosen: boolean): Promise<void> {
+    const sameOrigin = this.legsOf(tripId).filter((item) => legKey(item) === legKey(leg));
     for (const other of sameOrigin.filter((item) => item.chosen && item.id !== leg.id)) {
       await this.run(this.supabase.from('trip_legs').update({ chosen: false }).eq('id', other.id));
     }
