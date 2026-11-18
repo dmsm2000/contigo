@@ -712,7 +712,7 @@
       "add": "Añadir un trayecto",
       "addTitle": "Cómo llegar",
       "editTitle": "Cambiar el trayecto",
-      "origin": "Desde dónde",
+      "origin": "Desde dónde (opcional)",
       "originPlaceholder": "Oporto, Madrid…",
       "mode": "Cómo",
       "duration": "Duración",
@@ -720,10 +720,11 @@
       "priceHint": "El precio es por persona (en coche, peajes y carga).",
       "notePlaceholder": "P. ej.: coche eléctrico; cargador rápido a 3 km",
       "errors": {
-        "origin": "Escribe desde dónde se sale.",
         "duration": "Escribe la duración, por ejemplo 3h30 o 45."
       },
-      "choose": "Elegir este trayecto"
+      "choose": "Elegir este trayecto",
+      "originHint": "Déjalo vacío si es igual para los dos. Si salen de sitios distintos, añade un trayecto por origen.",
+      "everyone": "Para los dos"
     },
     "stays": {
       "title": "Alojamiento",

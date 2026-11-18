@@ -712,7 +712,7 @@
       "add": "Add a journey",
       "addTitle": "Getting there",
       "editTitle": "Change the journey",
-      "origin": "From where",
+      "origin": "From where (optional)",
       "originPlaceholder": "Porto, Madrid…",
       "mode": "How",
       "duration": "Duration",
@@ -720,10 +720,11 @@
       "priceHint": "The price is per person (by car: tolls and charging).",
       "notePlaceholder": "E.g. electric car; fast charger 3 km away",
       "errors": {
-        "origin": "Enter where you set off from.",
         "duration": "Enter the duration, for example 3h30 or 45."
       },
-      "choose": "Choose this journey"
+      "choose": "Choose this journey",
+      "originHint": "Leave empty if it's the same for both. If you leave from different places, add one journey per origin.",
+      "everyone": "For both"
     },
     "stays": {
       "title": "Stay",

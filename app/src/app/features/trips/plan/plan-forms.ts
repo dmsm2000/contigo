@@ -248,6 +248,7 @@ export class StayModal implements OnInit, AfterViewInit {
           <section class="block">
             <label class="label" for="leg-origin">{{ 'plan.legs.origin' | transloco }}</label>
             <input #field id="leg-origin" name="origin" type="text" maxlength="60" autocomplete="off" [placeholder]="'plan.legs.originPlaceholder' | transloco" [(ngModel)]="origin" (ngModelChange)="error.set(null)" />
+            <p class="hint">{{ 'plan.legs.originHint' | transloco }}</p>
           </section>
           <section class="block">
             <span class="label" id="leg-mode">{{ 'plan.legs.mode' | transloco }}</span>
@@ -324,7 +325,6 @@ export class LegModal implements OnInit, AfterViewInit {
 
   protected async save(): Promise<void> {
     const origin = this.origin.trim();
-    if (!origin) return this.error.set('plan.legs.errors.origin');
     const minutes = parseDuration(this.duration);
     if (minutes === 'invalid') return this.error.set('plan.legs.errors.duration');
     const priceEur = optionalAmount(this.price);
