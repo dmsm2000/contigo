@@ -716,8 +716,6 @@
         "out": "Añadir una ida",
         "back": "Añadir una vuelta"
       },
-      "addTitle": "Transporte",
-      "editTitle": "Cambiar el trayecto",
       "origin": "Desde dónde (opcional)",
       "originPlaceholder": "Oporto, Madrid…",
       "mode": "Cómo",
@@ -731,7 +729,6 @@
       "choose": "Elegir este trayecto",
       "originHint": "Déjalo vacío si es igual para los dos. Si salen de sitios distintos, añade un trayecto por origen.",
       "everyone": "Para los dos",
-      "direction": "Sentido",
       "directions": {
         "out": "Ida",
         "back": "Vuelta"
@@ -739,7 +736,11 @@
       "day": "Día",
       "departs": "Salida",
       "arrives": "Llegada",
-      "autoHint": "La llegada se calcula sola con la salida y la duración (la hora es la del destino)."
+      "autoHint": "La llegada se calcula sola con la salida y la duración (la hora es la del destino).",
+      "formTitle": {
+        "out": "Transporte de ida",
+        "back": "Transporte de vuelta"
+      }
     },
     "stays": {
       "title": "Alojamiento",

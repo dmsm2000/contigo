@@ -716,8 +716,6 @@
         "out": "Add an outbound",
         "back": "Add a return"
       },
-      "addTitle": "Transport",
-      "editTitle": "Change the journey",
       "origin": "From where (optional)",
       "originPlaceholder": "Porto, Madrid…",
       "mode": "How",
@@ -731,7 +729,6 @@
       "choose": "Choose this journey",
       "originHint": "Leave empty if it's the same for both. If you leave from different places, add one journey per origin.",
       "everyone": "For both",
-      "direction": "Direction",
       "directions": {
         "out": "Outbound",
         "back": "Return"
@@ -739,7 +736,11 @@
       "day": "Day",
       "departs": "Departure",
       "arrives": "Arrival",
-      "autoHint": "Arrival is worked out from the departure and the duration (use the destination's local time)."
+      "autoHint": "Arrival is worked out from the departure and the duration (use the destination's local time).",
+      "formTitle": {
+        "out": "Outbound transport",
+        "back": "Return transport"
+      }
     },
     "stays": {
       "title": "Stay",

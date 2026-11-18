@@ -716,8 +716,6 @@
         "out": "Juntar uma ida",
         "back": "Juntar uma volta"
       },
-      "addTitle": "Transporte",
-      "editTitle": "Mudar a deslocação",
       "origin": "De onde (opcional)",
       "originPlaceholder": "Porto, Madrid…",
       "mode": "Como",
@@ -731,7 +729,6 @@
       "choose": "Escolher esta deslocação",
       "originHint": "Deixa vazio se for igual para os dois. Se partem de sítios diferentes, junta uma deslocação por origem.",
       "everyone": "Para os dois",
-      "direction": "Sentido",
       "directions": {
         "out": "Ida",
         "back": "Volta"
@@ -739,7 +736,11 @@
       "day": "Dia",
       "departs": "Saída",
       "arrives": "Chegada",
-      "autoHint": "A chegada calcula-se sozinha com a saída e a duração (a hora é a do destino)."
+      "autoHint": "A chegada calcula-se sozinha com a saída e a duração (a hora é a do destino).",
+      "formTitle": {
+        "out": "Transporte de ida",
+        "back": "Transporte de volta"
+      }
     },
     "stays": {
       "title": "Alojamento",

@@ -5,7 +5,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline, trashOutline } from 'ionicons/icons';
 import { parseAmount } from '../../../core/expenses.logic';
-import { DateOption, formatDuration, addMinutes, Leg, LEG_DIRECTIONS, LEG_MODES, LegDirection, LegMode, minutesBetween, parseDuration, Stay } from '../../../core/trip-plan.logic';
+import { DateOption, formatDuration, addMinutes, Leg, LEG_MODES, LegDirection, LegMode, minutesBetween, parseDuration, Stay } from '../../../core/trip-plan.logic';
 import { TripPlanService } from '../../../core/trip-plan.service';
 
 /** Os campos de texto de um euro (opcionais): vazio é nulo, inválido é 'invalid'. */
@@ -241,7 +241,7 @@ export class StayModal implements OnInit, AfterViewInit {
     <ion-content>
       <div class="sheet">
         <header class="head">
-          <h1 class="ct-display title">{{ (leg ? 'plan.legs.editTitle' : 'plan.legs.addTitle') | transloco }}</h1>
+          <h1 class="ct-display title">{{ 'plan.legs.formTitle.' + directionSignal() | transloco }}</h1>
           <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco"><ion-icon name="close-outline" aria-hidden="true"></ion-icon></button>
         </header>
         <form id="leg-form" (ngSubmit)="save()" novalidate>
@@ -249,14 +249,6 @@ export class StayModal implements OnInit, AfterViewInit {
             <label class="label" for="leg-origin">{{ 'plan.legs.origin' | transloco }}</label>
             <input #field id="leg-origin" name="origin" type="text" maxlength="60" autocomplete="off" [placeholder]="'plan.legs.originPlaceholder' | transloco" [(ngModel)]="origin" (ngModelChange)="error.set(null)" />
             <p class="hint">{{ 'plan.legs.originHint' | transloco }}</p>
-          </section>
-          <section class="block">
-            <span class="label" id="leg-direction">{{ 'plan.legs.direction' | transloco }}</span>
-            <div class="pills" role="group" aria-labelledby="leg-direction">
-              @for (option of directions; track option) {
-                <button class="pill" type="button" [class.on]="directionSignal() === option" [attr.aria-pressed]="directionSignal() === option" (click)="directionSignal.set(option)">{{ 'plan.legs.directions.' + option | transloco }}</button>
-              }
-            </div>
           </section>
           <section class="block">
             <span class="label" id="leg-mode">{{ 'plan.legs.mode' | transloco }}</span>
@@ -322,7 +314,6 @@ export class LegModal implements OnInit, AfterViewInit {
   /** O sentido de partida ao juntar uma deslocação nova (a ida ou a volta). */
   @Input() set direction(value: LegDirection) { this.directionSignal.set(value); }
   protected readonly modes = LEG_MODES;
-  protected readonly directions = LEG_DIRECTIONS;
   private readonly directionSignal = signal<LegDirection>('out');
   protected readonly mode = signal<LegMode>('car');
   protected origin = '';
