@@ -735,7 +735,10 @@
       "directions": {
         "out": "Ida",
         "back": "Vuelta"
-      }
+      },
+      "day": "Día",
+      "departs": "Salida",
+      "arrives": "Llegada"
     },
     "stays": {
       "title": "Alojamiento",

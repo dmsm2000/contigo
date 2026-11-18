@@ -162,6 +162,13 @@ export class TripPlanComponent {
     return formatDuration(minutes);
   }
 
+  /** "5 dez · 08:30 → 12:00", com o que houver. */
+  protected schedule(leg: Leg): string {
+    const times = [leg.departsTime, leg.arrivesTime].filter(Boolean).join(' → ');
+    const day = leg.departsOn ? formatRange(leg.departsOn, leg.departsOn, this.language()) : '';
+    return [day, times].filter(Boolean).join(' · ');
+  }
+
   protected modeIcon(mode: LegMode): string {
     return { car: 'car-outline', train: 'train-outline', bus: 'bus', flight: 'airplane-outline', other: 'ellipsis-horizontal' }[mode];
   }

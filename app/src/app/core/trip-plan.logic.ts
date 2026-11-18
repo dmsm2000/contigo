@@ -140,6 +140,10 @@ export interface Leg {
   origin: string;
   /** Ida ou volta: cada sentido tem as suas alternativas e a sua escolhida. */
   direction: LegDirection;
+  /** Dia (AAAA-MM-DD) e horas (HH:MM) da saída e da chegada; tudo opcional. */
+  departsOn: string | null;
+  departsTime: string | null;
+  arrivesTime: string | null;
   mode: LegMode;
   minutes: number | null;
   priceEur: number | null;
@@ -153,6 +157,9 @@ export interface LegRow {
   trip_id: string;
   origin: string;
   direction?: LegDirection;
+  departs_on?: string | null;
+  departs_time?: string | null;
+  arrives_time?: string | null;
   mode: LegMode;
   minutes: number | null;
   price_eur: number | string | null;
@@ -166,6 +173,9 @@ export function toLeg(row: LegRow): Leg {
     tripId: row.trip_id,
     origin: row.origin,
     direction: row.direction ?? 'out',
+    departsOn: row.departs_on ?? null,
+    departsTime: row.departs_time?.slice(0, 5) ?? null,
+    arrivesTime: row.arrives_time?.slice(0, 5) ?? null,
     mode: row.mode,
     minutes: row.minutes,
     priceEur: row.price_eur === null ? null : Number(row.price_eur),

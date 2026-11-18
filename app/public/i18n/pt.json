@@ -735,7 +735,10 @@
       "directions": {
         "out": "Ida",
         "back": "Volta"
-      }
+      },
+      "day": "Dia",
+      "departs": "Saída",
+      "arrives": "Chegada"
     },
     "stays": {
       "title": "Alojamento",

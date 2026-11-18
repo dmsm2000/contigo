@@ -149,6 +149,7 @@
                 @if (leg.minutes !== null) { · {{ duration(leg.minutes) }} }
                 @if (leg.priceEur !== null) { · {{ money(leg.priceEur) }} }
               </small>
+              @if (schedule(leg); as when) {<small class="when">{{ when }}</small>}
               @if (leg.note) {<small class="note">{{ leg.note }}</small>}
             </button>
           </li>

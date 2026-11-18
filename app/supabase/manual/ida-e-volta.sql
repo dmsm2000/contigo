@@ -45,4 +45,9 @@ begin
 end;
 $$;
 
-insert into supabase_migrations.schema_migrations (version, name) values ('20261118120000', 'leg_direction') on conflict (version) do nothing;
+-- Dia e horas da deslocação (opcionais).
+alter table public.trip_legs add column if not exists departs_on date;
+alter table public.trip_legs add column if not exists departs_time time;
+alter table public.trip_legs add column if not exists arrives_time time;
+
+insert into supabase_migrations.schema_migrations (version, name) values ('20261118120000', 'leg_direction'), ('20261118130000', 'leg_schedule') on conflict (version) do nothing;

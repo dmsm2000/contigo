@@ -267,6 +267,22 @@ export class StayModal implements OnInit, AfterViewInit {
             </div>
           </section>
           <section class="block">
+            <label class="field">
+              <span class="field-label">{{ 'plan.legs.day' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em></span>
+              <input name="departsOn" type="date" [(ngModel)]="departsOn" />
+            </label>
+            <div class="row-2">
+              <label class="field">
+                <span class="field-label">{{ 'plan.legs.departs' | transloco }}</span>
+                <input name="departsTime" type="time" [(ngModel)]="departsTime" />
+              </label>
+              <label class="field">
+                <span class="field-label">{{ 'plan.legs.arrives' | transloco }}</span>
+                <input name="arrivesTime" type="time" [(ngModel)]="arrivesTime" />
+              </label>
+            </div>
+          </section>
+          <section class="block">
             <div class="row-2">
               <label class="field">
                 <span class="field-label">{{ 'plan.legs.duration' | transloco }}</span>
@@ -310,6 +326,9 @@ export class LegModal implements OnInit, AfterViewInit {
   protected duration = '';
   protected price = '';
   protected note = '';
+  protected departsOn = '';
+  protected departsTime = '';
+  protected arrivesTime = '';
   protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
 
@@ -326,6 +345,9 @@ export class LegModal implements OnInit, AfterViewInit {
     this.duration = leg.minutes === null ? '' : formatDuration(leg.minutes);
     this.price = euros(leg.priceEur);
     this.note = leg.note ?? '';
+    this.departsOn = leg.departsOn ?? '';
+    this.departsTime = leg.departsTime ?? '';
+    this.arrivesTime = leg.arrivesTime ?? '';
   }
 
   ngAfterViewInit(): void {
@@ -344,7 +366,7 @@ export class LegModal implements OnInit, AfterViewInit {
     if (priceEur === 'invalid') return this.error.set('plan.errors.amount');
     this.saving.set(true);
     try {
-      await this.plan.saveLeg(this.tripId, { id: this.leg?.id, origin, direction: this.directionSignal(), mode: this.mode(), minutes, priceEur, note: this.note.trim() || null });
+      await this.plan.saveLeg(this.tripId, { id: this.leg?.id, origin, direction: this.directionSignal(), mode: this.mode(), departsOn: this.departsOn || null, departsTime: this.departsTime || null, arrivesTime: this.arrivesTime || null, minutes, priceEur, note: this.note.trim() || null });
       await this.modalCtrl.dismiss({ saved: true });
     } catch {
       this.saving.set(false);

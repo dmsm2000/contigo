@@ -155,8 +155,8 @@ export class TripPlanService {
 
   // ------------------------------------------------------------ como chegar
 
-  async saveLeg(tripId: string, input: { id?: string; origin: string; direction: LegDirection; mode: LegMode; minutes: number | null; priceEur: number | null; note: string | null }): Promise<void> {
-    const row = { origin: input.origin, direction: input.direction, mode: input.mode, minutes: input.minutes, price_eur: input.priceEur, note: input.note };
+  async saveLeg(tripId: string, input: { id?: string; origin: string; direction: LegDirection; departsOn: string | null; departsTime: string | null; arrivesTime: string | null; mode: LegMode; minutes: number | null; priceEur: number | null; note: string | null }): Promise<void> {
+    const row = { origin: input.origin, direction: input.direction, departs_on: input.departsOn, departs_time: input.departsTime, arrives_time: input.arrivesTime, mode: input.mode, minutes: input.minutes, price_eur: input.priceEur, note: input.note };
     if (input.id) await this.run(this.supabase.from('trip_legs').update(row).eq('id', input.id));
     else {
       // A primeira deslocação de uma origem fica escolhida (é a única); as outras entram como alternativas.

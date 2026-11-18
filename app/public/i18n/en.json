@@ -735,7 +735,10 @@
       "directions": {
         "out": "Outbound",
         "back": "Return"
-      }
+      },
+      "day": "Day",
+      "departs": "Departure",
+      "arrives": "Arrival"
     },
     "stays": {
       "title": "Stay",
