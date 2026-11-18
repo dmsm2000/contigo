@@ -184,6 +184,25 @@ export function toLeg(row: LegRow): Leg {
   };
 }
 
+/** "08:30" + 195 min → "11:45"; `days` conta as viragens da meia-noite (a chegada do dia seguinte). */
+export function addMinutes(time: string, minutes: number): { time: string; days: number } | null {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(time.trim());
+  if (!match) return null;
+  const total = Number(match[1]) * 60 + Number(match[2]) + minutes;
+  const day = 24 * 60;
+  const wrapped = ((total % day) + day) % day;
+  return { time: `${String(Math.floor(wrapped / 60)).padStart(2, '0')}:${String(wrapped % 60).padStart(2, '0')}`, days: Math.floor(total / day) };
+}
+
+/** Minutos entre a saída e a chegada ("23:00" → "01:30" são 150: passa a meia-noite). */
+export function minutesBetween(from: string, to: string): number | null {
+  const a = /^(\d{1,2}):(\d{2})$/.exec(from.trim());
+  const b = /^(\d{1,2}):(\d{2})$/.exec(to.trim());
+  if (!a || !b) return null;
+  const diff = Number(b[1]) * 60 + Number(b[2]) - (Number(a[1]) * 60 + Number(a[2]));
+  return diff >= 0 ? diff : diff + 24 * 60;
+}
+
 /** "3h30", "1h37", "45 min". */
 export function formatDuration(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;

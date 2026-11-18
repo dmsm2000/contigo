@@ -738,7 +738,8 @@
       },
       "day": "Dia",
       "departs": "Saída",
-      "arrives": "Chegada"
+      "arrives": "Chegada",
+      "autoHint": "A chegada calcula-se sozinha com a saída e a duração (a hora é a do destino)."
     },
     "stays": {
       "title": "Alojamento",

@@ -738,7 +738,8 @@
       },
       "day": "Day",
       "departs": "Departure",
-      "arrives": "Arrival"
+      "arrives": "Arrival",
+      "autoHint": "Arrival is worked out from the departure and the duration (use the destination's local time)."
     },
     "stays": {
       "title": "Stay",

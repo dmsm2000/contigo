@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  addMinutes,
+  minutesBetween,
   budgetTotals,
   formatDuration,
   formatRange,
@@ -149,5 +151,18 @@ describe('ida e volta', () => {
     expect(transportDecided([out])).toBe(true);
     expect(transportDecided([out, back])).toBe(false);
     expect(transportDecided([out, { ...back, chosen: true }])).toBe(true);
+  });
+});
+
+describe('horas da deslocação', () => {
+  it('calcula a chegada a partir da saída e da duração', () => {
+    expect(addMinutes('16:30', 195)).toEqual({ time: '19:45', days: 0 });
+    expect(addMinutes('23:00', 150)).toEqual({ time: '01:30', days: 1 });
+    expect(addMinutes('xx', 10)).toBeNull();
+  });
+
+  it('calcula a duração entre a saída e a chegada', () => {
+    expect(minutesBetween('16:30', '19:45')).toBe(195);
+    expect(minutesBetween('23:00', '01:30')).toBe(150);
   });
 });

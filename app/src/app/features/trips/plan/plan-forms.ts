@@ -5,7 +5,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline, trashOutline } from 'ionicons/icons';
 import { parseAmount } from '../../../core/expenses.logic';
-import { DateOption, formatDuration, Leg, LEG_DIRECTIONS, LEG_MODES, LegDirection, LegMode, parseDuration, Stay } from '../../../core/trip-plan.logic';
+import { DateOption, formatDuration, addMinutes, Leg, LEG_DIRECTIONS, LEG_MODES, LegDirection, LegMode, minutesBetween, parseDuration, Stay } from '../../../core/trip-plan.logic';
 import { TripPlanService } from '../../../core/trip-plan.service';
 
 /** Os campos de texto de um euro (opcionais): vazio é nulo, inválido é 'invalid'. */
@@ -267,26 +267,29 @@ export class StayModal implements OnInit, AfterViewInit {
             </div>
           </section>
           <section class="block">
-            <label class="field">
-              <span class="field-label">{{ 'plan.legs.day' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em></span>
-              <input name="departsOn" type="date" [(ngModel)]="departsOn" />
-            </label>
-            <div class="row-2">
+            <div class="stack">
               <label class="field">
-                <span class="field-label">{{ 'plan.legs.departs' | transloco }}</span>
-                <input name="departsTime" type="time" [(ngModel)]="departsTime" />
+                <span class="field-label">{{ 'plan.legs.day' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em></span>
+                <input name="departsOn" type="date" [(ngModel)]="departsOn" />
               </label>
-              <label class="field">
-                <span class="field-label">{{ 'plan.legs.arrives' | transloco }}</span>
-                <input name="arrivesTime" type="time" [(ngModel)]="arrivesTime" />
-              </label>
+              <div class="row-2">
+                <label class="field">
+                  <span class="field-label">{{ 'plan.legs.departs' | transloco }}</span>
+                  <input name="departsTime" type="time" [(ngModel)]="departsTime" (ngModelChange)="recalc()" />
+                </label>
+                <label class="field">
+                  <span class="field-label">{{ 'plan.legs.arrives' | transloco }}</span>
+                  <input name="arrivesTime" type="time" [(ngModel)]="arrivesTime" (ngModelChange)="onArrives()" />
+                </label>
+              </div>
+              <p class="hint">{{ 'plan.legs.autoHint' | transloco }}</p>
             </div>
           </section>
           <section class="block">
             <div class="row-2">
               <label class="field">
                 <span class="field-label">{{ 'plan.legs.duration' | transloco }}</span>
-                <input name="duration" type="text" autocomplete="off" placeholder="3h30" [(ngModel)]="duration" (ngModelChange)="error.set(null)" />
+                <input name="duration" type="text" autocomplete="off" placeholder="3h30" [(ngModel)]="duration" (ngModelChange)="error.set(null); recalc()" />
               </label>
               <label class="field">
                 <span class="field-label">{{ 'plan.legs.price' | transloco }}</span>
@@ -348,10 +351,33 @@ export class LegModal implements OnInit, AfterViewInit {
     this.departsOn = leg.departsOn ?? '';
     this.departsTime = leg.departsTime ?? '';
     this.arrivesTime = leg.arrivesTime ?? '';
+    this.arrivesByHand = !!leg.arrivesTime;
   }
 
   ngAfterViewInit(): void {
     if (!this.leg) setTimeout(() => this.field()?.nativeElement.focus(), 450);
+  }
+
+  /** A chegada que o utilizador escreveu à mão não é tapada pelo cálculo. */
+  private arrivesByHand = false;
+
+  /** Saída + duração dão a chegada. */
+  protected recalc(): void {
+    this.error.set(null);
+    if (this.arrivesByHand && this.arrivesTime) return;
+    const minutes = parseDuration(this.duration);
+    if (!this.departsTime || minutes === 'invalid' || minutes === null) return;
+    const arrival = addMinutes(this.departsTime, minutes);
+    if (arrival) this.arrivesTime = arrival.time;
+  }
+
+  /** Escrever a chegada à mão: se a duração estiver vazia, sai da saída e da chegada. */
+  protected onArrives(): void {
+    this.arrivesByHand = !!this.arrivesTime;
+    if (!this.duration.trim() && this.departsTime && this.arrivesTime) {
+      const minutes = minutesBetween(this.departsTime, this.arrivesTime);
+      if (minutes !== null) this.duration = formatDuration(minutes);
+    }
   }
 
   protected close(): void {

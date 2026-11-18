@@ -28,7 +28,19 @@
 }
 
 // No iPhone o campo de data tem uma largura própria que o faz sair do ecrã: aqui obedece à coluna.
-input[type='date'] {
+// Os campos da secção do horário ficam em coluna, com o mesmo espaço entre eles.
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .hint {
+    margin: 0 4px;
+  }
+}
+
+input[type='date'],
+input[type='time'] {
   display: block;
   min-width: 0;
   max-width: 100%;
