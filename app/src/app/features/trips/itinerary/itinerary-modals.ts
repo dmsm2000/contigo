@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, Input, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, Input, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonFooter, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -13,6 +13,8 @@ import { TripsService } from '../../../core/trips.service';
 import { daysBetween } from './itinerary-days';
 
 const PACES: Pace[] = ['relaxed', 'balanced', 'packed'];
+/** O máximo de texto no campo "o que queremos" (cabem as notas da viagem inteiras). */
+const NOTES_MAX = 1500;
 
 // ---------------------------------------------------------------- pedir o roteiro
 
@@ -43,7 +45,7 @@ const PACES: Pace[] = ['relaxed', 'balanced', 'packed'];
 
         <section class="block">
           <label class="label" for="itinerary-notes">{{ 'itinerary.request.notes' | transloco }}</label>
-          <textarea id="itinerary-notes" class="wants" name="notes" rows="5" maxlength="800" [placeholder]="'itinerary.request.notesPlaceholder' | transloco" [ngModel]="notes()" (ngModelChange)="notes.set($event)"></textarea>
+          <textarea id="itinerary-notes" class="wants" name="notes" rows="5" [attr.maxlength]="notesMax" [placeholder]="'itinerary.request.notesPlaceholder' | transloco" [ngModel]="notes()" (ngModelChange)="notes.set($event)"></textarea>
           <p class="hint">{{ 'itinerary.request.notesHint' | transloco }}</p>
         </section>
 
@@ -64,7 +66,7 @@ const PACES: Pace[] = ['relaxed', 'balanced', 'packed'];
   `,
   styleUrl: './itinerary-modals.scss',
 })
-export class ItineraryRequestModal {
+export class ItineraryRequestModal implements OnInit {
   private readonly modalCtrl = inject(ModalController);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
@@ -77,6 +79,7 @@ export class ItineraryRequestModal {
 
   protected readonly paces = PACES;
   protected readonly pace = signal<Pace>('balanced');
+  protected readonly notesMax = NOTES_MAX;
   protected readonly notes = signal('');
   protected readonly copied = signal(false);
 
@@ -103,13 +106,20 @@ export class ItineraryRequestModal {
       wishes,
       pace: this.pace(),
       notes: this.notes(),
-      planNote: trip.planNote,
+      // As notas do plano entram no campo "o que queremos" (já vem preenchido), por isso não vão duas vezes.
+      planNote: null,
       language: lang,
     });
   });
 
   constructor() {
     addIcons({ clipboardOutline, closeOutline });
+  }
+
+  ngOnInit(): void {
+    // O campo já vem com as notas da viagem; podem mudá-las à vontade antes de copiar.
+    const note = this.trips.trips().find((item) => item.id === this.tripId)?.planNote;
+    if (note?.trim()) this.notes.set(note.trim().slice(0, NOTES_MAX));
   }
 
   protected close(): void {

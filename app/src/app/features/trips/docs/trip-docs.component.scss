@@ -1,0 +1,233 @@
+:host {
+  display: block;
+}
+
+.part {
+  margin-top: 28px;
+
+  h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
+.sub {
+  margin: 22px 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ct-mu);
+}
+
+// ------------------------------------------------ post-its
+
+.c-yellow { --paper: #fff3a8; }
+.c-pink { --paper: #ffc9dc; }
+.c-green { --paper: #c9f0c2; }
+.c-blue { --paper: #c5e3ff; }
+.c-orange { --paper: #ffd9b0; }
+
+.notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.note {
+  position: relative;
+  display: block;
+  min-height: 104px;
+  padding: 16px 14px 14px;
+  border: none;
+  border-radius: 6px 6px 14px 6px;
+  background: var(--paper);
+  // Os post-its são sempre claros, com letra escura, também no escuro: é o que lhes dá o ar de papel.
+  color: #2b2430;
+  font: inherit;
+  text-align: left;
+  box-shadow: 0 6px 14px -6px rgba(40, 20, 50, 0.35);
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform var(--ct-dur-fast);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    transform: rotate(0deg) scale(0.98);
+  }
+}
+
+.note-body {
+  display: -webkit-box;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.pin {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+.note--add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: transparent;
+  border: 2px dashed var(--ct-ln);
+  border-radius: 14px;
+  color: var(--ct-ac);
+  box-shadow: none;
+  transform: none;
+  font-weight: 600;
+  font-size: 14px;
+
+  ion-icon {
+    font-size: 26px;
+  }
+}
+
+// ------------------------------------------------ ficheiros
+
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file {
+  display: flex;
+  align-items: stretch;
+  border-radius: 18px;
+  background: var(--ct-sf);
+}
+
+.file-main {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 6px 12px 14px;
+  border: none;
+  background: none;
+  color: var(--ct-tx);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.file-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--ct-bg);
+  color: var(--ct-ac);
+  font-size: 22px;
+}
+
+.file-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  strong {
+    font-size: 15px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    font-size: 13px;
+    color: var(--ct-mu);
+  }
+}
+
+.file-note {
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-more {
+  flex: none;
+  width: 52px;
+  border: none;
+  background: none;
+  color: var(--ct-mu);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.empty {
+  margin: 0 0 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--ct-sf);
+  color: var(--ct-mu);
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 14px;
+  border: 2px dashed var(--ct-ln);
+  border-radius: 18px;
+  color: var(--ct-ac);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  &.busy {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  // O seletor de ficheiros fica escondido: o toque é na etiqueta.
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.hint {
+  margin: 10px 4px 0;
+  font-size: 13px;
+  color: var(--ct-mu);
+}

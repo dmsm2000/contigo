@@ -874,6 +874,58 @@
     "time": "Time (optional)",
     "timeHint": "With a time, Home counts the hours and minutes left."
   },
+  "docs": {
+    "title": "Documents",
+    "files": "Files",
+    "addNote": "Sticky note",
+    "addFile": "Add a file",
+    "uploading": "Uploading…",
+    "emptyFiles": "Tickets, bookings, insurance… add the PDFs and photos here so they are at hand when you need them.",
+    "privacy": "Only the two of you can see these files. Up to 10 MB each, as PDF or image.",
+    "save": "Save",
+    "keep": "Keep",
+    "delete": "Delete",
+    "optional": "optional",
+    "saveFailed": "Could not save. Try again.",
+    "deleteFailed": "Could not delete. Try again.",
+    "openFailed": "Could not open the file.",
+    "error": {
+      "tooBig": "The file is too big (the limit is 10 MB).",
+      "unsupported": "Only PDFs and images can be added.",
+      "empty": "The file is empty.",
+      "upload": "Could not upload the file. Try again."
+    },
+    "color": {
+      "yellow": "Yellow",
+      "pink": "Pink",
+      "green": "Green",
+      "blue": "Blue",
+      "orange": "Orange"
+    },
+    "note": {
+      "newTitle": "New sticky note",
+      "editTitle": "Sticky note",
+      "label": "What matters?",
+      "placeholder": "E.g. check-in from 3pm · door code 4821 · the train leaves from platform 3",
+      "color": "Colour",
+      "pin": "Pin to the top",
+      "pinHint": "Pinned notes show first.",
+      "delete": "Delete sticky note",
+      "deleteTitle": "Delete this sticky note?",
+      "deleteText": "It disappears for both of you."
+    },
+    "file": {
+      "title": "File",
+      "name": "Name",
+      "note": "Note",
+      "notePlaceholder": "E.g. seats 12A and 12B",
+      "open": "Open file",
+      "delete": "Delete file",
+      "deleteTitle": "Delete this file?",
+      "deleteText": "The file is deleted for both of you and cannot be recovered.",
+      "image": "Image"
+    }
+  },
   "itinerary": {
     "title": "Itinerary",
     "empty": "No itinerary yet. Ask a chat for one with everything the app knows about this trip, and paste the answer here.",
@@ -927,7 +979,7 @@
       "copiedToast": "Request copied.",
       "copyFailed": "Could not copy: select the text and copy it by hand.",
       "haveAnswer": "I already have the answer",
-      "notesHint": "The more you say, the more the itinerary will feel like you. What you wrote in the plan notes is sent too."
+      "notesHint": "Pre-filled with the trip notes; change or add whatever you like."
     },
     "import": {
       "title": "Paste itinerary",

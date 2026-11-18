@@ -874,6 +874,58 @@
     "time": "Hora (opcional)",
     "timeHint": "Com hora, o Início conta as horas e os minutos que faltam."
   },
+  "docs": {
+    "title": "Documentos",
+    "files": "Ficheiros",
+    "addNote": "Post-it",
+    "addFile": "Juntar ficheiro",
+    "uploading": "A enviar…",
+    "emptyFiles": "Bilhetes, reservas, seguros… junta aqui os PDF e as fotos, para estarem à mão quando for preciso.",
+    "privacy": "Só vocês os dois veem estes ficheiros. Até 10 MB cada, em PDF ou imagem.",
+    "save": "Guardar",
+    "keep": "Manter",
+    "delete": "Apagar",
+    "optional": "opcional",
+    "saveFailed": "Não foi possível guardar. Tenta outra vez.",
+    "deleteFailed": "Não foi possível apagar. Tenta outra vez.",
+    "openFailed": "Não foi possível abrir o ficheiro.",
+    "error": {
+      "tooBig": "O ficheiro é demasiado grande (o máximo são 10 MB).",
+      "unsupported": "Só dá para juntar PDF e imagens.",
+      "empty": "O ficheiro está vazio.",
+      "upload": "Não foi possível enviar o ficheiro. Tenta outra vez."
+    },
+    "color": {
+      "yellow": "Amarelo",
+      "pink": "Rosa",
+      "green": "Verde",
+      "blue": "Azul",
+      "orange": "Laranja"
+    },
+    "note": {
+      "newTitle": "Novo post-it",
+      "editTitle": "Post-it",
+      "label": "O que é importante?",
+      "placeholder": "Ex.: check-in a partir das 15h · código da porta 4821 · o comboio parte da linha 3",
+      "color": "Cor",
+      "pin": "Fixar no topo",
+      "pinHint": "Os post-its fixados aparecem primeiro.",
+      "delete": "Apagar post-it",
+      "deleteTitle": "Apagar este post-it?",
+      "deleteText": "Deixa de aparecer para os dois."
+    },
+    "file": {
+      "title": "Ficheiro",
+      "name": "Nome",
+      "note": "Nota",
+      "notePlaceholder": "Ex.: lugares 12A e 12B",
+      "open": "Abrir ficheiro",
+      "delete": "Apagar ficheiro",
+      "deleteTitle": "Apagar este ficheiro?",
+      "deleteText": "O ficheiro é apagado para os dois e não se recupera.",
+      "image": "Imagem"
+    }
+  },
   "itinerary": {
     "title": "Roteiro",
     "empty": "Ainda não há roteiro. Pede um a um chat com tudo o que a app já sabe desta viagem, e cola aqui a resposta.",
@@ -927,7 +979,7 @@
       "copiedToast": "Pedido copiado.",
       "copyFailed": "Não deu para copiar: seleciona o texto e copia à mão.",
       "haveAnswer": "Já tenho a resposta",
-      "notesHint": "Quanto mais disseres, mais o roteiro se parece convosco. Já vai também o que escreveram nas notas do plano."
+      "notesHint": "Já vem preenchido com as notas da viagem; muda ou acrescenta o que quiseres."
     },
     "import": {
       "title": "Colar roteiro",

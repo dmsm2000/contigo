@@ -1,0 +1,48 @@
+<section class="part ct-rise" style="--i: 6">
+  <h2>{{ 'docs.title' | transloco }}</h2>
+
+  @if (loaded()) {
+    <!-- Post-its: o que é importante ter à mão. -->
+    <div class="notes">
+      @for (note of notes(); track note.id; let i = $index) {
+        <button class="note" type="button" [class]="'note c-' + note.color" [style.--tilt]="tilt(i)" (click)="editNote(note.id)">
+          @if (note.pinned) {<ion-icon class="pin" name="pin-outline" aria-hidden="true"></ion-icon>}
+          <span class="note-body">{{ note.body }}</span>
+        </button>
+      }
+      <button class="note note--add" type="button" (click)="addNote()">
+        <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+        <span>{{ 'docs.addNote' | transloco }}</span>
+      </button>
+    </div>
+
+    <!-- Ficheiros: bilhetes, reservas, seguros… -->
+    <h3 class="sub">{{ 'docs.files' | transloco }}</h3>
+    @if (files().length) {
+      <ul class="files">
+        @for (doc of files(); track doc.id) {
+          <li class="file">
+            <button class="file-main" type="button" [disabled]="openingId() === doc.id" (click)="open(doc)">
+              <span class="file-icon"><ion-icon [name]="icon(doc)" aria-hidden="true"></ion-icon></span>
+              <span class="file-text">
+                <strong>{{ doc.name }}</strong>
+                <small>{{ meta(doc) }}</small>
+                @if (doc.note) {<small class="file-note">{{ doc.note }}</small>}
+              </span>
+            </button>
+            <button class="file-more" type="button" (click)="editDoc($event, doc.id)" [attr.aria-label]="'docs.file.title' | transloco"><ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon></button>
+          </li>
+        }
+      </ul>
+    } @else if (!uploading()) {
+      <p class="empty">{{ 'docs.emptyFiles' | transloco }}</p>
+    }
+
+    <label class="upload" [class.busy]="uploading() > 0">
+      <input type="file" accept="application/pdf,image/*" multiple (change)="pick($event)" />
+      <ion-icon name="attach-outline" aria-hidden="true"></ion-icon>
+      <span>{{ (uploading() ? 'docs.uploading' : 'docs.addFile') | transloco }}</span>
+    </label>
+    <p class="hint">{{ 'docs.privacy' | transloco }}</p>
+  }
+</section>

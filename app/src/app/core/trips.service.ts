@@ -6,6 +6,7 @@ import { PlaceImageService } from './place-image.service';
 import { attachPlaceImage, reuseKnownPlace } from './places.service';
 import { PlaceCandidate } from './geocoder';
 import { PhotosService } from './photos.service';
+import { TripDocsService } from './trip-docs.service';
 import { SupabaseService } from './supabase.service';
 import { isDone, startDateFor, toTrip, Trip, TripRow, WouldReturn } from './trips.logic';
 
@@ -28,6 +29,7 @@ export class TripsService {
   private readonly supabase = inject(SupabaseService).client;
   private readonly auth = inject(AuthService);
   private readonly photos = inject(PhotosService);
+  private readonly docs = inject(TripDocsService);
   private channel: RealtimeChannel | null = null;
 
   /** Todas as viagens, também as sorteadas que ainda não aconteceram. */
@@ -144,6 +146,7 @@ export class TripsService {
   async remove(trip: Trip): Promise<void> {
     // Os registos das fotos saem com a viagem, mas os ficheiros no bucket têm de ser apagados antes.
     await this.photos.removeFilesOfTrip(trip.id).catch(() => undefined);
+    await this.docs.removeFilesOfTrip(trip.id).catch(() => undefined);
     const { error } = await this.supabase.from('trips').delete().eq('id', trip.id);
     if (error) throw error;
     // O sítio só sai se já não tiver mais viagens; se tiver, a base de dados recusa e ele fica.
