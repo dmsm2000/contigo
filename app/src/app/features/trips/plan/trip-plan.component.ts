@@ -35,6 +35,8 @@ import {
   formatRange,
   headroom,
   Leg,
+  LEG_DIRECTIONS,
+  LegDirection,
   LegMode,
   nextStage,
   nightsBetween,
@@ -229,8 +231,14 @@ export class TripPlanComponent {
 
   // ------------------------------------------------------------ como chegar e alojamento
 
-  protected async addLeg(): Promise<void> {
-    await this.open(LegModal, { tripId: this.trip().id });
+  protected readonly directions = LEG_DIRECTIONS;
+
+  protected legsBy(direction: LegDirection): Leg[] {
+    return this.legs().filter((leg) => leg.direction === direction);
+  }
+
+  protected async addLeg(direction: LegDirection): Promise<void> {
+    await this.open(LegModal, { tripId: this.trip().id, direction });
   }
 
   protected async chooseLeg(leg: Leg): Promise<void> {

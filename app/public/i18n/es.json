@@ -699,7 +699,7 @@
       "pendingShort": "fechas por decidir"
     },
     "legs": {
-      "title": "Cómo llegar",
+      "title": "Transporte",
       "from": "Desde {{origin}}",
       "modes": {
         "car": "Coche",
@@ -708,9 +708,15 @@
         "flight": "Avión",
         "other": "Otro"
       },
-      "empty": "Aún no hay trayectos. Añade la ida y la vuelta (uno por origen, si salen de sitios distintos).",
-      "add": "Añadir un trayecto",
-      "addTitle": "Cómo llegar",
+      "empty": {
+        "out": "Aún no hay ida. Añade las opciones y elige una.",
+        "back": "Aún no hay vuelta. Es opcional."
+      },
+      "add": {
+        "out": "Añadir una ida",
+        "back": "Añadir una vuelta"
+      },
+      "addTitle": "Transporte",
       "editTitle": "Cambiar el trayecto",
       "origin": "Desde dónde (opcional)",
       "originPlaceholder": "Oporto, Madrid…",

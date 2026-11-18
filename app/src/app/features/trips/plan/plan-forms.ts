@@ -254,7 +254,7 @@ export class StayModal implements OnInit, AfterViewInit {
             <span class="label" id="leg-direction">{{ 'plan.legs.direction' | transloco }}</span>
             <div class="pills" role="group" aria-labelledby="leg-direction">
               @for (option of directions; track option) {
-                <button class="pill" type="button" [class.on]="direction() === option" [attr.aria-pressed]="direction() === option" (click)="direction.set(option)">{{ 'plan.legs.directions.' + option | transloco }}</button>
+                <button class="pill" type="button" [class.on]="directionSignal() === option" [attr.aria-pressed]="directionSignal() === option" (click)="directionSignal.set(option)">{{ 'plan.legs.directions.' + option | transloco }}</button>
               }
             </div>
           </section>
@@ -300,9 +300,11 @@ export class LegModal implements OnInit, AfterViewInit {
   private readonly field = viewChild<ElementRef<HTMLInputElement>>('field');
   @Input() tripId = '';
   @Input() leg: Leg | null = null;
+  /** O sentido de partida ao juntar uma deslocação nova (a ida ou a volta). */
+  @Input() set direction(value: LegDirection) { this.directionSignal.set(value); }
   protected readonly modes = LEG_MODES;
   protected readonly directions = LEG_DIRECTIONS;
-  protected readonly direction = signal<LegDirection>('out');
+  private readonly directionSignal = signal<LegDirection>('out');
   protected readonly mode = signal<LegMode>('car');
   protected origin = '';
   protected duration = '';
@@ -320,7 +322,7 @@ export class LegModal implements OnInit, AfterViewInit {
     if (!leg) return;
     this.origin = leg.origin;
     this.mode.set(leg.mode);
-    this.direction.set(leg.direction);
+    this.directionSignal.set(leg.direction);
     this.duration = leg.minutes === null ? '' : formatDuration(leg.minutes);
     this.price = euros(leg.priceEur);
     this.note = leg.note ?? '';
@@ -342,7 +344,7 @@ export class LegModal implements OnInit, AfterViewInit {
     if (priceEur === 'invalid') return this.error.set('plan.errors.amount');
     this.saving.set(true);
     try {
-      await this.plan.saveLeg(this.tripId, { id: this.leg?.id, origin, direction: this.direction(), mode: this.mode(), minutes, priceEur, note: this.note.trim() || null });
+      await this.plan.saveLeg(this.tripId, { id: this.leg?.id, origin, direction: this.directionSignal(), mode: this.mode(), minutes, priceEur, note: this.note.trim() || null });
       await this.modalCtrl.dismiss({ saved: true });
     } catch {
       this.saving.set(false);

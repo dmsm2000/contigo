@@ -699,7 +699,7 @@
       "pendingShort": "dates to be decided"
     },
     "legs": {
-      "title": "Getting there",
+      "title": "Transport",
       "from": "From {{origin}}",
       "modes": {
         "car": "Car",
@@ -708,9 +708,15 @@
         "flight": "Flight",
         "other": "Other"
       },
-      "empty": "No journeys yet. Add the outbound and the return (one per origin if you leave from different places).",
-      "add": "Add a journey",
-      "addTitle": "Getting there",
+      "empty": {
+        "out": "No outbound yet. Add the options and pick one.",
+        "back": "No return yet. It's optional."
+      },
+      "add": {
+        "out": "Add an outbound",
+        "back": "Add a return"
+      },
+      "addTitle": "Transport",
       "editTitle": "Change the journey",
       "origin": "From where (optional)",
       "originPlaceholder": "Porto, Madrid…",

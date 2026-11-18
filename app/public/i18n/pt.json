@@ -699,7 +699,7 @@
       "pendingShort": "datas por decidir"
     },
     "legs": {
-      "title": "Como chegar",
+      "title": "Transporte",
       "from": "Desde {{origin}}",
       "modes": {
         "car": "Carro",
@@ -708,9 +708,15 @@
         "flight": "Avião",
         "other": "Outro"
       },
-      "empty": "Ainda não há deslocações. Junta a ida e a volta (uma por origem, se partirem de sítios diferentes).",
-      "add": "Juntar uma deslocação",
-      "addTitle": "Como chegar",
+      "empty": {
+        "out": "Ainda não há ida. Junta as opções e escolhe uma.",
+        "back": "Ainda não há volta. É opcional."
+      },
+      "add": {
+        "out": "Juntar uma ida",
+        "back": "Juntar uma volta"
+      },
+      "addTitle": "Transporte",
       "editTitle": "Mudar a deslocação",
       "origin": "De onde (opcional)",
       "originPlaceholder": "Porto, Madrid…",
