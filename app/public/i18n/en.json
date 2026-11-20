@@ -1012,5 +1012,28 @@
       "noActivities": "The days came without titled activities. Ask the chat to fill them in.",
       "save": "Could not save right now. Try again."
     }
+  },
+  "live": {
+    "eyebrow": "On the trip · day {{day}} of {{total}}",
+    "now": "Now",
+    "endsIn": "ends in {{time}}",
+    "free": "Free time",
+    "freeTitle": "Nothing planned right now",
+    "until": "until {{time}}",
+    "today": "Today",
+    "startsIn": "in {{time}}",
+    "beforeTitle": "The day starts at {{time}}",
+    "done": "All done",
+    "doneTitle": "Today is all done",
+    "tomorrow": "Tomorrow: {{title}}, at {{time}}",
+    "lastDay": "That was the last day of the itinerary.",
+    "emptyTitle": "No timed activities today",
+    "noItinerary": "There is no itinerary for this trip yet.",
+    "createItinerary": "Create itinerary",
+    "next": "Up next",
+    "inTime": "in {{time}}",
+    "expense": "Expense",
+    "fullTrip": "Full itinerary",
+    "directions": "Directions"
   }
 }

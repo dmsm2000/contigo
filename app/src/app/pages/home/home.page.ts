@@ -6,6 +6,7 @@ import { addIcons } from 'ionicons';
 import { add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, sunnyOutline } from 'ionicons/icons';
 import { daysUntil, formatWeekdays, formatWindow, leafParts, monthInitials, todayIso } from '../../core/availability.logic';
 import { AvailabilityService } from '../../core/availability.service';
+import { ClockService } from '../../core/clock.service';
 import { DrawService } from '../../core/draw.service';
 import { clockParts, Meeting, meetingCountdown, meetingSpan, nextEncounter } from '../../core/meetings.logic';
 import { MeetingsService } from '../../core/meetings.service';
@@ -14,11 +15,13 @@ import { LanguageService } from '../../core/language.service';
 import { StoriesService } from '../../core/stories.service';
 import { ProfileService } from '../../core/profile.service';
 import { ThemeService } from '../../core/theme.service';
+import { liveDayOf } from '../../core/trip-live.logic';
 import { byRecentlyAdded, formatCost, formatTripDate, placeSubtitle, tileColors, Trip, tripCountdown, yearStats } from '../../core/trips.logic';
 import { TripsService } from '../../core/trips.service';
 import { Suggestion } from '../../core/suggestions';
 import { averageStars, nearestOrigin, WishlistItem } from '../../core/wishlist.logic';
 import { WishlistService } from '../../core/wishlist.service';
+import { TripLiveComponent } from '../../features/trips/live/trip-live.component';
 import { TripFlowService } from '../../features/trips/trip-flow.service';
 import { TripLabels } from '../../features/trips/trip-labels.service';
 import { AvatarComponent } from '../../features/profile/avatar.component';
@@ -36,7 +39,7 @@ const DISCOVER_SHOWN = 8;
 
 @Component({
   selector: 'app-home',
-  imports: [LastUpdateComponent, IonContent, IonIcon, RouterLink, TranslocoPipe, StarsComponent, AvatarComponent],
+  imports: [LastUpdateComponent, IonContent, IonIcon, RouterLink, TranslocoPipe, StarsComponent, AvatarComponent, TripLiveComponent],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
 })
@@ -54,6 +57,7 @@ export class HomePage {
   protected readonly draws = inject(DrawService);
   private readonly meetings = inject(MeetingsService);
   private readonly language = inject(LanguageService).language;
+  private readonly clock = inject(ClockService);
 
   protected readonly year = new Date().getFullYear();
   /** Os sítios diferentes do ano e os meses em que houve viagem. */
@@ -97,6 +101,15 @@ export class HomePage {
   /** "Agora", para o contador: avança de segundo a segundo quando faltam horas para um encontro, e de minuto a minuto no resto. */
   private readonly now = signal(Date.now());
   protected readonly encounter = computed(() => nextEncounter(this.meetings.items(), this.draws.active(), todayIso(new Date(this.now()))));
+
+  /**
+   * A viagem em curso, se hoje é um dia dela: toma o lugar do cartão do próximo encontro e passa a ser o guia do dia.
+   * Devolve sempre o mesmo objeto enquanto a viagem for a mesma, por isso o painel não se refaz a cada minuto.
+   */
+  protected readonly live = computed<Trip | null>(() => {
+    const trip = this.draws.active();
+    return trip && liveDayOf(trip, this.clock.at(this.now())) ? trip : null;
+  });
 
   protected readonly heroDate = computed(() => {
     const encounter = this.encounter();

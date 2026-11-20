@@ -1,0 +1,547 @@
+:host {
+  display: block;
+}
+
+// O cartão principal: o mesmo gradiente do cartão do próximo encontro, para a app continuar a ser a mesma.
+.live {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: 20px 20px 22px;
+  background: var(--ct-hero);
+  color: #ffffff;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffd9e8;
+}
+
+// A bolinha "ao vivo".
+.pulse {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #7dffb0;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(125, 255, 176, 0.6);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 9px rgba(125, 255, 176, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+  }
+}
+
+.live-title {
+  margin: 6px 0 0;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.live-date {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #ffe9f1;
+}
+
+.sim {
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+// Um traço por dia da viagem: os passados mais fortes e o de hoje a branco.
+.days {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.25);
+
+  &.past {
+    background: rgba(255, 255, 255, 0.65);
+  }
+
+  &.today {
+    background: #ffffff;
+  }
+}
+
+.state {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+
+  .s1,
+  .s2 {
+    display: block;
+    height: 18px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .s1 {
+    width: 70%;
+  }
+
+  .s2 {
+    width: 45%;
+    margin-top: 10px;
+  }
+}
+
+.state-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  font-size: 13px;
+  color: #ffd9e8;
+
+  strong {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  span {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.state-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 8px 0 0;
+  font: 600 22px/1.2 var(--ct-font-display);
+
+  ion-icon {
+    flex: none;
+    margin-top: 2px;
+    font-size: 22px;
+  }
+}
+
+.state-meta {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #ffe9f1;
+}
+
+.bar {
+  height: 6px;
+  margin-top: 14px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.22);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: #ffffff;
+    transition: width 1s linear;
+  }
+}
+
+.state-tip {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+// Ligações em forma de botão: grandes o bastante para tocar com uma mão.
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 21px;
+  background: #ffffff;
+  color: #9e2462;
+  font: 700 14px var(--ion-font-family);
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+
+  &.pill--soft {
+    background: var(--ct-acs);
+    color: var(--ct-act);
+  }
+}
+
+// A seguir
+.next {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  background: var(--ct-sf);
+}
+
+.next-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ct-acs);
+  color: var(--ct-act);
+  font-size: 20px;
+}
+
+.next-body {
+  flex: 1;
+  min-width: 0;
+
+  // A etiqueta e o contador na mesma linha; em ecrãs estreitos o contador passa para baixo, e o título fica com a largura toda.
+  .next-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 10px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ct-mu);
+  }
+
+  strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 16px;
+    line-height: 1.25;
+  }
+
+  small {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    color: var(--ct-mu);
+  }
+}
+
+.next-count {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: 14px;
+  background: var(--ct-acs);
+  color: var(--ct-act);
+  font: 700 13px var(--ion-font-family);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+// Atalhos
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.act {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 26px;
+  background: var(--ct-sf);
+  color: var(--ct-tx);
+  font: 700 14px var(--ion-font-family);
+  white-space: nowrap;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 20px;
+    color: var(--ct-ac);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+.sec {
+  margin: 28px 0 6px;
+  font: 600 20px var(--ct-font-display);
+}
+
+// A linha do tempo do dia
+.tl {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tl-item {
+  border-bottom: 1px solid var(--ct-ln);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.tl-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 10px 2px;
+  border: none;
+  background: none;
+  color: var(--ct-tx);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: -2px;
+    border-radius: 12px;
+  }
+}
+
+.tl-time {
+  flex: none;
+  width: 42px;
+  font: 600 13px var(--ion-font-family);
+  color: var(--ct-mu);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-dot {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--ct-sf);
+  color: var(--ct-mu);
+  font-size: 18px;
+}
+
+.tl-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.tl-chev {
+  flex: none;
+  color: var(--ct-mu);
+  transition: transform var(--ct-dur-fast) var(--ct-ease);
+}
+
+.is-open .tl-chev {
+  transform: rotate(180deg);
+}
+
+.is-done {
+  .tl-time,
+  .tl-title {
+    color: var(--ct-mu);
+  }
+
+  .tl-dot {
+    background: transparent;
+    color: #2e9e5b;
+    font-size: 24px;
+  }
+}
+
+.is-now {
+  .tl-title {
+    color: var(--ct-act);
+  }
+
+  .tl-dot {
+    background: var(--ct-ac);
+    color: #ffffff;
+  }
+}
+
+.tl-body {
+  padding: 0 2px 16px;
+
+  p {
+    margin: 0 0 10px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .when {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .place {
+    color: var(--ct-mu);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tip {
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: var(--ct-sf);
+    font-size: 13.5px;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+}
+
+.chip {
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: var(--ct-sf);
+  font: 600 12px var(--ion-font-family);
+
+  &.chip--warn {
+    background: var(--ct-acs);
+    color: var(--ct-act);
+  }
+}
+
+// Documentos à mão
+.files {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 18px;
+  background: var(--ct-sf);
+  color: var(--ct-tx);
+  font: 600 14px var(--ion-font-family);
+  text-align: left;
+  cursor: pointer;
+
+  ion-icon {
+    flex: none;
+    font-size: 22px;
+    color: var(--ct-ac);
+  }
+
+  span {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .file-open {
+    font-size: 18px;
+    color: var(--ct-mu);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ct-ac);
+    outline-offset: 2px;
+  }
+}
+
+.tips {
+  margin-top: 24px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--ct-sf);
+
+  summary {
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  ul {
+    margin: 10px 0 0;
+    padding-left: 18px;
+  }
+
+  li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+}

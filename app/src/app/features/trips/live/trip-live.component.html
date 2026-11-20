@@ -1,0 +1,283 @@
+@if (today(); as live) {
+  <!-- O painel da viagem em curso: o dia, o que está a acontecer agora e o que vem a seguir. -->
+  <section class="live ct-rise" style="--i: 3">
+    <p class="eyebrow">
+      <span class="pulse" aria-hidden="true"></span
+      >{{ 'live.eyebrow' | transloco: { day: live.day, total: live.total } }}
+    </p>
+    <h1 class="ct-display live-title">{{ trip().place.name }}</h1>
+    <p class="live-date">
+      {{ dateText() }}
+      @if (simulated) {
+        · <span class="sim">{{ clockText() }} (simulado)</span>
+      }
+    </p>
+    <div class="days" aria-hidden="true">
+      @for (n of dots(); track n) {
+        <span class="dot" [class.past]="n < live.day" [class.today]="n === live.day"></span>
+      }
+    </div>
+
+    @if (!loaded()) {
+      <div class="state" aria-hidden="true">
+        <span class="ct-skeleton s1"></span>
+        <span class="ct-skeleton s2"></span>
+      </div>
+    } @else if (view(); as v) {
+      @if (v.current; as c) {
+        <div class="state">
+          <p class="state-label">
+            <strong>{{ 'live.now' | transloco }}</strong>
+            <span>{{ 'live.endsIn' | transloco: { time: until(v.msToEnd) } }}</span>
+          </p>
+          <h2 class="state-title">
+            <ion-icon [name]="icon(c.item.category)" aria-hidden="true"></ion-icon
+            >{{ c.item.title }}
+          </h2>
+          <p class="state-meta">
+            {{ time(c.item) }}
+            @if (place(c.item); as spot) {
+              · {{ spot }}
+            }
+          </p>
+          <div
+            class="bar"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            [attr.aria-valuenow]="((v.progress ?? 0) * 100).toFixed(0)"
+            [attr.aria-label]="c.item.title"
+          >
+            <span [style.width.%]="(v.progress ?? 0) * 100"></span>
+          </div>
+          @if (c.item.tip) {
+            <p class="state-tip">{{ c.item.tip }}</p>
+          }
+          @if (mapUrl(c.item); as url) {
+            <div class="state-actions">
+              <a class="pill" [href]="url" target="_blank" rel="noopener">
+                <ion-icon name="navigate-outline" aria-hidden="true"></ion-icon
+                >{{ 'live.directions' | transloco }}
+              </a>
+              @if (c.item.link; as link) {
+                <a class="pill" [href]="link" target="_blank" rel="noopener">
+                  <ion-icon name="open-outline" aria-hidden="true"></ion-icon
+                  >{{ 'itinerary.link' | transloco }}
+                </a>
+              }
+            </div>
+          } @else if (c.item.link; as link) {
+            <div class="state-actions">
+              <a class="pill" [href]="link" target="_blank" rel="noopener">
+                <ion-icon name="open-outline" aria-hidden="true"></ion-icon
+                >{{ 'itinerary.link' | transloco }}
+              </a>
+            </div>
+          }
+        </div>
+      } @else if (v.phase === 'free') {
+        <div class="state">
+          <p class="state-label">
+            <strong>{{ 'live.free' | transloco }}</strong>
+            @if (v.next; as n) {
+              <span>{{ 'live.until' | transloco: { time: n.item.startTime } }}</span>
+            }
+          </p>
+          <h2 class="state-title">{{ 'live.freeTitle' | transloco }}</h2>
+        </div>
+      } @else if (v.phase === 'before') {
+        <div class="state">
+          <p class="state-label">
+            <strong>{{ 'live.today' | transloco }}</strong>
+            <span>{{ 'live.startsIn' | transloco: { time: until(v.msToNext) } }}</span>
+          </p>
+          @if (v.next; as n) {
+            <h2 class="state-title">
+              {{ 'live.beforeTitle' | transloco: { time: n.item.startTime } }}
+            </h2>
+          }
+        </div>
+      } @else if (v.phase === 'after') {
+        <div class="state">
+          <p class="state-label">
+            <strong>{{ 'live.done' | transloco }}</strong>
+          </p>
+          <h2 class="state-title">{{ 'live.doneTitle' | transloco }}</h2>
+          @if (tomorrow(); as t) {
+            <p class="state-meta">
+              {{ 'live.tomorrow' | transloco: { title: t.title, time: t.startTime } }}
+            </p>
+          } @else if (live.day === live.total) {
+            <p class="state-meta">{{ 'live.lastDay' | transloco }}</p>
+          }
+        </div>
+      } @else {
+        <div class="state">
+          <h2 class="state-title">{{ 'live.emptyTitle' | transloco }}</h2>
+        </div>
+      }
+    } @else {
+      <div class="state">
+        <h2 class="state-title">{{ 'live.noItinerary' | transloco }}</h2>
+        <div class="state-actions">
+          <button class="ct-btn ct-btn--light" type="button" (click)="openTrip()">
+            {{ 'live.createItinerary' | transloco }}
+          </button>
+        </div>
+      </div>
+    }
+  </section>
+
+  @if (view(); as v) {
+    @if (v.next; as n) {
+      <div class="next ct-rise" style="--i: 4">
+        <span class="next-icon" aria-hidden="true"
+          ><ion-icon [name]="icon(n.item.category)"></ion-icon
+        ></span>
+        <div class="next-body">
+          <div class="next-top">
+            <p>{{ 'live.next' | transloco }} · {{ time(n.item) }}</p>
+            <span class="next-count">{{
+              'live.inTime' | transloco: { time: until(v.msToNext) }
+            }}</span>
+          </div>
+          <strong>{{ n.item.title }}</strong>
+          @if (place(n.item); as spot) {
+            <small>{{ spot }}</small>
+          }
+        </div>
+      </div>
+    }
+  }
+
+  <div class="actions ct-rise" style="--i: 5">
+    <button class="act" type="button" (click)="newExpense()">
+      <ion-icon name="add" aria-hidden="true"></ion-icon>{{ 'live.expense' | transloco }}
+    </button>
+    <button class="act" type="button" (click)="openTrip()">
+      <ion-icon name="list-outline" aria-hidden="true"></ion-icon>{{ 'live.fullTrip' | transloco }}
+    </button>
+  </div>
+
+  @if (view(); as v) {
+    @if (v.entries.length) {
+      <h2 class="sec">{{ 'itinerary.day' | transloco: { day: live.day } }}</h2>
+      <ul class="tl">
+        @for (entry of v.entries; track entry.item.id) {
+          <li
+            class="tl-item"
+            [class.is-done]="entry.status === 'done'"
+            [class.is-now]="entry.status === 'now'"
+            [class.is-open]="expandedId() === entry.item.id"
+          >
+            <button
+              class="tl-main"
+              type="button"
+              [attr.aria-expanded]="expandedId() === entry.item.id"
+              (click)="toggle(entry)"
+            >
+              <span class="tl-time">{{ entry.item.startTime ?? '·' }}</span>
+              <span class="tl-dot" aria-hidden="true">
+                <ion-icon
+                  [name]="entry.status === 'done' ? 'checkmark-circle' : icon(entry.item.category)"
+                ></ion-icon>
+              </span>
+              <span class="tl-title">{{ entry.item.title }}</span>
+              <ion-icon class="tl-chev" name="chevron-down-outline" aria-hidden="true"></ion-icon>
+            </button>
+            @if (expandedId() === entry.item.id) {
+              <div class="tl-body">
+                @if (entry.item.startTime) {
+                  <p class="when">{{ time(entry.item) }}</p>
+                }
+                @if (entry.item.description) {
+                  <p>{{ entry.item.description }}</p>
+                }
+                @if (place(entry.item) || entry.item.address) {
+                  <p class="place">
+                    {{ place(entry.item) }}
+                    @if (place(entry.item) && entry.item.address) {
+                      ·
+                    }
+                    {{ entry.item.address }}
+                  </p>
+                }
+                @if (entry.item.costEur !== null || entry.item.booking) {
+                  <p class="chips">
+                    @if (entry.item.costEur !== null) {
+                      <span class="chip">{{
+                        entry.item.costEur === 0
+                          ? ('itinerary.free' | transloco)
+                          : money(entry.item.costEur)
+                      }}</span>
+                    }
+                    @if (entry.item.booking) {
+                      <span class="chip chip--warn">{{ entry.item.booking }}</span>
+                    }
+                  </p>
+                }
+                @if (entry.item.tip) {
+                  <p class="tip">{{ entry.item.tip }}</p>
+                }
+                @if (mapUrl(entry.item); as url) {
+                  <p class="links">
+                    <a class="pill pill--soft" [href]="url" target="_blank" rel="noopener">
+                      <ion-icon name="navigate-outline" aria-hidden="true"></ion-icon
+                      >{{ 'live.directions' | transloco }}
+                    </a>
+                    @if (entry.item.link; as link) {
+                      <a class="pill pill--soft" [href]="link" target="_blank" rel="noopener">
+                        <ion-icon name="open-outline" aria-hidden="true"></ion-icon
+                        >{{ 'itinerary.link' | transloco }}
+                      </a>
+                    }
+                  </p>
+                } @else if (entry.item.link; as link) {
+                  <p class="links">
+                    <a class="pill pill--soft" [href]="link" target="_blank" rel="noopener">
+                      <ion-icon name="open-outline" aria-hidden="true"></ion-icon
+                      >{{ 'itinerary.link' | transloco }}
+                    </a>
+                  </p>
+                }
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    }
+  }
+
+  @if (files().length) {
+    <h2 class="sec">{{ 'docs.title' | transloco }}</h2>
+    <ul class="files">
+      @for (doc of files(); track doc.id) {
+        <li>
+          <button
+            class="file"
+            type="button"
+            [disabled]="openingId() === doc.id"
+            (click)="openDoc(doc)"
+          >
+            <ion-icon [name]="docIcon(doc)" aria-hidden="true"></ion-icon>
+            <span>{{ doc.name }}</span>
+            <ion-icon class="file-open" name="open-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (accepted(); as a) {
+    @if (a.tips.length) {
+      <details class="tips">
+        <summary>{{ 'itinerary.tips' | transloco }}</summary>
+        <ul>
+          @for (tip of a.tips; track $index) {
+            <li>{{ tip }}</li>
+          }
+        </ul>
+      </details>
+    }
+  }
+}

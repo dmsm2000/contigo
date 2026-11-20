@@ -11,6 +11,11 @@
       </button>
     </header>
 
+    <!-- Com a viagem a decorrer, o guia do dia vem primeiro: é para isso que se abre a app. -->
+    @if (live(); as trip) {
+      <app-trip-live [trip]="trip" />
+    }
+
     <ul class="stories">
       <li class="ct-rise" style="--i: 1">
         <button class="story" type="button" (click)="addPastTrip()">
@@ -48,6 +53,7 @@
       }
     </ul>
 
+    @if (!live()) {
     <section class="hero ct-rise" style="--i: 3">
       @if (heroLoading()) {
         <div class="hero-skel" aria-hidden="true">
@@ -134,6 +140,7 @@
         </div>
       }
     </section>
+    }
 
     <a class="onion ct-rise" style="--i: 4" routerLink="/expenses">
       <div class="onion-head">

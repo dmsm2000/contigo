@@ -1012,5 +1012,28 @@
       "noActivities": "Los días vinieron sin actividades con título. Pídele al chat que los rellene.",
       "save": "No se pudo guardar ahora. Inténtalo otra vez."
     }
+  },
+  "live": {
+    "eyebrow": "De viaje · día {{day}} de {{total}}",
+    "now": "Ahora",
+    "endsIn": "termina en {{time}}",
+    "free": "Tiempo libre",
+    "freeTitle": "Nada previsto por ahora",
+    "until": "hasta las {{time}}",
+    "today": "Hoy",
+    "startsIn": "en {{time}}",
+    "beforeTitle": "El día empieza a las {{time}}",
+    "done": "Completado",
+    "doneTitle": "El día de hoy está completo",
+    "tomorrow": "Mañana: {{title}}, a las {{time}}",
+    "lastDay": "Era el último día del itinerario.",
+    "emptyTitle": "Hoy no hay actividades con hora",
+    "noItinerary": "Todavía no hay itinerario para este viaje.",
+    "createItinerary": "Crear itinerario",
+    "next": "A continuación",
+    "inTime": "en {{time}}",
+    "expense": "Gasto",
+    "fullTrip": "Itinerario completo",
+    "directions": "Cómo llegar"
   }
 }
