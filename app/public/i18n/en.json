@@ -456,6 +456,7 @@
     "language": "Language",
     "theme": "Appearance",
     "signOut": "Sign out",
+    "signOutOffline": "You can't sign out while offline. Connect to the internet and try again.",
     "noName": "No name",
     "password": "Password",
     "newPassword": "New password",
@@ -508,7 +509,8 @@
       "invalidEmail": "Enter a valid email.",
       "passwordRequired": "Enter your password.",
       "wrongCredentials": "Wrong email or password.",
-      "generic": "Something went wrong. Try again."
+      "generic": "Something went wrong. Try again.",
+      "offline": "You're offline. You need an internet connection to sign in."
     }
   },
   "languages": {
@@ -906,6 +908,8 @@
     "saveFailed": "Could not save. Try again.",
     "deleteFailed": "Could not delete. Try again.",
     "openFailed": "Could not open the file.",
+    "openOffline": "You're offline, and this file isn't saved on your phone yet.",
+    "offlineReady": "Saved on your phone: opens offline",
     "error": {
       "tooBig": "The file is too big (the limit is 10 MB).",
       "unsupported": "Only PDFs and images can be added.",
@@ -1034,6 +1038,7 @@
     "inTime": "in {{time}}",
     "expense": "Expense",
     "fullTrip": "Full itinerary",
-    "directions": "Directions"
+    "directions": "Directions",
+    "offline": "Offline · showing the last saved copy"
   }
 }

@@ -162,6 +162,13 @@
     font-size: 13px;
     color: var(--ct-mu);
   }
+
+  // O sinal de que o ficheiro já está no telemóvel e abre sem rede.
+  .saved {
+    margin-left: 6px;
+    vertical-align: -2px;
+    font-size: 14px;
+  }
 }
 
 .file-note {

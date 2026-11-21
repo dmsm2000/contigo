@@ -2,7 +2,8 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { addOutline, attachOutline, documentTextOutline, ellipsisHorizontal, imageOutline, pinOutline } from 'ionicons/icons';
+import { addOutline, attachOutline, documentTextOutline, ellipsisHorizontal, imageOutline, phonePortraitOutline, pinOutline } from 'ionicons/icons';
+import { DocCacheService } from '../../../core/doc-cache.service';
 import { LanguageService } from '../../../core/language.service';
 import { DocError, TripDocsService } from '../../../core/trip-docs.service';
 import { formatSize, isImage, TripDoc } from '../../../core/trip-docs.logic';
@@ -23,6 +24,7 @@ export class TripDocsComponent {
   readonly trip = input.required<Trip>();
 
   private readonly docs = inject(TripDocsService);
+  private readonly saved = inject(DocCacheService);
   private readonly modals = inject(ModalController);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
@@ -35,7 +37,12 @@ export class TripDocsComponent {
   protected readonly openingId = signal<string | null>(null);
 
   constructor() {
-    addIcons({ addOutline, attachOutline, documentTextOutline, ellipsisHorizontal, imageOutline, pinOutline });
+    addIcons({ addOutline, attachOutline, documentTextOutline, ellipsisHorizontal, imageOutline, phonePortraitOutline, pinOutline });
+  }
+
+  /** O ficheiro já está no telemóvel (abre sem rede). */
+  protected isSaved(doc: TripDoc): boolean {
+    return this.saved.has(doc.id);
   }
 
   protected icon(doc: TripDoc): string {
@@ -73,9 +80,9 @@ export class TripDocsComponent {
   protected async open(doc: TripDoc): Promise<void> {
     if (this.openingId()) return;
     this.openingId.set(doc.id);
-    const ok = await this.docs.open(doc);
+    const result = await this.docs.open(doc);
     this.openingId.set(null);
-    if (!ok) await this.toast('docs.openFailed');
+    if (result !== 'opened') await this.toast(result === 'offline' ? 'docs.openOffline' : 'docs.openFailed');
   }
 
   /** Envia os ficheiros escolhidos (um a um, para um que falhe não deitar abaixo os outros). */

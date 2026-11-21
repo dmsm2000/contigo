@@ -12,6 +12,12 @@
         · <span class="sim">{{ clockText() }} (simulado)</span>
       }
     </p>
+    @if (offline()) {
+      <p class="offline" role="status">
+        <ion-icon name="cloud-offline-outline" aria-hidden="true"></ion-icon
+        >{{ 'live.offline' | transloco }}
+      </p>
+    }
     <div class="days" aria-hidden="true">
       @for (n of dots(); track n) {
         <span class="dot" [class.past]="n < live.day" [class.today]="n === live.day"></span>
@@ -261,6 +267,14 @@
           >
             <ion-icon [name]="docIcon(doc)" aria-hidden="true"></ion-icon>
             <span>{{ doc.name }}</span>
+            @if (isSaved(doc)) {
+              <ion-icon
+                class="file-saved"
+                name="phone-portrait-outline"
+                role="img"
+                [attr.aria-label]="'docs.offlineReady' | transloco"
+              ></ion-icon>
+            }
             <ion-icon class="file-open" name="open-outline" aria-hidden="true"></ion-icon>
           </button>
         </li>

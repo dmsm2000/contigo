@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { isAuthRetryableFetchError } from '@supabase/supabase-js';
 import { addIcons } from 'ionicons';
 import { eyeOffOutline, eyeOutline } from 'ionicons/icons';
 import { AuthService } from '../../core/auth.service';
@@ -62,11 +63,22 @@ export class LoginPage {
       this.password = '';
       await this.router.navigateByUrl('/home', { replaceUrl: true });
     } catch (error) {
-      this.error.set(isWrongCredentials(error) ? 'login.errors.wrongCredentials' : 'login.errors.generic');
+      this.error.set(
+        isNetworkError(error)
+          ? 'login.errors.offline'
+          : isWrongCredentials(error)
+            ? 'login.errors.wrongCredentials'
+            : 'login.errors.generic',
+      );
     } finally {
       this.busy.set(false);
     }
   }
+}
+
+/** Não houve resposta do Supabase (sem rede, ou sem internet no wifi): a palavra-passe nem chegou a ser vista. */
+function isNetworkError(error: unknown): boolean {
+  return !navigator.onLine || isAuthRetryableFetchError(error);
 }
 
 function isWrongCredentials(error: unknown): boolean {

@@ -68,6 +68,27 @@
   font-weight: 600;
 }
 
+// O aviso de que o que se vê é a cópia guardada, por não haver rede.
+.offline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 10px 0 0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+
+  ion-icon {
+    flex: none;
+    font-size: 15px;
+  }
+}
+
 // Um traço por dia da viagem: os passados mais fortes e o de hoje a branco.
 .days {
   display: flex;
@@ -508,6 +529,12 @@
 
   .file-open {
     font-size: 18px;
+    color: var(--ct-mu);
+  }
+
+  // O sinal de que o ficheiro já está no telemóvel e abre sem rede.
+  .file-saved {
+    font-size: 16px;
     color: var(--ct-mu);
   }
 

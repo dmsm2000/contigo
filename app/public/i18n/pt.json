@@ -456,6 +456,7 @@
     "language": "Língua",
     "theme": "Aparência",
     "signOut": "Sair",
+    "signOutOffline": "Sem rede não dá para sair. Liga-te à internet e tenta outra vez.",
     "noName": "Sem nome",
     "password": "Palavra-passe",
     "newPassword": "Nova palavra-passe",
@@ -508,7 +509,8 @@
       "invalidEmail": "Escreve um email válido.",
       "passwordRequired": "Escreve a tua palavra-passe.",
       "wrongCredentials": "Email ou palavra-passe incorretos.",
-      "generic": "Algo correu mal. Tenta outra vez."
+      "generic": "Algo correu mal. Tenta outra vez.",
+      "offline": "Sem rede. Para entrar precisas de ligação à internet."
     }
   },
   "languages": {
@@ -906,6 +908,8 @@
     "saveFailed": "Não foi possível guardar. Tenta outra vez.",
     "deleteFailed": "Não foi possível apagar. Tenta outra vez.",
     "openFailed": "Não foi possível abrir o ficheiro.",
+    "openOffline": "Sem rede, e este ficheiro ainda não está guardado no telemóvel.",
+    "offlineReady": "Guardado no telemóvel: abre sem rede",
     "error": {
       "tooBig": "O ficheiro é demasiado grande (o máximo são 10 MB).",
       "unsupported": "Só dá para juntar PDF e imagens.",
@@ -1034,6 +1038,7 @@
     "inTime": "daqui a {{time}}",
     "expense": "Despesa",
     "fullTrip": "Roteiro completo",
-    "directions": "Como chegar"
+    "directions": "Como chegar",
+    "offline": "Sem rede · a mostrar a última cópia guardada"
   }
 }

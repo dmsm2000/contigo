@@ -1,6 +1,7 @@
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
+import { ConnectivityService } from './connectivity.service';
 import {
   costSummary,
   Itinerary,
@@ -11,6 +12,7 @@ import {
   toItinerary,
   toItineraryItem,
 } from './itinerary.logic';
+import { readSnapshot, writeSnapshot } from './offline-store';
 import { SupabaseService } from './supabase.service';
 import { TripPlanService } from './trip-plan.service';
 
@@ -25,10 +27,13 @@ export class ItineraryService {
   private readonly supabase = inject(SupabaseService).client;
   private readonly auth = inject(AuthService);
   private readonly plan = inject(TripPlanService);
+  private readonly connectivity = inject(ConnectivityService);
   private channel: RealtimeChannel | null = null;
 
   readonly itineraries = signal<Itinerary[]>([]);
   readonly loaded = signal(false);
+  /** A última tentativa de ir buscar os roteiros falhou (por exemplo, sem rede): o que se vê é a cópia da última vez. */
+  readonly loadFailed = signal(false);
 
   private readonly byTrip = computed(() => {
     const map = new Map<string, { draft: Itinerary | null; accepted: Itinerary | null }>();
@@ -43,10 +48,14 @@ export class ItineraryService {
   constructor() {
     effect(() => {
       const userId = this.auth.userId();
+      const stale = this.auth.stale();
+      // Recarrega quando a rede volta ou a app volta ao primeiro plano.
+      this.connectivity.refresh();
       untracked(() => {
         if (userId) {
+          this.restore(userId);
           void this.load();
-          this.listen();
+          if (!stale) this.listen();
         } else {
           this.stopListening();
           this.itineraries.set([]);
@@ -56,24 +65,48 @@ export class ItineraryService {
     });
   }
 
+  /** O roteiro da última vez, para aparecer logo (e sem rede): a rede só o atualiza. */
+  private restore(userId: string): void {
+    if (this.loaded()) return;
+    const itineraries = readSnapshot<ItineraryRow>(userId, 'itineraries');
+    const items = readSnapshot<ItineraryItemRow>(userId, 'itinerary-items');
+    if (!itineraries || !items) return;
+    this.apply(itineraries, items);
+  }
+
+  private apply(itineraries: ItineraryRow[], items: ItineraryItemRow[]): void {
+    const byItinerary = new Map<string, ItineraryItem[]>();
+    for (const row of items) {
+      const item = toItineraryItem(row);
+      byItinerary.set(item.itineraryId, [...(byItinerary.get(item.itineraryId) ?? []), item]);
+    }
+    this.itineraries.set(itineraries.map((row) => toItinerary(row, byItinerary.get(row.id) ?? [])));
+    this.loaded.set(true);
+  }
+
   /** O rascunho e o roteiro aceite de uma viagem (qualquer um pode não existir). */
   of(tripId: string): { draft: Itinerary | null; accepted: Itinerary | null } {
     return this.byTrip().get(tripId) ?? { draft: null, accepted: null };
   }
 
   async load(): Promise<void> {
+    // Com a sessão só guardada (sem rede), um pedido iria como anónimo e voltaria vazio: fica a cópia.
+    if (this.auth.stale()) return;
     const [itineraries, items] = await Promise.all([
       this.supabase.from('trip_itineraries').select('*').returns<ItineraryRow[]>(),
       this.supabase.from('trip_itinerary_items').select('*').order('day').order('position').returns<ItineraryItemRow[]>(),
     ]);
-    if (itineraries.error || items.error) return;
-    const byItinerary = new Map<string, ItineraryItem[]>();
-    for (const row of items.data ?? []) {
-      const item = toItineraryItem(row);
-      byItinerary.set(item.itineraryId, [...(byItinerary.get(item.itineraryId) ?? []), item]);
+    if (itineraries.error || items.error) {
+      this.loadFailed.set(true);
+      return;
     }
-    this.itineraries.set((itineraries.data ?? []).map((row) => toItinerary(row, byItinerary.get(row.id) ?? [])));
-    this.loaded.set(true);
+    this.loadFailed.set(false);
+    this.apply(itineraries.data ?? [], items.data ?? []);
+    const userId = this.auth.userId();
+    if (userId) {
+      writeSnapshot(userId, 'itineraries', itineraries.data ?? []);
+      writeSnapshot(userId, 'itinerary-items', items.data ?? []);
+    }
   }
 
   /** Guarda o que veio do chat como rascunho, no lugar do rascunho anterior (se havia). */

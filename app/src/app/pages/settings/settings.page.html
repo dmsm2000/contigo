@@ -150,10 +150,13 @@
       </form>
     </section>
 
-    <button class="ct-btn ct-btn--ghost sign-out ct-rise" style="--i: 6" type="button" (click)="signOut()">
+    <button class="ct-btn ct-btn--ghost sign-out ct-rise" style="--i: 6" type="button" [disabled]="signOutBusy()" (click)="signOut()">
       <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
       {{ 'us.signOut' | transloco }}
     </button>
+    @if (signOutOffline()) {
+      <p class="sign-out-note" role="alert">{{ 'us.signOutOffline' | transloco }}</p>
+    }
     <app-last-update />
   </div>
 </ion-content>

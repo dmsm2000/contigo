@@ -55,6 +55,10 @@ export class SettingsPage {
   /** A dotação da outra pessoa, só para ler. */
   protected readonly partnerAllowance = computed(() => Number(this.profile.partner()?.monthly_allowance ?? 0));
 
+  protected readonly signOutBusy = signal(false);
+  /** A última tentativa de sair falhou por falta de rede. */
+  protected readonly signOutOffline = signal(false);
+
   protected readonly passwordBusy = signal(false);
   protected readonly passwordStatus = signal<Status>({ kind: 'idle' });
   protected newPassword = '';
@@ -168,7 +172,15 @@ export class SettingsPage {
   }
 
   protected async signOut(): Promise<void> {
-    await this.auth.signOut();
-    await this.router.navigateByUrl('/login', { replaceUrl: true });
+    if (this.signOutBusy()) return;
+    this.signOutBusy.set(true);
+    this.signOutOffline.set(false);
+    try {
+      // Sem rede não se sai (ver AuthService.signOut): fica na app e diz porquê.
+      if (await this.auth.signOut()) await this.router.navigateByUrl('/login', { replaceUrl: true });
+      else this.signOutOffline.set(true);
+    } finally {
+      this.signOutBusy.set(false);
+    }
   }
 }

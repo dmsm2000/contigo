@@ -26,7 +26,17 @@
               <span class="file-icon"><ion-icon [name]="icon(doc)" aria-hidden="true"></ion-icon></span>
               <span class="file-text">
                 <strong>{{ doc.name }}</strong>
-                <small>{{ meta(doc) }}</small>
+                <small
+                  >{{ meta(doc)
+                  }}@if (isSaved(doc)) {
+                    <ion-icon
+                      class="saved"
+                      name="phone-portrait-outline"
+                      role="img"
+                      [attr.aria-label]="'docs.offlineReady' | transloco"
+                    ></ion-icon>
+                  }</small
+                >
                 @if (doc.note) {<small class="file-note">{{ doc.note }}</small>}
               </span>
             </button>

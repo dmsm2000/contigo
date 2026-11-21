@@ -11,13 +11,18 @@ import {
   ellipseOutline,
   eyeOutline,
   imageOutline,
+  cloudOfflineOutline,
   listOutline,
   navigateOutline,
   openOutline,
+  phonePortraitOutline,
   restaurantOutline,
   walkOutline,
 } from 'ionicons/icons';
+import { AuthService } from '../../../core/auth.service';
 import { ClockService } from '../../../core/clock.service';
+import { ConnectivityService } from '../../../core/connectivity.service';
+import { DocCacheService } from '../../../core/doc-cache.service';
 import { ItineraryCategory, ItineraryItem } from '../../../core/itinerary.logic';
 import { ItineraryService } from '../../../core/itinerary.service';
 import { LanguageService } from '../../../core/language.service';
@@ -65,6 +70,9 @@ export class TripLiveComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(LanguageService).language;
   private readonly clock = inject(ClockService);
+  private readonly auth = inject(AuthService);
+  private readonly connectivity = inject(ConnectivityService);
+  private readonly saved = inject(DocCacheService);
 
   /** O instante real, de segundo a segundo, para os contadores andarem. */
   private readonly tick = signal(Date.now());
@@ -77,6 +85,10 @@ export class TripLiveComponent {
   });
 
   protected readonly loaded = this.itineraries.loaded;
+  /** Sem rede (ou sem conseguir ir buscar o roteiro): o que se vê é a cópia guardada da última vez que houve. */
+  protected readonly offline = computed(
+    () => !this.connectivity.online() || this.auth.stale() || this.itineraries.loadFailed(),
+  );
   protected readonly today = computed(() => liveDayOf(this.trip(), new Date(this.nowMs())));
   protected readonly accepted = computed(() => this.itineraries.of(this.trip().id).accepted);
   protected readonly dots = computed(() =>
@@ -121,6 +133,7 @@ export class TripLiveComponent {
       bedOutline,
       checkmarkCircle,
       chevronDownOutline,
+      cloudOfflineOutline,
       documentTextOutline,
       ellipseOutline,
       eyeOutline,
@@ -128,6 +141,7 @@ export class TripLiveComponent {
       listOutline,
       navigateOutline,
       openOutline,
+      phonePortraitOutline,
       restaurantOutline,
       walkOutline,
     });
@@ -175,6 +189,11 @@ export class TripLiveComponent {
     return isImage(doc.mime) ? 'image-outline' : 'document-text-outline';
   }
 
+  /** O ficheiro já está no telemóvel (abre sem rede). */
+  protected isSaved(doc: TripDoc): boolean {
+    return this.saved.has(doc.id);
+  }
+
   protected newExpense(): void {
     void this.flow.openExpense(this.trip().id);
   }
@@ -187,11 +206,13 @@ export class TripLiveComponent {
   protected async openDoc(doc: TripDoc): Promise<void> {
     if (this.openingId()) return;
     this.openingId.set(doc.id);
-    const ok = await this.docs.open(doc);
+    const result = await this.docs.open(doc);
     this.openingId.set(null);
-    if (!ok) {
+    if (result !== 'opened') {
       const toast = await this.toasts.create({
-        message: this.transloco.translate('docs.openFailed'),
+        message: this.transloco.translate(
+          result === 'offline' ? 'docs.openOffline' : 'docs.openFailed',
+        ),
         duration: 2600,
         position: 'bottom',
       });

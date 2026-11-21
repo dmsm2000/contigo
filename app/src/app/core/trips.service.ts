@@ -2,6 +2,8 @@ import { computed, effect, inject, Injectable, signal, untracked } from '@angula
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
 import { todayIso } from './availability.logic';
+import { ConnectivityService } from './connectivity.service';
+import { readSnapshot, writeSnapshot } from './offline-store';
 import { PlaceImageService } from './place-image.service';
 import { attachPlaceImage, reuseKnownPlace } from './places.service';
 import { PlaceCandidate } from './geocoder';
@@ -30,6 +32,7 @@ export class TripsService {
   private readonly auth = inject(AuthService);
   private readonly photos = inject(PhotosService);
   private readonly docs = inject(TripDocsService);
+  private readonly connectivity = inject(ConnectivityService);
   private channel: RealtimeChannel | null = null;
 
   /** Todas as viagens, também as sorteadas que ainda não aconteceram. */
@@ -42,10 +45,14 @@ export class TripsService {
   constructor() {
     effect(() => {
       const userId = this.auth.userId();
+      const stale = this.auth.stale();
+      // Recarrega quando a rede volta ou a app volta ao primeiro plano.
+      this.connectivity.refresh();
       untracked(() => {
         if (userId) {
+          this.restore(userId);
           void this.load();
-          this.listen();
+          if (!stale) this.listen();
         } else {
           this.stopListening();
           this.trips.set([]);
@@ -55,7 +62,18 @@ export class TripsService {
     });
   }
 
+  /** Sem rede, as viagens que se viram da última vez: aparecem logo, e a rede só as atualiza. */
+  private restore(userId: string): void {
+    if (this.loaded()) return;
+    const rows = readSnapshot<TripRow>(userId, 'trips');
+    if (!rows) return;
+    this.trips.set(rows.map(toTrip));
+    this.loaded.set(true);
+  }
+
   async load(): Promise<void> {
+    // Com a sessão só guardada (sem rede), um pedido iria como anónimo e voltaria vazio: ficam as cópias.
+    if (this.auth.stale()) return;
     const { data, error } = await this.supabase
       .from('trips')
       .select(TRIP_SELECT)
@@ -69,6 +87,8 @@ export class TripsService {
     this.loadFailed.set(false);
     this.trips.set(data.map(toTrip));
     this.loaded.set(true);
+    const userId = this.auth.userId();
+    if (userId) writeSnapshot(userId, 'trips', data);
   }
 
   find(id: string): Trip | undefined {

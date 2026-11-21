@@ -1,6 +1,9 @@
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
+import { ConnectivityService } from './connectivity.service';
+import { DocCacheService } from './doc-cache.service';
+import { readSnapshot, writeSnapshot } from './offline-store';
 import { SupabaseService } from './supabase.service';
 import {
   checkDoc,
@@ -22,6 +25,9 @@ const BUCKET = 'trip-documents';
 /** O link para abrir um documento dura 10 minutos: chega para o abrir e descarregar. */
 const URL_TTL_SECONDS = 10 * 60;
 
+/** O que aconteceu ao abrir um documento: abriu, não deu por falta de rede (e de cópia no telemóvel), ou falhou. */
+export type OpenResult = 'opened' | 'offline' | 'failed';
+
 /** Um erro de envio com o motivo, para o ecrã dizer o que correu mal. */
 export class DocError extends Error {
   constructor(readonly reason: Exclude<DocCheck, 'ok'> | 'upload') {
@@ -38,6 +44,8 @@ export class DocError extends Error {
 export class TripDocsService {
   private readonly supabase = inject(SupabaseService).client;
   private readonly auth = inject(AuthService);
+  private readonly connectivity = inject(ConnectivityService);
+  private readonly saved = inject(DocCacheService);
   private channel: RealtimeChannel | null = null;
 
   private readonly notes = signal<TripNote[]>([]);
@@ -59,10 +67,14 @@ export class TripDocsService {
   constructor() {
     effect(() => {
       const userId = this.auth.userId();
+      const stale = this.auth.stale();
+      // Recarrega quando a rede volta ou a app volta ao primeiro plano.
+      this.connectivity.refresh();
       untracked(() => {
         if (userId) {
+          this.restore(userId);
           void this.load();
-          this.listen();
+          if (!stale) this.listen();
         } else {
           this.stopListening();
           this.notes.set([]);
@@ -81,7 +93,20 @@ export class TripDocsService {
     return this.docsByTrip().get(tripId) ?? [];
   }
 
+  /** Os post-its e a lista de ficheiros da última vez, para aparecerem logo (e sem rede). */
+  private restore(userId: string): void {
+    if (this.loaded()) return;
+    const notes = readSnapshot<NoteRow>(userId, 'trip-notes');
+    const docs = readSnapshot<DocRow>(userId, 'trip-docs');
+    if (!notes || !docs) return;
+    this.notes.set(notes.map(toNote));
+    this.docs.set(docs.map(toDoc));
+    this.loaded.set(true);
+  }
+
   async load(): Promise<void> {
+    // Com a sessão só guardada (sem rede), um pedido iria como anónimo e voltaria vazio: ficam as cópias.
+    if (this.auth.stale()) return;
     const [notes, docs] = await Promise.all([
       this.supabase.from('trip_notes').select('*').order('created_at').returns<NoteRow[]>(),
       this.supabase.from('trip_documents').select('*').order('created_at').returns<DocRow[]>(),
@@ -94,6 +119,13 @@ export class TripDocsService {
     this.notes.set((notes.data ?? []).map(toNote));
     this.docs.set((docs.data ?? []).map(toDoc));
     this.loaded.set(true);
+    const userId = this.auth.userId();
+    if (userId) {
+      writeSnapshot(userId, 'trip-notes', notes.data ?? []);
+      writeSnapshot(userId, 'trip-docs', docs.data ?? []);
+    }
+    // Os ficheiros guardados de documentos que entretanto se apagaram já não fazem falta.
+    void this.saved.prune((docs.data ?? []).map((doc) => doc.id));
   }
 
   // ------------------------------------------------------------ post-its
@@ -147,6 +179,7 @@ export class TripDocsService {
     const { error } = await this.supabase.from('trip_documents').delete().eq('id', doc.id);
     if (error) throw error;
     this.docs.update((docs) => docs.filter((item) => item.id !== doc.id));
+    await this.saved.remove(doc.id);
     await this.supabase.storage.from(BUCKET).remove([doc.path]);
   }
 
@@ -156,20 +189,39 @@ export class TripDocsService {
     return error || !data ? null : data.signedUrl;
   }
 
+  /** O ficheiro todo, para o guardar no telemóvel (nulo se não foi possível). */
+  async download(doc: TripDoc): Promise<Blob | null> {
+    const { data, error } = await this.supabase.storage.from(BUCKET).download(doc.path);
+    return error || !data ? null : data;
+  }
+
   /**
    * Abre o documento (PDF ou imagem) fora da app. A janela abre-se já, no toque, porque o iOS não deixa abrir uma
-   * depois de esperar pelo link; o link só se põe nela quando chega.
+   * depois de esperar pelo link; o link só se põe nela quando chega. Se o ficheiro já está guardado no telemóvel,
+   * abre-se esse (e funciona sem rede).
    */
-  async open(doc: TripDoc): Promise<boolean> {
+  async open(doc: TripDoc): Promise<OpenResult> {
     const win = window.open('', '_blank');
-    const url = await this.urlOf(doc);
+    const copy = await this.saved.get(doc.id);
+    let url: string | null = null;
+    if (copy) {
+      url = URL.createObjectURL(copy);
+      // A janela já o carregou; larga-se mais tarde para não ficar na memória.
+      setTimeout(() => URL.revokeObjectURL(url as string), 10 * 60_000);
+    } else if (!this.connectivity.online() || this.auth.stale()) {
+      win?.close();
+      return 'offline';
+    } else {
+      url = await this.urlOf(doc);
+    }
     if (!url) {
       win?.close();
-      return false;
+      // Sem rede o browser nem sempre sabe (wifi sem internet): se a última ida à rede também falhou, é por isso.
+      return !this.connectivity.online() || this.loadFailed() ? 'offline' : 'failed';
     }
     if (win) win.location.href = url;
     else window.location.href = url;
-    return true;
+    return 'opened';
   }
 
   /** Apaga os ficheiros de uma viagem. Chama-se antes de apagar a viagem: os registos saem com ela, o bucket não. */

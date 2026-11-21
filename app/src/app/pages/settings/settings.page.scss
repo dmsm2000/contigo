@@ -177,6 +177,20 @@
   }
 }
 
+// Sem rede não se sai: a razão aparece logo abaixo do botão.
+.sign-out-note {
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  color: #d64545;
+  animation: ct-rise var(--ct-dur) var(--ct-ease) both;
+}
+
+:host-context(.ion-palette-dark) .sign-out-note {
+  color: #ff8a8a;
+}
+
 .skel-name {
   width: 120px;
   border-radius: 8px;
