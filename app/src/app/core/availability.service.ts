@@ -68,6 +68,8 @@ export class AvailabilityService {
   constructor() {
     effect(() => {
       const userId = this.auth.userId();
+      // Recarrega quando a rede volta, a app volta ao primeiro plano ou a sessão se renova.
+      this.auth.reload();
       untracked(() => {
         if (userId) {
           void this.load();
@@ -94,6 +96,8 @@ export class AvailabilityService {
   }
 
   async load(): Promise<void> {
+    // Com a sessão só guardada (sem rede), um pedido iria como anónimo: espera-se pela renovação.
+    if (this.auth.stale()) return;
     const today = todayIso();
     const from = addDays(today, -DAYS_BEFORE);
     const to = addDays(today, DAYS_AFTER);

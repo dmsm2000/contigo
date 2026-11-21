@@ -50,6 +50,43 @@ export function writeSnapshot(
   }
 }
 
+/**
+ * O que ainda não se enviou (por exemplo, despesas registadas sem rede). Fica à parte das cópias: as cópias apagam-se
+ * quando a sessão acaba, mas isto é trabalho da pessoa que ainda não chegou ao servidor, e não se deve perder.
+ */
+const PENDING_PREFIX = 'contigo.pending.v1';
+
+export function readPending<T>(
+  userId: string,
+  name: string,
+  storage: Store | null = defaultStore(),
+): T[] {
+  try {
+    const raw = storage?.getItem(`${PENDING_PREFIX}:${userId}:${name}`);
+    const value: unknown = raw ? JSON.parse(raw) : null;
+    return Array.isArray(value) ? (value as T[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Guarda o que falta enviar; uma lista vazia limpa a chave. Devolve falso se não coube (e a pessoa deve ser avisada). */
+export function writePending(
+  userId: string,
+  name: string,
+  rows: readonly unknown[],
+  storage: Store | null = defaultStore(),
+): boolean {
+  try {
+    const key = `${PENDING_PREFIX}:${userId}:${name}`;
+    if (rows.length) storage?.setItem(key, JSON.stringify(rows));
+    else storage?.removeItem(key);
+    return !!storage;
+  } catch {
+    return false;
+  }
+}
+
 /** Apaga todas as cópias (de qualquer utilizador). */
 export function clearSnapshots(storage: Store | null = defaultStore()): void {
   if (!storage) return;

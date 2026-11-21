@@ -554,6 +554,11 @@
     "remove": "Delete",
     "removed": "Expense deleted.",
     "removeError": "Could not delete it. Try again.",
+    "removeOffline": "You can't delete an expense that was already sent while offline.",
+    "sync": {
+      "pending": "Not sent yet",
+      "failed": "Not sent: tap to fix, or delete it"
+    },
     "total": "Total",
     "category": {
       "transport": "Transport",
@@ -573,11 +578,13 @@
       "date": "When",
       "save": "Save expense",
       "saved": "Expense saved.",
+      "savedOffline": "Expense saved on your phone. It will be sent when you're back online.",
       "errors": {
         "amount": "Enter an amount above zero (for example 12.50).",
         "note": "The note is too long.",
         "noTrip": "Add a trip first so you can add expenses to it.",
-        "save": "Could not save. Try again."
+        "save": "Could not save. Try again.",
+        "offline": "You're offline. You can log new expenses, but editing one that was already sent needs a connection."
       },
       "editTitle": "Edit expense",
       "updated": "Expense updated."
@@ -892,6 +899,9 @@
     "keep": "Keep it",
     "time": "Time (optional)",
     "timeHint": "With a time, Home counts the hours and minutes left."
+  },
+  "links": {
+    "open": "Open"
   },
   "docs": {
     "title": "Documents",

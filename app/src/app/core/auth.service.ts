@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { isAuthRetryableFetchError, Session } from '@supabase/supabase-js';
 import { parseStoredSession } from './auth-session.logic';
+import { ConnectivityService } from './connectivity.service';
 import { clearOfflineData } from './offline-store';
 import { SupabaseService } from './supabase.service';
 
@@ -14,6 +15,7 @@ const SESSION_WAIT_MS = 3000;
 export class AuthService {
   private readonly supabaseService = inject(SupabaseService);
   private readonly supabase = this.supabaseService.client;
+  private readonly connectivity = inject(ConnectivityService);
   private readonly sessionState = signal<Session | null>(null);
   private readonly staleState = signal(false);
   private readonly recoveredState = signal(0);
@@ -28,6 +30,11 @@ export class AuthService {
   readonly stale = this.staleState.asReadonly();
   /** Sobe quando a sessão se renova depois de ter estado assim: é a altura de ir buscar os dados outra vez. */
   readonly recovered = this.recoveredState.asReadonly();
+  /**
+   * Muda quando convém voltar a ir buscar os dados: a rede voltou, a app voltou ao primeiro plano depois de um bocado
+   * fora, ou a sessão renovou-se. Os serviços leem-no dentro do `effect` que carrega os dados, e recarregam com ele.
+   */
+  readonly reload = computed(() => this.connectivity.refresh() + this.recoveredState());
   readonly ready: Promise<void>;
 
   constructor() {

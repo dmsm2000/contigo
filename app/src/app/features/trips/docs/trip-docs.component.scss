@@ -33,6 +33,18 @@
   gap: 14px;
 }
 
+// Um post-it e, por baixo, os botões "Abrir site" das ligações que tem.
+.note-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+
+  .note {
+    flex: 1;
+  }
+}
+
 .note {
   position: relative;
   display: block;

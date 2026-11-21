@@ -5,10 +5,14 @@
     <!-- Post-its: o que é importante ter à mão. -->
     <div class="notes">
       @for (note of notes(); track note.id; let i = $index) {
-        <button class="note" type="button" [class]="'note c-' + note.color" [style.--tilt]="tilt(i)" (click)="editNote(note.id)">
-          @if (note.pinned) {<ion-icon class="pin" name="pin-outline" aria-hidden="true"></ion-icon>}
-          <span class="note-body">{{ note.body }}</span>
-        </button>
+        <div class="note-cell">
+          <button class="note" type="button" [class]="'note c-' + note.color" [style.--tilt]="tilt(i)" (click)="editNote(note.id)">
+            @if (note.pinned) {<ion-icon class="pin" name="pin-outline" aria-hidden="true"></ion-icon>}
+            <span class="note-body">{{ short(note.body) }}</span>
+          </button>
+          <!-- Fora do post-it (que é um botão): um "Abrir site" para cada ligação da nota. -->
+          <app-link-chips [text]="note.body" />
+        </div>
       }
       <button class="note note--add" type="button" (click)="addNote()">
         <ion-icon name="add-outline" aria-hidden="true"></ion-icon>

@@ -75,7 +75,7 @@
             @for (item of tripExpenses().slice(0, 5); track item.id) {
               <li>
                 <button class="spend-row" type="button" (click)="editExpense(item)">
-                  <span class="spend-what">{{ item.note || ('expenses.category.' + item.category | transloco) }}</span>
+                  <span class="spend-what">{{ item.note || ('expenses.category.' + item.category | transloco) }}@if (item.sync; as sync) { · <em class="sync" [class.sync--failed]="sync === 'failed'">{{ 'expenses.sync.' + sync | transloco }}</em> }</span>
                   <span class="spend-amount">{{ money(item.amount) }}</span>
                 </button>
               </li>

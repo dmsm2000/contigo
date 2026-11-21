@@ -1,8 +1,9 @@
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { AuthService } from './auth.service';
 import { AllowanceChange, monthlyIncome } from './expenses.logic';
 import { compressAvatar } from './image-compress';
 import { Language, LanguageService } from './language.service';
+import { readSnapshot, writeSnapshot } from './offline-store';
 import { SupabaseService } from './supabase.service';
 import { ThemePreference, ThemeService } from './theme.service';
 
@@ -59,7 +60,11 @@ export class ProfileService {
   constructor() {
     effect(() => {
       const userId = this.auth.userId();
+      // Recarrega quando a rede volta, a app volta ao primeiro plano ou a sessão se renova.
+      this.auth.reload();
       if (userId) {
+        // `untracked`: ler as listas aqui não pode fazer o `effect` correr outra vez de cada vez que elas mudam.
+        untracked(() => this.restore(userId));
         void this.load(userId);
       } else {
         this.profile.set(null);
@@ -234,9 +239,26 @@ export class ProfileService {
     return this.save({ theme });
   }
 
+  /**
+   * Os perfis e as dotações da última vez, para aparecerem logo e sem rede: sem as dotações, a cebola (que sai das
+   * despesas e do que cada um põe) mostraria valores errados.
+   */
+  private restore(userId: string): void {
+    if (this.people().length) return;
+    const people = readSnapshot<Profile>(userId, 'profiles');
+    if (!people) return;
+    this.people.set(people);
+    this.profile.set(people.find((person) => person.id === userId) ?? null);
+    const history = readSnapshot<AllowanceChange>(userId, 'allowance-history');
+    if (history) this.allowanceHistory.set(history);
+  }
+
   private async load(userId: string): Promise<void> {
+    // Com a sessão só guardada (sem rede), um pedido iria como anónimo: espera-se pela renovação.
+    if (this.auth.stale()) return;
     const { data } = await this.supabase.from('profiles').select(COLUMNS).returns<Profile[]>();
     if (!data) return;
+    writeSnapshot(userId, 'profiles', data);
     this.people.set(data);
     void this.loadAllowanceHistory();
     void this.markSeen(true);
@@ -254,7 +276,10 @@ export class ProfileService {
       .select('user_id, month, amount')
       .returns<{ user_id: string; month: string; amount: number | string }[]>();
     if (!data) return;
-    this.allowanceHistory.set(data.map((row) => ({ userId: row.user_id, month: row.month, amount: Number(row.amount) })));
+    const history = data.map((row) => ({ userId: row.user_id, month: row.month, amount: Number(row.amount) }));
+    this.allowanceHistory.set(history);
+    const userId = this.auth.userId();
+    if (userId) writeSnapshot(userId, 'allowance-history', history);
   }
 
   private async save(changes: Partial<Pick<Profile, 'name' | 'language' | 'theme'>>): Promise<void> {

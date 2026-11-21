@@ -7,6 +7,7 @@ import { addIcons } from 'ionicons';
 import { chevronBackOutline, logOutOutline } from 'ionicons/icons';
 import { AuthService } from '../../core/auth.service';
 import { MAX_EXPENSE, parseAmount } from '../../core/expenses.logic';
+import { ExpensesService } from '../../core/expenses.service';
 import { Language, LANGUAGES, LanguageService } from '../../core/language.service';
 import { cleanName, MAX_NAME_LENGTH } from '../../core/profile.logic';
 import { HomeKey, ProfileService } from '../../core/profile.service';
@@ -30,6 +31,7 @@ import { BackDirective } from '../../shared/back.directive';
 export class SettingsPage {
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
+  private readonly expenses = inject(ExpensesService);
   protected readonly profile = inject(ProfileService);
   protected readonly language = inject(LanguageService);
   protected readonly theme = inject(ThemeService);
@@ -176,6 +178,8 @@ export class SettingsPage {
     this.signOutBusy.set(true);
     this.signOutOffline.set(false);
     try {
+      // Antes de sair, envia-se o que ficou guardado sem rede (despesas); o que não seguir fica à espera da próxima entrada.
+      await this.expenses.flush();
       // Sem rede não se sai (ver AuthService.signOut): fica na app e diz porquê.
       if (await this.auth.signOut()) await this.router.navigateByUrl('/login', { replaceUrl: true });
       else this.signOutOffline.set(true);

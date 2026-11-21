@@ -251,6 +251,20 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  // Registada sem rede e ainda por enviar (ou recusada pelo servidor).
+  .sync {
+    font-weight: 600;
+    color: var(--ct-act);
+
+    &.sync--failed {
+      color: #d64545;
+    }
+  }
+}
+
+:host-context(.ion-palette-dark) .expense-body .sync--failed {
+  color: #ff8a8a;
 }
 
 .amount {

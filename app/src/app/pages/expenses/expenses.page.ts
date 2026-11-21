@@ -7,7 +7,7 @@ import { add, chevronBackOutline, chevronForwardOutline, receiptOutline, trashOu
 import { AuthService } from '../../core/auth.service';
 import { todayIso } from '../../core/availability.logic';
 import { Expense, monthlyLedger, spentByPerson, totalOf } from '../../core/expenses.logic';
-import { ExpensesService } from '../../core/expenses.service';
+import { ExpensesService, OfflineError } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
 import { ProfileService } from '../../core/profile.service';
 import { formatCost } from '../../core/trips.logic';
@@ -136,8 +136,8 @@ export class ExpensesPage {
     try {
       await this.expenses.remove(expense.id);
       await this.toast('expenses.removed');
-    } catch {
-      await this.toast('expenses.removeError');
+    } catch (error) {
+      await this.toast(error instanceof OfflineError ? 'expenses.removeOffline' : 'expenses.removeError');
     }
   }
 

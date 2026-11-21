@@ -115,10 +115,11 @@
               <small>
                 {{ (optionNights(option) === 1 ? 'plan.nights_one' : 'plan.nights_other') | transloco: { count: optionNights(option) } }}
                 @if (option.preferred) { · {{ 'plan.dates.preferred' | transloco }} }
-                @if (option.note) { · {{ option.note }} }
+                @if (option.note) { · {{ short(option.note) }} }
               </small>
             </button>
             <button class="pick" type="button" (click)="confirmDate(option)">{{ 'plan.dates.choose' | transloco }}</button>
+            <app-link-chips class="chips" [text]="option.note" />
           </li>
         }
       </ul>
@@ -150,8 +151,9 @@
                 @if (leg.priceEur !== null) { · {{ money(leg.priceEur) }} }
               </small>
               @if (schedule(leg); as when) {<small class="when">{{ when }}</small>}
-              @if (leg.note) {<small class="note">{{ leg.note }}</small>}
+              @if (leg.note) {<small class="note">{{ short(leg.note) }}</small>}
             </button>
+            <app-link-chips class="chips" [text]="leg.note" />
           </li>
         }
       </ul>
@@ -179,11 +181,10 @@
               @if (stay.rating !== null) { · {{ stay.rating }} }
               @if (stay.chosen) { · {{ 'plan.stays.chosen' | transloco }} }
             </small>
-            @if (stay.note) {<small class="note">{{ stay.note }}</small>}
+            @if (stay.note) {<small class="note">{{ short(stay.note) }}</small>}
           </button>
-          @if (stay.link) {
-            <a class="open" [href]="stay.link" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'wish.openLink' | transloco"><ion-icon name="open-outline" aria-hidden="true"></ion-icon></a>
-          }
+          <!-- A ligação do alojamento e as que se colaram na nota: um botão "Abrir site" para cada uma. -->
+          <app-link-chips class="chips" [link]="stay.link" [text]="stay.note" />
         </li>
       }
     </ul>
@@ -260,8 +261,9 @@
             <ion-icon [name]="item.done ? 'checkmark-circle' : 'ellipse-outline'" aria-hidden="true"></ion-icon>
           </button>
           <span class="grow">
-            <strong>{{ item.text }}</strong>
+            <strong>{{ short(item.text) }}</strong>
             <small>{{ 'plan.list.kinds.' + item.kind | transloco }}</small>
+            <app-link-chips class="chips" [text]="item.text" />
           </span>
           <button class="del" type="button" (click)="removeItem(item.id)" [attr.aria-label]="'plan.remove' | transloco"><ion-icon name="trash-outline" aria-hidden="true"></ion-icon></button>
         </li>
@@ -284,4 +286,6 @@
   <h2>{{ 'plan.notes.title' | transloco }}</h2>
   <textarea class="notes" rows="5" maxlength="4000" [placeholder]="'plan.notes.placeholder' | transloco" [value]="t.planNote ?? ''" (blur)="saveNote($any($event.target).value)"></textarea>
   <p class="hint">{{ 'plan.notes.hint' | transloco }}</p>
+  <!-- As ligações que estão nas notas (guardadas): um botão "Abrir site" para cada uma. -->
+  <app-link-chips class="chips chips--notes" [text]="t.planNote" />
 </section>

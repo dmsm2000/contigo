@@ -297,6 +297,17 @@ ion-content {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  // Registada sem rede e ainda por enviar (ou recusada pelo servidor).
+  .sync {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--ct-act);
+
+    &.sync--failed {
+      color: #d64545;
+    }
+  }
 }
 
 .spend-amount {

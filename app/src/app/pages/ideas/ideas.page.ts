@@ -5,13 +5,15 @@ import { addIcons } from 'ionicons';
 import { add, bulbOutline, chevronBackOutline, createOutline, trashOutline } from 'ionicons/icons';
 import { filterIdeas, Idea, IDEA_STATUSES, IdeaFilter, IdeaStatus } from '../../core/ideas.logic';
 import { IdeasService } from '../../core/ideas.service';
+import { shortenLinks } from '../../core/links.logic';
 import { AuditLineComponent } from '../../features/audit/audit-line.component';
 import { TripFlowService } from '../../features/trips/trip-flow.service';
 
 import { BackDirective } from '../../shared/back.directive';
+import { LinkChipsComponent } from '../../shared/link-chips.component';
 @Component({
   selector: 'app-ideas',
-  imports: [BackDirective, IonContent, IonIcon, TranslocoPipe, AuditLineComponent],
+  imports: [BackDirective, IonContent, IonIcon, TranslocoPipe, AuditLineComponent, LinkChipsComponent],
   templateUrl: './ideas.page.html',
   styleUrl: './ideas.page.scss',
 })
@@ -22,6 +24,8 @@ export class IdeasPage {
   private readonly flow = inject(TripFlowService);
   protected readonly ideas = inject(IdeasService);
 
+  /** O texto de uma ideia com as ligações trocadas pelo nome do site (os botões "Abrir" ficam por baixo). */
+  protected readonly short = shortenLinks;
   protected readonly statuses = IDEA_STATUSES;
   protected readonly filters: readonly IdeaFilter[] = ['all', ...IDEA_STATUSES];
   protected readonly filter = signal<IdeaFilter>('all');

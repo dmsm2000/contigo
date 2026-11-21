@@ -31,7 +31,8 @@
       <ul class="list">
         @for (idea of shown(); track idea.id; let i = $index) {
           <li class="idea ct-card ct-rise" [style.--i]="i + 2">
-            <p class="idea-body">{{ idea.body }}</p>
+            <p class="idea-body">{{ short(idea.body) }}</p>
+            <app-link-chips class="idea-links" [text]="idea.body" />
 
             <div class="idea-meta">
               <app-audit-line kind="written" [data]="{ createdBy: idea.userId, createdAt: idea.createdAt, updatedBy: idea.updatedBy, updatedAt: idea.updatedAt }" />

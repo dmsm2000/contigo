@@ -25,6 +25,7 @@ import { EXPENSE_CATEGORIES, ExpenseCategory, parseAmount, totalOf } from '../..
 import { ExpensesService } from '../../../core/expenses.service';
 import { AuthService } from '../../../core/auth.service';
 import { LanguageService } from '../../../core/language.service';
+import { shortenLinks } from '../../../core/links.logic';
 import { ProfileService } from '../../../core/profile.service';
 import {
   budgetTotals,
@@ -54,6 +55,7 @@ import {
 import { TripPlanService } from '../../../core/trip-plan.service';
 import { formatCost, Trip } from '../../../core/trips.logic';
 import { TripsService } from '../../../core/trips.service';
+import { LinkChipsComponent } from '../../../shared/link-chips.component';
 import { AvatarComponent } from '../../profile/avatar.component';
 import { CloseTripModal } from './close-trip.modal';
 import { DateOptionModal, LegModal, StayModal } from './plan-forms';
@@ -65,7 +67,7 @@ import { DateOptionModal, LegModal, StayModal } from './plan-forms';
 @Component({
   selector: 'app-trip-plan',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonIcon, FormsModule, TranslocoPipe, AvatarComponent],
+  imports: [IonIcon, FormsModule, TranslocoPipe, AvatarComponent, LinkChipsComponent],
   templateUrl: './trip-plan.component.html',
   styleUrl: './trip-plan.component.scss',
 })
@@ -83,6 +85,8 @@ export class TripPlanComponent {
 
   readonly trip = input.required<Trip>();
 
+  /** O texto de uma nota com as ligações trocadas pelo nome do site (os botões "Abrir" ficam por baixo). */
+  protected readonly short = shortenLinks;
   protected readonly stages = STAGES;
   protected readonly categories = EXPENSE_CATEGORIES;
   protected readonly kinds = CHECKLIST_KINDS;

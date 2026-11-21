@@ -63,6 +63,8 @@ export class WishlistService {
   constructor() {
     effect(() => {
       const userId = this.auth.userId();
+      // Recarrega quando a rede volta, a app volta ao primeiro plano ou a sessão se renova.
+      this.auth.reload();
       untracked(() => {
         if (userId) {
           void this.load();
@@ -88,6 +90,8 @@ export class WishlistService {
   }
 
   async load(): Promise<void> {
+    // Com a sessão só guardada (sem rede), um pedido iria como anónimo: espera-se pela renovação.
+    if (this.auth.stale()) return;
     // `!inner` só traz os sítios que têm pelo menos um desejo.
     const { data, error } = await this.supabase
       .from('places')

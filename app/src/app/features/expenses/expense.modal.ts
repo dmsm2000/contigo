@@ -7,7 +7,7 @@ import { bedOutline, closeOutline, ellipsisHorizontal, restaurantOutline, ticket
 import { todayIso } from '../../core/availability.logic';
 import { DrawService } from '../../core/draw.service';
 import { cleanExpenseNote, EXPENSE_CATEGORIES, Expense, ExpenseCategory, parseAmount } from '../../core/expenses.logic';
-import { ExpensesService } from '../../core/expenses.service';
+import { ExpensesService, OfflineError } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
 import { formatTripDate } from '../../core/trips.logic';
 import { TripsService } from '../../core/trips.service';
@@ -95,16 +95,18 @@ export class ExpenseModal implements OnInit, AfterViewInit {
 
     this.saving.set(true);
     this.error.set(null);
+    let message = this.expense ? 'expenses.form.updated' : 'expenses.form.saved';
     try {
       const fields = { amount, category: this.category(), note, spentOn: this.spentOn || this.today };
       if (this.expense) await this.expenses.update(this.expense.id, fields);
-      else await this.expenses.add({ tripId: this.chosenTrip(), ...fields });
-    } catch {
+      // Sem rede, a despesa nova fica guardada no telemóvel (e conta logo nos totais): diz-se, para não haver dúvida.
+      else if ((await this.expenses.add({ tripId: this.chosenTrip(), ...fields })) === 'queued') message = 'expenses.form.savedOffline';
+    } catch (error) {
       this.saving.set(false);
-      return this.error.set('expenses.form.errors.save');
+      return this.error.set(error instanceof OfflineError ? 'expenses.form.errors.offline' : 'expenses.form.errors.save');
     }
     await this.modalCtrl.dismiss({ saved: true });
-    const toast = await this.toasts.create({ message: this.transloco.translate(this.expense ? 'expenses.form.updated' : 'expenses.form.saved'), duration: 2200, position: 'top' });
+    const toast = await this.toasts.create({ message: this.transloco.translate(message), duration: message === 'expenses.form.savedOffline' ? 3600 : 2200, position: 'top' });
     await toast.present();
   }
 }

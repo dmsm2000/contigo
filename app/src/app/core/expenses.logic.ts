@@ -35,6 +35,53 @@ export interface Expense {
   createdAt: string;
   updatedAt: string;
   updatedBy: string | null;
+  /** Só nas despesas registadas sem rede: ainda por enviar, ou recusada pelo servidor. As outras não têm. */
+  sync?: 'pending' | 'failed';
+}
+
+/**
+ * Uma despesa registada sem rede, à espera de ser enviada. O `id` nasce no telemóvel: se o envio se repetir (a rede
+ * caiu depois de o servidor a receber), o servidor reconhece-o e não a duplica.
+ */
+export interface PendingExpense {
+  id: string;
+  tripId: string;
+  userId: string;
+  amount: number;
+  category: ExpenseCategory;
+  note: string | null;
+  spentOn: string;
+  /** Quando foi registada, no telemóvel. */
+  createdAt: string;
+  /** O servidor recusou-a (por exemplo, a viagem já não existe): não se volta a tentar até a pessoa a corrigir ou apagar. */
+  failed?: boolean;
+}
+
+export function pendingToExpense(pending: PendingExpense): Expense {
+  return {
+    id: pending.id,
+    tripId: pending.tripId,
+    userId: pending.userId,
+    amount: pending.amount,
+    category: pending.category,
+    note: pending.note,
+    spentOn: pending.spentOn,
+    createdAt: pending.createdAt,
+    updatedAt: pending.createdAt,
+    updatedBy: null,
+    sync: pending.failed ? 'failed' : 'pending',
+  };
+}
+
+/** As despesas do servidor mais as que ainda não foram enviadas (uma já enviada, mas ainda na fila, não conta duas vezes). */
+export function withPending(server: readonly Expense[], pending: readonly PendingExpense[]): Expense[] {
+  const known = new Set(server.map((expense) => expense.id));
+  return [...server, ...pending.filter((item) => !known.has(item.id)).map(pendingToExpense)];
+}
+
+/** Não houve resposta do servidor (sem rede, ou fora do ar): vale a pena tentar mais tarde. Uma recusa não é isto. */
+export function isUnreachable(status: number): boolean {
+  return status === 0 || status === 502 || status === 503 || status === 504;
 }
 
 export function toExpense(row: ExpenseRow): Expense {

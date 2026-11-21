@@ -5,6 +5,8 @@ import { addIcons } from 'ionicons';
 import { addOutline, attachOutline, documentTextOutline, ellipsisHorizontal, imageOutline, phonePortraitOutline, pinOutline } from 'ionicons/icons';
 import { DocCacheService } from '../../../core/doc-cache.service';
 import { LanguageService } from '../../../core/language.service';
+import { shortenLinks } from '../../../core/links.logic';
+import { LinkChipsComponent } from '../../../shared/link-chips.component';
 import { DocError, TripDocsService } from '../../../core/trip-docs.service';
 import { formatSize, isImage, TripDoc } from '../../../core/trip-docs.logic';
 import { LOCALES, Trip } from '../../../core/trips.logic';
@@ -16,7 +18,7 @@ import { DocModal, NoteModal } from './docs-modals';
  */
 @Component({
   selector: 'app-trip-docs',
-  imports: [IonIcon, TranslocoPipe],
+  imports: [IonIcon, TranslocoPipe, LinkChipsComponent],
   templateUrl: './trip-docs.component.html',
   styleUrl: './trip-docs.component.scss',
 })
@@ -30,6 +32,8 @@ export class TripDocsComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(LanguageService).language;
 
+  /** O texto de um post-it com as ligações trocadas pelo nome do site (os botões "Abrir" ficam por baixo). */
+  protected readonly short = shortenLinks;
   protected readonly loaded = this.docs.loaded;
   protected readonly notes = computed(() => this.docs.notesOf(this.trip().id));
   protected readonly files = computed(() => this.docs.docsOf(this.trip().id));

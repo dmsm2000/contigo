@@ -46,8 +46,23 @@
   background: var(--ct-sf);
 }
 
+// Os botões "Abrir site" (app-link-chips): numa linha por baixo do texto do cartão, alinhados com ele.
+.row-card > .chips {
+  flex: 1 0 100%;
+  margin: -2px 0 2px 48px;
+}
+
+.grow .chips {
+  margin-top: 8px;
+}
+
+.chips--notes {
+  margin-top: 4px;
+}
+
 .row-card {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   width: 100%;

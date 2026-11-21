@@ -554,6 +554,11 @@
     "remove": "Apagar",
     "removed": "Despesa apagada.",
     "removeError": "Não consegui apagar. Tenta outra vez.",
+    "removeOffline": "Sem rede não dá para apagar uma despesa já enviada.",
+    "sync": {
+      "pending": "Por enviar",
+      "failed": "Não enviada: toca para corrigir ou apaga"
+    },
     "total": "Total",
     "category": {
       "transport": "Transporte",
@@ -573,11 +578,13 @@
       "date": "Quando",
       "save": "Guardar despesa",
       "saved": "Despesa guardada.",
+      "savedOffline": "Despesa guardada no telemóvel. Envia-se quando houver rede.",
       "errors": {
         "amount": "Escreve um valor maior que zero (por exemplo 12,50).",
         "note": "A nota é demasiado comprida.",
         "noTrip": "Primeiro registem uma viagem para lhe juntar despesas.",
-        "save": "Não consegui guardar. Tenta outra vez."
+        "save": "Não consegui guardar. Tenta outra vez.",
+        "offline": "Sem rede. Podes registar despesas novas, mas corrigir uma já enviada só com ligação."
       },
       "editTitle": "Corrigir despesa",
       "updated": "Despesa atualizada."
@@ -892,6 +899,9 @@
     "keep": "Manter",
     "time": "Hora (opcional)",
     "timeHint": "Com hora, o Início conta as horas e os minutos que faltam."
+  },
+  "links": {
+    "open": "Abrir"
   },
   "docs": {
     "title": "Documentos",

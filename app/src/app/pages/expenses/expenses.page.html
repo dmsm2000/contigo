@@ -151,7 +151,11 @@
                 <button class="expense-body" type="button" (click)="edit(expense)">
                   <strong>{{ expense.note || ('expenses.category.' + expense.category | transloco) }}</strong>
                   <small>{{ 'expenses.category.' + expense.category | transloco }} · {{ tripName(expense) }}</small>
-                  <app-audit-line [compact]="true" [data]="{ createdBy: expense.userId, createdAt: expense.createdAt, updatedBy: expense.updatedBy, updatedAt: expense.updatedAt }" />
+                  @if (expense.sync; as sync) {
+                    <small class="sync" [class.sync--failed]="sync === 'failed'">{{ 'expenses.sync.' + sync | transloco }}</small>
+                  } @else {
+                    <app-audit-line [compact]="true" [data]="{ createdBy: expense.userId, createdAt: expense.createdAt, updatedBy: expense.updatedBy, updatedAt: expense.updatedAt }" />
+                  }
                 </button>
                 <span class="amount">{{ money(expense.amount) }}</span>
                 <button class="ct-icon-btn del" type="button" (click)="confirmRemove(expense)" [attr.aria-label]="'expenses.remove' | transloco">
