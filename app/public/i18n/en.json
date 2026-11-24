@@ -73,7 +73,11 @@
       "photosFailed": "Trip saved, but {{count}} photo(s) didn't go through. Add them from the trip.",
       "capital": "Capital",
       "findingImage": "Looking for an image…",
-      "imageFound": "Image found (Wikipedia)"
+      "imageFound": "Image found (Wikipedia)",
+      "exactDays": "Exact days",
+      "dayFrom": "From",
+      "dayTo": "To",
+      "exactDaysHint": "If you know the days, the trip counts towards your days together. Without them only the month is known, so it isn't counted."
     },
     "detail": {
       "together": "We went together",
@@ -493,7 +497,8 @@
     "togetherSince_one": "You last met yesterday",
     "togetherSince_other": "You last met {{count}} days ago",
     "togetherNow": "You are together now",
-    "togetherNever": "Mark your meet-ups to count the days together."
+    "togetherNever": "Mark your meet-ups to count the days together.",
+    "togetherTotal": "In total, {{count}} days together"
   },
   "login": {
     "title": "Hello again",

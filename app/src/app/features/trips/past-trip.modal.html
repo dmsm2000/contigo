@@ -38,6 +38,20 @@
           </label>
         </div>
       </section>
+      <section class="block ct-rise" style="--i: 2">
+        <span class="label" id="days-label">{{ 'trip.form.exactDays' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em></span>
+        <div class="row row-days" role="group" aria-labelledby="days-label">
+          <label class="field">
+            <span class="ct-visually-hidden">{{ 'trip.form.dayFrom' | transloco }}</span>
+            <input name="dayStart" type="date" [max]="today" [(ngModel)]="dayStart" (ngModelChange)="onDays()" />
+          </label>
+          <label class="field">
+            <span class="ct-visually-hidden">{{ 'trip.form.dayTo' | transloco }}</span>
+            <input name="dayEnd" type="date" [min]="dayStart" [max]="today" [(ngModel)]="dayEnd" (ngModelChange)="onDays()" />
+          </label>
+        </div>
+        <p class="hint">{{ 'trip.form.exactDaysHint' | transloco }}</p>
+      </section>
       @if (!trip) {
         <section class="block ct-rise" style="--i: 2">
           <span class="label" id="photos-label">

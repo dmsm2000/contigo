@@ -50,6 +50,9 @@
           <strong class="ct-display">{{ together().daysThisYear }}</strong>
           {{ (together().daysThisYear === 1 ? 'us.togetherDays_one' : 'us.togetherDays_other') | transloco: { year } }}
         </p>
+        @if (together().daysTotal > together().daysThisYear) {
+          <p class="together-total">{{ 'us.togetherTotal' | transloco: { count: together().daysTotal } }}</p>
+        }
         <p class="together-since">
           @if (together().daysSince === null) {
             {{ 'us.togetherNever' | transloco }}

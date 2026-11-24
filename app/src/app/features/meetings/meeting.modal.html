@@ -25,7 +25,7 @@
         <div class="row-dates">
           <label class="date">
             <span class="date-label">{{ 'plan.form.from' | transloco }}</span>
-            <input name="start" type="date" [min]="meetingId ? null : today" [(ngModel)]="start" (ngModelChange)="onStart()" />
+            <input name="start" type="date" [(ngModel)]="start" (ngModelChange)="onStart()" />
           </label>
           <label class="date">
             <span class="date-label">{{ 'meeting.toOptional' | transloco }}</span>

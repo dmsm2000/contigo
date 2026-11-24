@@ -9,6 +9,7 @@ import { LanguageService } from '../../core/language.service';
 import { checkFile } from '../../core/photos.logic';
 import { PhotosService } from '../../core/photos.service';
 import { TripsService } from '../../core/trips.service';
+import { todayIso } from '../../core/availability.logic';
 import { isFutureMonth, monthOptions, parseCost, previousMonth, Trip, WouldReturn, yearOptions } from '../../core/trips.logic';
 import { PlacePickerComponent } from '../places/place-picker.component';
 
@@ -55,6 +56,9 @@ export class PastTripModal implements OnInit, OnDestroy {
   protected readonly month = signal(this.start.month);
   protected readonly months = computed(() => monthOptions(this.language()));
   protected readonly years = yearOptions();
+  protected readonly today = todayIso();
+  protected dayStart = '';
+  protected dayEnd = '';
 
   // O resto
   protected readonly withPartner = signal(true);
@@ -84,6 +88,10 @@ export class PastTripModal implements OnInit, OnDestroy {
     const [year, month] = trip.startDate.split('-').map(Number);
     this.year.set(year);
     this.month.set(month);
+    if (trip.datePrecision === 'day') {
+      this.dayStart = trip.startDate;
+      this.dayEnd = trip.endDate ?? '';
+    }
     this.withPartner.set(trip.withPartner);
     this.wouldReturn.set(trip.wouldReturn);
     this.cost = trip.costEur === null ? '' : String(trip.costEur).replace('.', ',');
@@ -135,10 +143,22 @@ export class PastTripModal implements OnInit, OnDestroy {
     this.wouldReturn.update((current) => (current === option ? null : option));
   }
 
+  /** Os dias exatos mandam no mês e no ano: acertam-se por eles. */
+  protected onDays(): void {
+    this.error.set(null);
+    if (this.dayEnd && this.dayEnd < this.dayStart) this.dayEnd = this.dayStart;
+    if (this.dayStart) {
+      const [year, month] = this.dayStart.split('-').map(Number);
+      this.year.set(year);
+      this.month.set(month);
+    }
+  }
+
   protected async save(): Promise<void> {
     const place = this.place();
     if (!place) return this.fail('trip.form.errors.place');
-    if (isFutureMonth(this.year(), this.month())) return this.fail('trip.form.errors.future');
+    if (this.dayStart && this.dayStart > this.today) return this.fail('trip.form.errors.future');
+    if (!this.dayStart && isFutureMonth(this.year(), this.month())) return this.fail('trip.form.errors.future');
     const cost = parseCost(this.cost);
     if (cost === 'invalid') return this.fail('trip.form.errors.cost');
 
@@ -150,6 +170,7 @@ export class PastTripModal implements OnInit, OnDestroy {
         place,
         year: this.year(),
         month: this.month(),
+        days: this.dayStart ? { start: this.dayStart, end: this.dayEnd && this.dayEnd > this.dayStart ? this.dayEnd : null } : null,
         withPartner: this.withPartner(),
         wouldReturn: this.wouldReturn(),
         costEur: cost,

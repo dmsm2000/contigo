@@ -73,7 +73,11 @@
       "photosFailed": "Viaje guardado, pero {{count}} foto(s) no se enviaron. Añádelas en el viaje.",
       "capital": "Capital",
       "findingImage": "Buscando una imagen…",
-      "imageFound": "Imagen encontrada (Wikipedia)"
+      "imageFound": "Imagen encontrada (Wikipedia)",
+      "exactDays": "Días exactos",
+      "dayFrom": "Desde",
+      "dayTo": "Hasta",
+      "exactDaysHint": "Si sabes los días, el viaje cuenta para los días juntos. Sin ellos solo cuenta el mes y no entra en la cuenta."
     },
     "detail": {
       "together": "Fuimos los dos",
@@ -493,7 +497,8 @@
     "togetherSince_one": "El último encuentro fue ayer",
     "togetherSince_other": "El último encuentro fue hace {{count}} días",
     "togetherNow": "Estáis juntos ahora",
-    "togetherNever": "Marcad los encuentros para contar los días juntos."
+    "togetherNever": "Marcad los encuentros para contar los días juntos.",
+    "togetherTotal": "En total, {{count}} días juntos"
   },
   "login": {
     "title": "Hola de nuevo",

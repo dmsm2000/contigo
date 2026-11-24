@@ -79,6 +79,8 @@ export function nextEncounter(meetings: readonly Meeting[], trip: Trip | null, t
 export interface TogetherStats {
   /** Quantos dias deste ano já passaram juntos (até hoje). */
   daysThisYear: number;
+  /** Todos os dias juntos de sempre (até hoje). */
+  daysTotal: number;
   /** Há quantos dias foi o último dia juntos (0 = hoje); null se ainda não há nenhum. */
   daysSince: number | null;
 }
@@ -103,15 +105,18 @@ export function togetherStats(
 
   const year = today.slice(0, 4);
   const days = new Set<string>();
+  const all = new Set<string>();
   let last: string | null = null;
   for (const span of spans) {
     if (span.from > today) continue;
     const to = span.to < today ? span.to : today;
     if (last === null || to > last) last = to;
-    // Só os dias do ano em curso, por isso começa-se no máximo a 1 de janeiro.
-    for (let day = span.from < `${year}-01-01` ? `${year}-01-01` : span.from; day <= to; day = addDays(day, 1)) days.add(day);
+    for (let day = span.from; day <= to; day = addDays(day, 1)) {
+      all.add(day);
+      if (day.startsWith(year)) days.add(day);
+    }
   }
-  return { daysThisYear: days.size, daysSince: last === null ? null : daysUntil(today, last) };
+  return { daysThisYear: days.size, daysTotal: all.size, daysSince: last === null ? null : daysUntil(today, last) };
 }
 
 const DAY_MS = 86_400_000;

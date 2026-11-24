@@ -60,7 +60,7 @@ describe('togetherStats', () => {
     ({ status: 'past', withPartner: true, datePrecision: 'day', startDate, endDate, ...extra }) as Trip;
 
   it('sem nada, zero dias e sem último encontro', () => {
-    expect(togetherStats([], [], today)).toEqual({ daysThisYear: 0, daysSince: null });
+    expect(togetherStats([], [], today)).toEqual({ daysThisYear: 0, daysTotal: 0, daysSince: null });
   });
 
   it('soma os dias dos encontros e das viagens, sem contar duas vezes os que se sobrepõem', () => {
@@ -75,17 +75,18 @@ describe('togetherStats', () => {
       [past('2026-05-01', '2026-05-04', { withPartner: false }), past('2026-06-01', null, { datePrecision: 'month' })],
       today,
     );
-    expect(stats).toEqual({ daysThisYear: 0, daysSince: null });
+    expect(stats).toEqual({ daysThisYear: 0, daysTotal: 0, daysSince: null });
   });
 
   it('só conta os dias do ano em curso', () => {
     const stats = togetherStats([meeting('a', '2025-12-30', '2026-01-02')], [], today);
     expect(stats.daysThisYear).toBe(2);
+    expect(stats.daysTotal).toBe(4);
   });
 
   it('um encontro a decorrer conta até hoje e o último foi hoje', () => {
     const stats = togetherStats([meeting('a', '2026-11-14', '2026-11-18')], [], today);
-    expect(stats).toEqual({ daysThisYear: 2, daysSince: 0 });
+    expect(stats).toEqual({ daysThisYear: 2, daysTotal: 2, daysSince: 0 });
   });
 });
 

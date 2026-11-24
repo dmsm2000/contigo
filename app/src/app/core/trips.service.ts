@@ -16,10 +16,18 @@ export interface PastTripInput {
   place: PlaceCandidate;
   year: number;
   month: number;
+  /** Os dias exatos, se se sabem: com eles a viagem conta para os dias juntos. */
+  days?: { start: string; end: string | null } | null;
   withPartner: boolean;
   wouldReturn: WouldReturn | null;
   costEur: number | null;
   note: string | null;
+}
+
+/** As datas de uma viagem feita: o mês (dia 1) ou, se se sabem, os dias exatos. */
+function datesFor(input: Pick<PastTripInput, 'year' | 'month' | 'days'>): { start_date: string; end_date: string | null; date_precision: 'month' | 'day' } {
+  if (input.days) return { start_date: input.days.start, end_date: input.days.end, date_precision: 'day' };
+  return { start_date: startDateFor(input.year, input.month), end_date: null, date_precision: 'month' };
 }
 
 const TRIP_SELECT = '*, place:places(*)';
@@ -101,8 +109,7 @@ export class TripsService {
     const { data, error } = await this.supabase.from('trips').insert({
       place_id: placeId,
       status: 'past',
-      start_date: startDateFor(input.year, input.month),
-      date_precision: 'month',
+      ...datesFor(input),
       with_partner: input.withPartner,
       would_return: input.wouldReturn,
       cost_eur: input.costEur,
@@ -150,7 +157,7 @@ export class TripsService {
       .from('trips')
       .update({
         place_id: placeId,
-        start_date: startDateFor(input.year, input.month),
+        ...datesFor(input),
         with_partner: input.withPartner,
         would_return: input.wouldReturn,
         cost_eur: input.costEur,
