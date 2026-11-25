@@ -5,6 +5,9 @@ import { addIcons } from 'ionicons';
 import {
   add,
   bedOutline,
+  airplaneOutline,
+  busOutline,
+  carOutline,
   checkmarkCircle,
   chevronDownOutline,
   documentTextOutline,
@@ -17,6 +20,8 @@ import {
   openOutline,
   phonePortraitOutline,
   restaurantOutline,
+  ticketOutline,
+  trainOutline,
   walkOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../../core/auth.service';
@@ -26,6 +31,9 @@ import { DocCacheService } from '../../../core/doc-cache.service';
 import { ItineraryCategory, ItineraryItem } from '../../../core/itinerary.logic';
 import { ItineraryService } from '../../../core/itinerary.service';
 import { LanguageService } from '../../../core/language.service';
+import { nextTransport } from '../../../core/transport-live.logic';
+import { Leg, LegMode } from '../../../core/trip-plan.logic';
+import { TripPlanService } from '../../../core/trip-plan.service';
 import { isImage, TripDoc } from '../../../core/trip-docs.logic';
 import { TripDocsService } from '../../../core/trip-docs.service';
 import {
@@ -65,6 +73,7 @@ export class TripLiveComponent {
 
   private readonly itineraries = inject(ItineraryService);
   private readonly docs = inject(TripDocsService);
+  private readonly plan = inject(TripPlanService);
   private readonly flow = inject(TripFlowService);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
@@ -109,6 +118,10 @@ export class TripLiveComponent {
       ? firstTimed(itemsOfDay(accepted.items, today.day + 1))
       : null;
   });
+  /** O transporte a seguir (ou a caminho), com a hora da partida no fuso certo. */
+  protected readonly transport = computed(() =>
+    nextTransport(this.plan.legsOf(this.trip().id), this.nowMs(), Intl.DateTimeFormat().resolvedOptions().timeZone),
+  );
   protected readonly files = computed(() => this.docs.docsOf(this.trip().id));
   /** "quinta-feira, 3 de dezembro". */
   protected readonly dateText = computed(() => {
@@ -130,7 +143,10 @@ export class TripLiveComponent {
   constructor() {
     addIcons({
       add,
+      airplaneOutline,
       bedOutline,
+      busOutline,
+      carOutline,
       checkmarkCircle,
       chevronDownOutline,
       cloudOfflineOutline,
@@ -143,6 +159,8 @@ export class TripLiveComponent {
       openOutline,
       phonePortraitOutline,
       restaurantOutline,
+      ticketOutline,
+      trainOutline,
       walkOutline,
     });
     const timer = setInterval(() => this.tick.set(Date.now()), 1000);
@@ -183,6 +201,27 @@ export class TripLiveComponent {
 
   protected toggle(entry: LiveEntry): void {
     this.expandedId.update((id) => (id === entry.item.id ? null : entry.item.id));
+  }
+
+  protected modeIcon(mode: LegMode): string {
+    return { car: 'car-outline', train: 'train-outline', bus: 'bus-outline', flight: 'airplane-outline', other: 'navigate-outline' }[mode];
+  }
+
+  /** "Comboio · Desde Madrid". */
+  protected transportTitle(leg: Leg): string {
+    const mode = this.transloco.translate(`plan.legs.modes.${leg.mode}`);
+    return leg.origin ? `${mode} · ${this.transloco.translate('plan.legs.from', { origin: leg.origin })}` : mode;
+  }
+
+  /** "Ida · 16:30 → 20:45". */
+  protected transportMeta(leg: Leg): string {
+    const times = [leg.departsTime, leg.arrivesTime].filter(Boolean).join(' → ');
+    return [this.transloco.translate(`plan.legs.directions.${leg.direction}`), times].filter(Boolean).join(' · ');
+  }
+
+  /** Os bilhetes ligados a uma deslocação. */
+  protected ticketsOf(leg: Leg): TripDoc[] {
+    return this.files().filter((doc) => doc.legId === leg.id);
   }
 
   protected docIcon(doc: TripDoc): string {

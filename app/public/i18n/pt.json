@@ -963,7 +963,10 @@
       "delete": "Apagar ficheiro",
       "deleteTitle": "Apagar este ficheiro?",
       "deleteText": "O ficheiro é apagado para os dois e não se recupera.",
-      "image": "Imagem"
+      "image": "Imagem",
+      "leg": "Transporte",
+      "noLeg": "Sem transporte",
+      "legHint": "Assim o bilhete aparece junto da deslocação e no guia do dia."
     }
   },
   "itinerary": {
@@ -1058,6 +1061,10 @@
     "expense": "Despesa",
     "fullTrip": "Roteiro completo",
     "directions": "Como chegar",
-    "offline": "Sem rede · a mostrar a última cópia guardada"
+    "offline": "Sem rede · a mostrar a última cópia guardada",
+    "transportNext": "A seguir: transporte",
+    "transportUnderway": "A caminho",
+    "departsIn": "parte daqui a {{time}}",
+    "arrivesIn": "chega daqui a {{time}}"
   }
 }

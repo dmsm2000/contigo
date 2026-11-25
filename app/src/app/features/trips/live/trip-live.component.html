@@ -24,6 +24,30 @@
       }
     </div>
 
+    @if (transport(); as tr) {
+      <div class="state transport">
+        <p class="state-label">
+          <strong>{{ (tr.status === 'underway' ? 'live.transportUnderway' : 'live.transportNext') | transloco }}</strong>
+          <span>{{ (tr.status === 'underway' ? 'live.arrivesIn' : 'live.departsIn') | transloco: { time: until(tr.msLeft) } }}</span>
+        </p>
+        <h2 class="state-title">
+          <ion-icon [name]="modeIcon(tr.leg.mode)" aria-hidden="true"></ion-icon>{{ transportTitle(tr.leg) }}
+        </h2>
+        <p class="state-meta">{{ transportMeta(tr.leg) }}</p>
+        @if (ticketsOf(tr.leg); as tickets) {
+          @if (tickets.length) {
+            <div class="state-actions">
+              @for (doc of tickets; track doc.id) {
+                <button class="pill" type="button" [disabled]="openingId() === doc.id" (click)="openDoc(doc)">
+                  <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon>{{ doc.name }}
+                </button>
+              }
+            </div>
+          }
+        }
+      </div>
+    }
+
     @if (!loaded()) {
       <div class="state" aria-hidden="true">
         <span class="ct-skeleton s1"></span>

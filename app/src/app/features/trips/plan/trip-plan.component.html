@@ -154,6 +154,17 @@
               @if (leg.note) {<small class="note">{{ short(leg.note) }}</small>}
             </button>
             <app-link-chips class="chips" [text]="leg.note" />
+            @if (ticketsOf(leg); as tickets) {
+              @if (tickets.length) {
+                <div class="tickets">
+                  @for (doc of tickets; track doc.id) {
+                    <button class="ticket" type="button" (click)="openTicket(doc)">
+                      <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon>{{ doc.name }}
+                    </button>
+                  }
+                </div>
+              }
+            }
           </li>
         }
       </ul>

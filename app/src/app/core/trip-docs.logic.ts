@@ -56,6 +56,7 @@ export interface DocRow {
   mime: string;
   size_bytes: number;
   note: string | null;
+  leg_id?: string | null;
   created_by: string | null;
   created_at: string;
 }
@@ -68,6 +69,8 @@ export interface TripDoc {
   mime: string;
   sizeBytes: number;
   note: string | null;
+  /** A deslocação a que o documento pertence (o bilhete da ida, por exemplo). */
+  legId: string | null;
   createdBy: string | null;
   createdAt: string;
 }
@@ -93,6 +96,7 @@ export function toDoc(row: DocRow): TripDoc {
     mime: row.mime,
     sizeBytes: row.size_bytes,
     note: row.note,
+    legId: row.leg_id ?? null,
     createdBy: row.created_by,
     createdAt: row.created_at,
   };

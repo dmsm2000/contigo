@@ -170,8 +170,8 @@ export class TripDocsService {
     return doc;
   }
 
-  async updateDoc(id: string, input: { name: string; note: string | null }): Promise<void> {
-    await this.run(this.supabase.from('trip_documents').update({ name: input.name.trim(), note: input.note?.trim() || null }).eq('id', id));
+  async updateDoc(id: string, input: { name: string; note: string | null; legId: string | null }): Promise<void> {
+    await this.run(this.supabase.from('trip_documents').update({ name: input.name.trim(), note: input.note?.trim() || null, leg_id: input.legId }).eq('id', id));
   }
 
   /** Apaga o documento: primeiro o registo (para deixar de aparecer) e depois o ficheiro. */

@@ -15,6 +15,7 @@ import {
   openOutline,
   star,
   starOutline,
+  ticketOutline,
   trainOutline,
   trashOutline,
   airplaneOutline,
@@ -52,6 +53,8 @@ import {
   suggestBudget,
   travellers,
 } from '../../../core/trip-plan.logic';
+import { TripDocsService } from '../../../core/trip-docs.service';
+import { TripDoc } from '../../../core/trip-docs.logic';
 import { TripPlanService } from '../../../core/trip-plan.service';
 import { formatCost, Trip } from '../../../core/trips.logic';
 import { TripsService } from '../../../core/trips.service';
@@ -80,6 +83,7 @@ export class TripPlanComponent {
   private readonly tripsService = inject(TripsService);
   private readonly expenses = inject(ExpensesService);
   protected readonly plan = inject(TripPlanService);
+  private readonly docs = inject(TripDocsService);
   private readonly auth = inject(AuthService);
   private readonly profile = inject(ProfileService);
 
@@ -243,6 +247,18 @@ export class TripPlanComponent {
   // ------------------------------------------------------------ como chegar e alojamento
 
   protected readonly directions = LEG_DIRECTIONS;
+
+  /** Os bilhetes (documentos) ligados a esta deslocação. */
+  protected ticketsOf(leg: Leg): TripDoc[] {
+    return this.docs.docsOf(this.trip().id).filter((doc) => doc.legId === leg.id);
+  }
+
+  protected async openTicket(doc: TripDoc): Promise<void> {
+    const result = await this.docs.open(doc);
+    if (result === 'opened') return;
+    const toast = await this.toasts.create({ message: this.transloco.translate(result === 'offline' ? 'docs.openOffline' : 'docs.openFailed'), duration: 2600, position: 'bottom' });
+    await toast.present();
+  }
 
   protected legsBy(direction: LegDirection): Leg[] {
     return this.legs().filter((leg) => leg.direction === direction);

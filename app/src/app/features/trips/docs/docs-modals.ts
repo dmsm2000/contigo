@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonContent, IonFooter, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -6,6 +6,7 @@ import { addIcons } from 'ionicons';
 import { closeOutline, openOutline, trashOutline } from 'ionicons/icons';
 import { DOC_NAME_MAX, DOC_NOTE_MAX, nextColor, NOTE_COLORS, NOTE_MAX, NoteColor } from '../../../core/trip-docs.logic';
 import { TripDocsService } from '../../../core/trip-docs.service';
+import { TripPlanService } from '../../../core/trip-plan.service';
 
 /** Pergunta se se quer mesmo apagar; devolve `true` só se disserem que sim. */
 async function confirmDelete(alerts: AlertController, transloco: TranslocoService, title: string, message: string): Promise<boolean> {
@@ -161,6 +162,19 @@ export class NoteModal implements OnInit {
           <textarea id="doc-note" rows="3" name="note" [attr.maxlength]="noteMax" [placeholder]="'docs.file.notePlaceholder' | transloco" [ngModel]="note()" (ngModelChange)="note.set($event)"></textarea>
         </section>
 
+        @if (legOptions().length) {
+          <section class="block">
+            <label class="label" for="doc-leg">{{ 'docs.file.leg' | transloco }} <em>({{ 'docs.optional' | transloco }})</em></label>
+            <select id="doc-leg" name="leg" [ngModel]="legId()" (ngModelChange)="legId.set($event)">
+              <option value="">{{ 'docs.file.noLeg' | transloco }}</option>
+              @for (option of legOptions(); track option.id) {
+                <option [value]="option.id">{{ option.label }}</option>
+              }
+            </select>
+            <p class="hint">{{ 'docs.file.legHint' | transloco }}</p>
+          </section>
+        }
+
         <section class="block">
           <button class="ct-btn ct-btn--ghost open" type="button" [disabled]="opening()" (click)="open()"><ion-icon name="open-outline" aria-hidden="true"></ion-icon>{{ 'docs.file.open' | transloco }}</button>
         </section>
@@ -183,6 +197,7 @@ export class DocModal implements OnInit {
   private readonly alerts = inject(AlertController);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
+  private readonly plan = inject(TripPlanService);
 
   @Input() tripId = '';
   @Input() docId = '';
@@ -191,6 +206,18 @@ export class DocModal implements OnInit {
   protected readonly noteMax = DOC_NOTE_MAX;
   protected readonly name = signal('');
   protected readonly note = signal('');
+  protected readonly legId = signal('');
+  /** As deslocações da viagem, para ligar o bilhete a uma: "Ida · Desde Porto · Comboio". */
+  protected readonly legOptions = computed(() =>
+    this.plan.legsOf(this.tripId).map((leg) => ({
+      id: leg.id,
+      label: [
+        this.transloco.translate(`plan.legs.directions.${leg.direction}`),
+        leg.origin ? this.transloco.translate('plan.legs.from', { origin: leg.origin }) : this.transloco.translate('plan.legs.everyone'),
+        this.transloco.translate(`plan.legs.modes.${leg.mode}`),
+      ].join(' · '),
+    })),
+  );
   protected readonly saving = signal(false);
   protected readonly opening = signal(false);
   protected readonly failed = signal(false);
@@ -205,6 +232,7 @@ export class DocModal implements OnInit {
     if (doc) {
       this.name.set(doc.name);
       this.note.set(doc.note ?? '');
+      this.legId.set(doc.legId ?? '');
     }
   }
 
@@ -216,10 +244,10 @@ export class DocModal implements OnInit {
     const doc = this.docs.docsOf(this.tripId).find((item) => item.id === this.docId);
     if (!doc) return;
     this.opening.set(true);
-    const ok = await this.docs.open(doc);
+    const result = await this.docs.open(doc);
     this.opening.set(false);
-    if (!ok) {
-      const toast = await this.toasts.create({ message: this.transloco.translate('docs.openFailed'), duration: 2600, position: 'bottom' });
+    if (result !== 'opened') {
+      const toast = await this.toasts.create({ message: this.transloco.translate(result === 'offline' ? 'docs.openOffline' : 'docs.openFailed'), duration: 2600, position: 'bottom' });
       await toast.present();
     }
   }
@@ -229,7 +257,7 @@ export class DocModal implements OnInit {
     this.saving.set(true);
     this.failed.set(false);
     try {
-      await this.docs.updateDoc(this.docId, { name: this.name(), note: this.note() });
+      await this.docs.updateDoc(this.docId, { name: this.name(), note: this.note(), legId: this.legId() || null });
       await this.modalCtrl.dismiss({ saved: true });
     } catch {
       this.failedKey.set('docs.saveFailed');

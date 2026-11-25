@@ -963,7 +963,10 @@
       "delete": "Delete file",
       "deleteTitle": "Delete this file?",
       "deleteText": "The file is deleted for both of you and cannot be recovered.",
-      "image": "Image"
+      "image": "Image",
+      "leg": "Journey",
+      "noLeg": "No journey",
+      "legHint": "This way the ticket shows up next to the journey and in the day guide."
     }
   },
   "itinerary": {
@@ -1058,6 +1061,10 @@
     "expense": "Expense",
     "fullTrip": "Full itinerary",
     "directions": "Directions",
-    "offline": "Offline · showing the last saved copy"
+    "offline": "Offline · showing the last saved copy",
+    "transportNext": "Next: transport",
+    "transportUnderway": "On the way",
+    "departsIn": "leaves in {{time}}",
+    "arrivesIn": "arrives in {{time}}"
   }
 }
