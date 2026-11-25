@@ -1,11 +1,14 @@
-import { AfterViewInit, Component, ElementRef, inject, Input, OnInit, signal, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, Input, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonContent, IonFooter, IonIcon, ModalController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline, trashOutline } from 'ionicons/icons';
 import { parseAmount } from '../../../core/expenses.logic';
-import { DateOption, formatDuration, addMinutes, Leg, LEG_MODES, LegDirection, LegMode, minutesBetween, parseDuration, Stay } from '../../../core/trip-plan.logic';
+import { todayIso } from '../../../core/availability.logic';
+import { arrivalAt, durationBetween, isValidZone, zoneShiftHours } from '../../../core/timezone.logic';
+import { TripsService } from '../../../core/trips.service';
+import { DateOption, formatDuration, Leg, LEG_MODES, LegDirection, LegMode, parseDuration, Stay } from '../../../core/trip-plan.logic';
 import { TripPlanService } from '../../../core/trip-plan.service';
 
 /** Os campos de texto de um euro (opcionais): vazio é nulo, inválido é 'invalid'. */
@@ -274,6 +277,22 @@ export class StayModal implements OnInit, AfterViewInit {
                   <input name="arrivesTime" type="time" [(ngModel)]="arrivesTime" (ngModelChange)="onArrives()" />
                 </label>
               </div>
+              <div class="row-2">
+                <label class="field">
+                  <span class="field-label">{{ 'plan.legs.fromZone' | transloco }}</span>
+                  <input name="fromZone" type="text" list="leg-zones" autocomplete="off" autocapitalize="none" placeholder="Europe/Lisbon" [(ngModel)]="fromZone" (ngModelChange)="recalc()" />
+                </label>
+                <label class="field">
+                  <span class="field-label">{{ 'plan.legs.toZone' | transloco }}</span>
+                  <input name="toZone" type="text" list="leg-zones" autocomplete="off" autocapitalize="none" placeholder="Europe/Madrid" [(ngModel)]="toZone" (ngModelChange)="recalc()" />
+                </label>
+              </div>
+              <datalist id="leg-zones">
+                @for (zone of zones; track zone) {<option [value]="zone"></option>}
+              </datalist>
+              @if (shift(); as hours) {
+                <p class="hint">{{ 'plan.legs.zoneShift' | transloco: { hours: hours } }}</p>
+              }
               <p class="hint">{{ 'plan.legs.autoHint' | transloco }}</p>
             </div>
           </section>
@@ -308,6 +327,8 @@ export class StayModal implements OnInit, AfterViewInit {
 export class LegModal implements OnInit, AfterViewInit {
   private readonly modalCtrl = inject(ModalController);
   private readonly plan = inject(TripPlanService);
+  private readonly trips = inject(TripsService);
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly field = viewChild<ElementRef<HTMLInputElement>>('field');
   @Input() tripId = '';
   @Input() leg: Leg | null = null;
@@ -321,6 +342,9 @@ export class LegModal implements OnInit, AfterViewInit {
   protected price = '';
   protected note = '';
   protected departsOn = '';
+  protected fromZone = '';
+  protected toZone = '';
+  protected readonly zones: string[] = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : [];
   protected departsTime = '';
   protected arrivesTime = '';
   protected readonly saving = signal(false);
@@ -332,7 +356,10 @@ export class LegModal implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     const leg = this.leg;
-    if (!leg) return;
+    if (!leg) {
+      void this.defaultZones();
+      return;
+    }
     this.origin = leg.origin;
     this.mode.set(leg.mode);
     this.directionSignal.set(leg.direction);
@@ -343,10 +370,37 @@ export class LegModal implements OnInit, AfterViewInit {
     this.departsTime = leg.departsTime ?? '';
     this.arrivesTime = leg.arrivesTime ?? '';
     this.arrivesByHand = !!leg.arrivesTime;
+    this.fromZone = leg.fromZone ?? '';
+    this.toZone = leg.toZone ?? '';
   }
 
   ngAfterViewInit(): void {
     if (!this.leg) setTimeout(() => this.field()?.nativeElement.focus(), 450);
+  }
+
+  /**
+   * Numa deslocação nova, o fuso do destino sai das coordenadas do sítio da viagem e o da origem do que já se usou
+   * com essa origem (ou, na falta disso, o deste telemóvel). Na volta é ao contrário. Dá para mudar à mão.
+   */
+  private async defaultZones(): Promise<void> {
+    const trip = this.trips.trips().find((item) => item.id === this.tripId);
+    let place: string | null = null;
+    if (trip?.place.lat != null && trip.place.lng != null) {
+      try {
+        const { default: lookup } = await import('tz-lookup');
+        place = lookup(trip.place.lat, trip.place.lng);
+      } catch {
+        place = null;
+      }
+    }
+    const key = this.origin.trim().toLowerCase();
+    const known = this.plan.legsOf(this.tripId).find((item) => item.origin.trim().toLowerCase() === key && (item.direction === 'out' ? item.fromZone : item.toZone));
+    const home = (known && (known.direction === 'out' ? known.fromZone : known.toZone)) || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const [from, to] = this.directionSignal() === 'out' ? [home, place ?? home] : [place ?? home, home];
+    if (!this.fromZone) this.fromZone = from;
+    if (!this.toZone) this.toZone = to;
+    // Depois do await, avisa que o ecrã mudou.
+    this.cdr.markForCheck();
   }
 
   /** A chegada que o utilizador escreveu à mão não é tapada pelo cálculo. */
@@ -358,16 +412,35 @@ export class LegModal implements OnInit, AfterViewInit {
     if (this.arrivesByHand && this.arrivesTime) return;
     const minutes = parseDuration(this.duration);
     if (!this.departsTime || minutes === 'invalid' || minutes === null) return;
-    const arrival = addMinutes(this.departsTime, minutes);
-    if (arrival) this.arrivesTime = arrival.time;
+    const [from, to] = this.zonePair();
+    this.arrivesTime = arrivalAt(this.refDate(), this.departsTime, minutes, from, to).time;
+  }
+
+  /** O dia que serve para saber a hora de verão ou de inverno de cada fuso. */
+  private refDate(): string {
+    return this.departsOn || todayIso();
+  }
+
+  /** Os fusos a usar; sem os dois (ou se algum não existe), contam como o mesmo. */
+  private zonePair(): [string, string] {
+    const same = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return isValidZone(this.fromZone) && isValidZone(this.toZone) ? [this.fromZone, this.toZone] : [same, same];
+  }
+
+  /** "+1", "-5", "+5,5": quanto o relógio do destino anda à frente do da partida (vazio se não muda). */
+  protected shift(): string {
+    const [from, to] = this.zonePair();
+    const hours = zoneShiftHours(this.refDate(), from, to);
+    if (!hours) return '';
+    return `${hours > 0 ? '+' : ''}${String(hours).replace('.', ',')}`;
   }
 
   /** Escrever a chegada à mão: se a duração estiver vazia, sai da saída e da chegada. */
   protected onArrives(): void {
     this.arrivesByHand = !!this.arrivesTime;
     if (!this.duration.trim() && this.departsTime && this.arrivesTime) {
-      const minutes = minutesBetween(this.departsTime, this.arrivesTime);
-      if (minutes !== null) this.duration = formatDuration(minutes);
+      const [from, to] = this.zonePair();
+      this.duration = formatDuration(durationBetween(this.refDate(), this.departsTime, this.arrivesTime, from, to));
     }
   }
 
@@ -383,7 +456,7 @@ export class LegModal implements OnInit, AfterViewInit {
     if (priceEur === 'invalid') return this.error.set('plan.errors.amount');
     this.saving.set(true);
     try {
-      await this.plan.saveLeg(this.tripId, { id: this.leg?.id, origin, direction: this.directionSignal(), mode: this.mode(), departsOn: this.departsOn || null, departsTime: this.departsTime || null, arrivesTime: this.arrivesTime || null, minutes, priceEur, note: this.note.trim() || null });
+      await this.plan.saveLeg(this.tripId, { id: this.leg?.id, origin, direction: this.directionSignal(), mode: this.mode(), departsOn: this.departsOn || null, fromZone: isValidZone(this.fromZone) ? this.fromZone : null, toZone: isValidZone(this.toZone) ? this.toZone : null, departsTime: this.departsTime || null, arrivesTime: this.arrivesTime || null, minutes, priceEur, note: this.note.trim() || null });
       await this.modalCtrl.dismiss({ saved: true });
     } catch {
       this.saving.set(false);

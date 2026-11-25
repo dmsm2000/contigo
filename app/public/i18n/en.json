@@ -750,11 +750,14 @@
       "day": "Day",
       "departs": "Departure",
       "arrives": "Arrival",
-      "autoHint": "Arrival is worked out from the departure and the duration (use the destination's local time).",
+      "autoHint": "Arrival is worked out from the departure, the duration and the time zones (it's the destination's clock time).",
       "formTitle": {
         "out": "Outbound transport",
         "back": "Return transport"
-      }
+      },
+      "fromZone": "Departure time zone",
+      "toZone": "Arrival time zone",
+      "zoneShift": "The destination clock is {{hours}} h from the departure clock."
     },
     "stays": {
       "title": "Stay",

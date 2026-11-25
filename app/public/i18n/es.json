@@ -750,11 +750,14 @@
       "day": "Día",
       "departs": "Salida",
       "arrives": "Llegada",
-      "autoHint": "La llegada se calcula sola con la salida y la duración (la hora es la del destino).",
+      "autoHint": "La llegada se calcula sola con la salida, la duración y las zonas horarias (la hora es la del reloj del destino).",
       "formTitle": {
         "out": "Transporte de ida",
         "back": "Transporte de vuelta"
-      }
+      },
+      "fromZone": "Zona horaria de salida",
+      "toZone": "Zona horaria de llegada",
+      "zoneShift": "El reloj del destino va {{hours}} h respecto al de salida."
     },
     "stays": {
       "title": "Alojamiento",

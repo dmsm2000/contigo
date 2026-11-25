@@ -144,6 +144,9 @@ export interface Leg {
   departsOn: string | null;
   departsTime: string | null;
   arrivesTime: string | null;
+  /** Os fusos (IANA) da partida e da chegada; sem eles, as horas contam como do mesmo fuso. */
+  fromZone: string | null;
+  toZone: string | null;
   mode: LegMode;
   minutes: number | null;
   priceEur: number | null;
@@ -160,6 +163,8 @@ export interface LegRow {
   departs_on?: string | null;
   departs_time?: string | null;
   arrives_time?: string | null;
+  from_tz?: string | null;
+  to_tz?: string | null;
   mode: LegMode;
   minutes: number | null;
   price_eur: number | string | null;
@@ -176,6 +181,8 @@ export function toLeg(row: LegRow): Leg {
     departsOn: row.departs_on ?? null,
     departsTime: row.departs_time?.slice(0, 5) ?? null,
     arrivesTime: row.arrives_time?.slice(0, 5) ?? null,
+    fromZone: row.from_tz ?? null,
+    toZone: row.to_tz ?? null,
     mode: row.mode,
     minutes: row.minutes,
     priceEur: row.price_eur === null ? null : Number(row.price_eur),

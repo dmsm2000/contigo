@@ -750,11 +750,14 @@
       "day": "Dia",
       "departs": "Saída",
       "arrives": "Chegada",
-      "autoHint": "A chegada calcula-se sozinha com a saída e a duração (a hora é a do destino).",
+      "autoHint": "A chegada calcula-se sozinha com a saída, a duração e os fusos (a hora é a do relógio do destino).",
       "formTitle": {
         "out": "Transporte de ida",
         "back": "Transporte de volta"
-      }
+      },
+      "fromZone": "Fuso da partida",
+      "toZone": "Fuso da chegada",
+      "zoneShift": "O relógio do destino anda {{hours}} h face ao da partida."
     },
     "stays": {
       "title": "Alojamento",
