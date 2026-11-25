@@ -5,9 +5,9 @@ import { SwUpdate } from '@angular/service-worker';
 /**
  * Mantém a PWA em dia sem a apagar, sem nunca te interromper. O iPhone só procura uma versão nova quando abre a app,
  * e a mostra à abertura seguinte. Aqui procura-se ao abrir e sempre que a app volta ao primeiro plano, mas uma versão
- * nova só se aplica (o que recarrega a página e mostra o ecrã de abertura) no momento em que a app volta ao primeiro
- * plano e ainda ninguém lhe tocou: parece uma abertura normal. Se for achada com a app já em uso, fica à espera dessa
- * altura, em vez de aparecer o ecrã de abertura por cima do que se está a fazer.
+ * nova só se aplica (o que recarrega a página) no momento em que a app volta ao primeiro plano e ainda ninguém lhe
+ * tocou. O ecrã de abertura não volta a aparecer nesse recarregamento (ver index.html): não é uma abertura. Se a
+ * versão for achada com a app já em uso, fica à espera dessa altura, em vez de recarregar por cima do que se faz.
  */
 @Injectable({ providedIn: 'root' })
 export class UpdateService {
@@ -53,6 +53,12 @@ export class UpdateService {
   }
 
   private reload(): void {
+    // A página recarrega com a app já aberta: o ecrã de abertura não volta a aparecer (ver index.html).
+    try {
+      sessionStorage.setItem('contigo.reloading', '1');
+    } catch {
+      // Sem sessionStorage, mostra-se o ecrã de abertura, como antes.
+    }
     this.document.location.reload();
   }
 }

@@ -4,10 +4,13 @@ import { filter, firstValueFrom, timeout } from 'rxjs';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { AuthService } from './app/core/auth.service';
+import { FirstScreenService } from './app/core/first-screen.service';
 
 const SPLASH_MIN_MS = 900;
 /** O máximo que se espera pela primeira página, para o ecrã de abertura nunca ficar preso. */
 const FIRST_PAGE_MAX_MS = 4000;
+/** E o máximo que se espera pelos dados do Início, para o ecrã de abertura não se prolongar se a rede for lenta. */
+const FIRST_DATA_MAX_MS = 2500;
 const splashStart = performance.now();
 
 /** Tira o ecrã de abertura: um mínimo para se ver, e só depois de se saber se há sessão (para não mostrar o login por engano). */
@@ -31,7 +34,12 @@ async function firstPageDrawn(router: Router): Promise<void> {
 bootstrapApplication(App, appConfig)
   .then(async (app) => {
     await app.injector.get(AuthService).ready.catch(() => undefined);
-    await firstPageDrawn(app.injector.get(Router));
+    const router = app.injector.get(Router);
+    await firstPageDrawn(router);
+    // Se a primeira página é o Início, o ecrã de abertura fica até ele ter dados (em vez de passar por um esqueleto).
+    if (router.url.startsWith('/home')) {
+      await Promise.race([app.injector.get(FirstScreenService).whenReady, new Promise<void>((resolve) => setTimeout(resolve, FIRST_DATA_MAX_MS))]);
+    }
   })
   .catch((err) => console.error(err))
   .finally(hideSplash);

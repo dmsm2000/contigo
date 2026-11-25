@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -8,6 +8,7 @@ import { daysUntil, formatWeekdays, formatWindow, leafParts, monthInitials, toda
 import { AvailabilityService } from '../../core/availability.service';
 import { ClockService } from '../../core/clock.service';
 import { DrawService } from '../../core/draw.service';
+import { FirstScreenService } from '../../core/first-screen.service';
 import { clockParts, Meeting, meetingCountdown, meetingSpan, nextEncounter } from '../../core/meetings.logic';
 import { MeetingsService } from '../../core/meetings.service';
 import { ExpensesService } from '../../core/expenses.service';
@@ -58,6 +59,7 @@ export class HomePage {
   private readonly meetings = inject(MeetingsService);
   private readonly language = inject(LanguageService).language;
   private readonly clock = inject(ClockService);
+  private readonly firstScreen = inject(FirstScreenService);
 
   protected readonly year = new Date().getFullYear();
   /** Os sítios diferentes do ano e os meses em que houve viagem. */
@@ -182,6 +184,10 @@ export class HomePage {
   );
 
   constructor() {
+    // O ecrã de abertura espera por isto: só sai quando o cartão grande já tem o que mostrar.
+    effect(() => {
+      if (!this.heroLoading() && this.trips.loaded()) this.firstScreen.ready();
+    });
     addIcons({ add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, sunnyOutline });
     // O relógio do contador: de segundo a segundo só quando há horas a contar; senão, de minuto a minuto (para a data virar à meia-noite).
     let lastMinute = 0;

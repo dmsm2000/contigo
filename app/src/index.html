@@ -127,6 +127,11 @@
         }
         document.getElementById('splash').className = (dark ? 'dark' : 'light') + (installed ? ' still' : '');
         document.documentElement.style.background = document.body.style.background = dark ? '#0e0c11' : '#ffffff';
+        // A página recarregou-se sozinha (uma versão nova, com a app já aberta): sem ecrã de abertura, que não é uma abertura.
+        if (sessionStorage.getItem('contigo.reloading')) {
+          sessionStorage.removeItem('contigo.reloading');
+          document.getElementById('splash').remove();
+        }
       } catch (e) {}
     </script>
     <app-root></app-root>
