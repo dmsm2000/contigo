@@ -903,7 +903,8 @@
     },
     "keep": "Keep it",
     "time": "Time (optional)",
-    "timeHint": "With a time, Home counts the hours and minutes left."
+    "timeHint": "With a time, Home counts the hours and minutes left.",
+    "pastTitle": "Past"
   },
   "links": {
     "open": "Open"

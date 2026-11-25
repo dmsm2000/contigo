@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clockParts, Meeting, meetingCountdown, nextEncounter, togetherStats, upcomingMeetings } from './meetings.logic';
+import { clockParts, Meeting, meetingCountdown, nextEncounter, pastMeetings, togetherStats, upcomingMeetings } from './meetings.logic';
 import { Trip } from './trips.logic';
 
 const meeting = (id: string, startDate: string, endDate: string | null = null): Meeting => ({
@@ -121,5 +121,12 @@ describe('meetingCountdown', () => {
 describe('clockParts', () => {
   it('separa horas, minutos e segundos', () => {
     expect(clockParts((3 * 3600 + 5 * 60 + 9) * 1000 + 400)).toEqual({ h: 3, m: 5, s: 9 });
+  });
+});
+
+describe('pastMeetings', () => {
+  it('só os que já acabaram, do mais recente para o mais antigo', () => {
+    const list = [meeting('a', '2026-10-01'), meeting('b', '2026-11-10', '2026-11-12'), meeting('c', '2026-12-01'), meeting('d', '2026-11-14', '2026-11-16')];
+    expect(pastMeetings(list, '2026-11-15').map((m) => m.id)).toEqual(['b', 'a']);
   });
 });

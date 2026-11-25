@@ -2,7 +2,7 @@ import { computed, effect, inject, Injectable, signal, untracked } from '@angula
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
 import { todayIso } from './availability.logic';
-import { Meeting, MeetingPlace, MeetingRow, toMeeting, upcomingMeetings } from './meetings.logic';
+import { Meeting, MeetingPlace, MeetingRow, pastMeetings, toMeeting, upcomingMeetings } from './meetings.logic';
 import { SupabaseService } from './supabase.service';
 
 export interface MeetingInput {
@@ -26,6 +26,7 @@ export class MeetingsService {
 
   /** Os que ainda vêm aí (ou estão a decorrer), do mais próximo para o mais distante. */
   readonly upcoming = computed(() => upcomingMeetings(this.items(), todayIso()));
+  readonly past = computed(() => pastMeetings(this.items(), todayIso()));
 
   constructor() {
     effect(() => {

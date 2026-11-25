@@ -55,6 +55,13 @@ export function upcomingMeetings(meetings: readonly Meeting[], today: string): M
     .sort((a, b) => startKey(a).localeCompare(startKey(b)) || a.id.localeCompare(b.id));
 }
 
+/** Os encontros que já acabaram, do mais recente para o mais antigo. */
+export function pastMeetings(meetings: readonly Meeting[], today: string): Meeting[] {
+  return meetings
+    .filter((meeting) => lastDayOf(meetingSpan(meeting)) < today)
+    .sort((a, b) => startKey(b).localeCompare(startKey(a)) || a.id.localeCompare(b.id));
+}
+
 export type NextEncounter = { kind: 'meeting'; meeting: Meeting } | { kind: 'trip'; trip: Trip };
 
 /**

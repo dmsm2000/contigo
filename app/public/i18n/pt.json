@@ -903,7 +903,8 @@
     },
     "keep": "Manter",
     "time": "Hora (opcional)",
-    "timeHint": "Com hora, o Início conta as horas e os minutos que faltam."
+    "timeHint": "Com hora, o Início conta as horas e os minutos que faltam.",
+    "pastTitle": "Já passaram"
   },
   "links": {
     "open": "Abrir"

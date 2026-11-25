@@ -40,6 +40,22 @@
         <ion-icon name="add" aria-hidden="true"></ion-icon>
         {{ 'meeting.add' | transloco }}
       </button>
+      @if (meetings.past().length) {
+        <h3 class="meetings-sub">{{ 'meeting.pastTitle' | transloco }}</h3>
+        <ul class="type-list">
+          @for (meeting of meetings.past(); track meeting.id) {
+            <li>
+              <button class="type-row" type="button" (click)="openMeeting(meeting.id)">
+                <span class="type-row-text">
+                  <strong>{{ 'meeting.at.' + meeting.place | transloco }}</strong>
+                  <small>{{ meetingDate(meeting) }}@if (meeting.note) { · {{ meeting.note }} }</small>
+                </span>
+                <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+              </button>
+            </li>
+          }
+        </ul>
+      }
     </section>
 
     <section class="calendar ct-card ct-rise" style="--i: 1">
