@@ -13,6 +13,8 @@ export class NavigationHistory {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private navigations = 0;
+  /** A volta que está a andar foi pedida pela própria app (a seta), e não pelo gesto ou pelo botão do sistema. */
+  ownBack = false;
 
   constructor() {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => this.navigations++);
@@ -24,7 +26,10 @@ export class NavigationHistory {
   }
 
   back(fallback: string): void {
-    if (this.canGoBack) this.location.back();
+    if (this.canGoBack) {
+      this.ownBack = true;
+      this.location.back();
+    }
     else void this.router.navigateByUrl(fallback, { replaceUrl: true });
   }
 }

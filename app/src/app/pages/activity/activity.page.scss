@@ -1,0 +1,150 @@
+.top {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .ct-page-title {
+    flex: 1;
+    margin: 8px 0 8px;
+  }
+
+  .back {
+    margin-bottom: 0;
+    margin-left: -8px;
+  }
+}
+
+@media (min-width: 768px) {
+  .back {
+    display: none;
+  }
+}
+
+.intro {
+  margin: 0 2px 18px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ct-mu);
+}
+
+.day {
+  margin-top: 22px;
+}
+
+.day-title {
+  margin: 0 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ct-mu);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 62px;
+  padding: 12px 14px;
+  border: none;
+  color: var(--ct-tx);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &.new {
+    box-shadow: inset 3px 0 0 var(--ct-ac);
+  }
+}
+
+.icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--ct-acs);
+  color: var(--ct-act);
+  font-size: 20px;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.text {
+  font-size: 15px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.when {
+  font-size: 12px;
+  color: var(--ct-mu);
+
+  .new & {
+    color: var(--ct-ac);
+    font-weight: 600;
+  }
+}
+
+.chev {
+  flex: none;
+  color: var(--ct-mu);
+}
+
+.empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--ct-mu);
+
+  ion-icon {
+    font-size: 30px;
+    color: var(--ct-ac);
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+}
+
+.empty {
+  color: var(--ct-mu);
+  font-size: 14px;
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .row {
+    height: 62px;
+    border-radius: 18px;
+  }
+}

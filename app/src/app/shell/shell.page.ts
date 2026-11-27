@@ -27,6 +27,7 @@ import {
   locationOutline,
   mapOutline,
   moonOutline,
+  notificationsOutline,
   peopleOutline,
 } from 'ionicons/icons';
 import { ProfileService } from '../core/profile.service';
@@ -75,6 +76,7 @@ export class ShellPage {
     { tab: 'availability', icon: 'calendar-outline', label: 'nav.availability' },
     { tab: 'expenses', icon: 'cash-outline', label: 'nav.expenses' },
     { tab: 'ideas', icon: 'bulb-outline', label: 'nav.ideas' },
+    { tab: 'activity', icon: 'notifications-outline', label: 'nav.activity' },
     { tab: 'us', icon: 'people-outline', label: 'nav.us' },
   ];
 
@@ -92,6 +94,7 @@ export class ShellPage {
       locationOutline,
       mapOutline,
       moonOutline,
+      notificationsOutline,
       peopleOutline,
     });
   }

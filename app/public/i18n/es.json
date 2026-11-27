@@ -13,7 +13,8 @@
     "ideas": "Ideas",
     "add": "Añadir",
     "trips": "Viajes",
-    "expenses": "Gastos"
+    "expenses": "Gastos",
+    "activity": "Novedades"
   },
   "add": {
     "title": "¿Qué quieres guardar?",
@@ -1101,6 +1102,60 @@
       "amount": "Escribe un valor válido, en euros (mayor que cero).",
       "date": "Elige un día que no sea en el futuro.",
       "save": "No se pudo guardar. Inténtalo otra vez."
+    }
+  },
+  "activity": {
+    "title": "Novedades",
+    "intro": "Lo que el otro fue haciendo en la app. Ves solo lo que cambió desde la última vez que miraste.",
+    "empty": "Aún no hay novedades. Cuando el otro haga algo en la app, aparece aquí.",
+    "loadFailed": "No se pudieron cargar las novedades.",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "new": "nuevo",
+    "theOther": "La otra persona",
+    "aTrip": "el viaje",
+    "bellUnread": "Novedades: {{count}} sin ver",
+    "bannerOne": "{{who}} hizo una cosa desde la última vez",
+    "bannerMany": "{{who}} hizo {{count}} cosas desde la última vez",
+    "bannerSee": "Ver qué cambió",
+    "status": {
+      "planned": "en planificación",
+      "drawn": "sorteado",
+      "prepared": "preparado",
+      "ongoing": "en curso",
+      "past": "hecho",
+      "closed": "cerrado"
+    },
+    "direction": {
+      "out": "la ida",
+      "back": "la vuelta"
+    },
+    "kind": {
+      "expense_one": "{{who}} registró {{amount}} en {{category}} ({{trip}})",
+      "expense_other": "{{who}} registró {{count}} gastos ({{amount}}) en {{trip}}",
+      "deposit": "{{who}} puso {{amount}} en la cebolla",
+      "meeting_added": "{{who}} marcó un encuentro: {{place}}, {{when}}",
+      "meeting_cancelled": "{{who}} canceló el encuentro de {{when}}",
+      "trip_planned": "{{who}} empezó a planear {{trip}}",
+      "trip_past": "{{who}} registró el viaje a {{trip}}",
+      "trip_drawn": "{{who}} sorteó {{trip}}",
+      "trip_status": "{{who}} pasó {{trip}} a «{{status}}»",
+      "trip_dates": "{{who}} confirmó las fechas de {{trip}}: {{when}}",
+      "stay_added": "{{who}} añadió un alojamiento a {{trip}}: {{name}}",
+      "stay_chosen": "{{who}} eligió el alojamiento «{{name}}» para {{trip}}",
+      "leg_added": "{{who}} añadió {{direction}} de {{mode}} a {{trip}}",
+      "leg_chosen": "{{who}} eligió {{direction}} de {{mode}} para {{trip}}",
+      "plan_approved": "{{who}} aprobó el plan de {{trip}}",
+      "itinerary_accepted": "{{who}} aceptó el itinerario de {{trip}}",
+      "itinerary_draft": "{{who}} pegó un itinerario para {{trip}}",
+      "doc_added_one": "{{who}} añadió un documento a {{trip}}: {{name}}",
+      "doc_added_other": "{{who}} añadió {{count}} documentos a {{trip}}",
+      "note_added_one": "{{who}} dejó un post-it en {{trip}}: «{{body}}»",
+      "note_added_other": "{{who}} dejó {{count}} post-its en {{trip}}",
+      "photo_added_one": "{{who}} añadió una foto a {{trip}}",
+      "photo_added_other": "{{who}} añadió {{count}} fotos a {{trip}}",
+      "wish_added": "{{who}} añadió {{name}} a los sitios pendientes",
+      "idea_added": "{{who}} dejó una idea: «{{body}}»"
     }
   }
 }

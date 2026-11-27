@@ -227,3 +227,20 @@ O ecrã Despesas mostra a conta à vista (de trás, dotações, depósitos, gast
 depósitos (`onion_deposits`) são dinheiro avulso, com dia e nota, que conta para o mês desse dia; um depósito marcado
 para depois de hoje só conta quando chegar. A lógica vive em `core/expenses.logic.ts` (`cebola`, `monthlyLedger`) e
 `core/deposits.logic.ts`.
+
+## Voltar (gesto do sistema)
+
+O gesto de voltar (deslizar da borda no iPhone) anda para trás no histórico do navegador; o gesto próprio do Ionic
+nunca arranca nesta app (as páginas ficam em pilhas diferentes), por isso não o usamos. `core/back-gesture.service.ts`
+trata de dois casos: (1) com uma janela aberta, voltar **fecha a janela** (cada janela guarda uma entrada no histórico
+que sai quando fecha) e não muda a página por baixo; (2) quando volta o sistema, a app não acrescenta a sua animação
+por cima da do sistema. A seta da página (`appBack`) continua a animar como antes.
+
+## Novidades
+
+O que cada um foi fazendo na app, para o outro ver quando volta. Quem escreve é a base de dados (gatilhos em
+`log_activity()`, tabela `activity`), nunca a app, por isso não há como registar o que não aconteceu. A app só lê,
+mostra **o que o outro fez** (não o que fez a própria pessoa) e marca "lido" em `profiles.activity_read_at` com a data
+da novidade mais recente (hora do servidor). Entradas: o sino com contagem e o aviso no Início, a página `/activity`
+(por dia, com o que é novo destacado) e, no computador, o menu lateral. Novidades iguais e seguidas do mesmo autor na
+mesma viagem juntam-se ("registou 3 despesas"). Lógica em `core/activity.logic.ts`.

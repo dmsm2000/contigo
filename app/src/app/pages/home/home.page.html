@@ -2,6 +2,12 @@
   <div class="ct-page">
     <header class="top ct-rise" style="--i: 0">
       <div class="ct-wordmark">Conti<span>·GO</span></div>
+      <a class="ct-icon-btn bell" routerLink="/activity" [attr.aria-label]="(activity.unread() ? 'activity.bellUnread' : 'activity.title') | transloco: { count: activity.unread() }">
+        <ion-icon name="notifications-outline" aria-hidden="true"></ion-icon>
+        @if (activity.unread()) {
+          <span class="badge" aria-hidden="true">{{ activity.unread() > 9 ? '9+' : activity.unread() }}</span>
+        }
+      </a>
       <button class="ct-icon-btn" type="button" (click)="toggleTheme()" [attr.aria-label]="'theme.toggle' | transloco">
         @if (theme.isDark()) {
           <ion-icon class="spin-in" name="sunny-outline" aria-hidden="true"></ion-icon>
@@ -10,6 +16,17 @@
         }
       </button>
     </header>
+
+    <!-- O que o outro fez desde a última vez que se leu. -->
+    @if (activity.unread(); as unread) {
+      <a class="news ct-rise" style="--i: 1" routerLink="/activity">
+        <span class="news-text">
+          <strong>{{ (unread === 1 ? 'activity.bannerOne' : 'activity.bannerMany') | transloco: { count: unread, who: otherName() } }}</strong>
+          <small>{{ 'activity.bannerSee' | transloco }}</small>
+        </span>
+        <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+      </a>
+    }
 
     <!-- Com a viagem a decorrer, o guia do dia vem primeiro: é para isso que se abre a app. -->
     @if (live(); as trip) {

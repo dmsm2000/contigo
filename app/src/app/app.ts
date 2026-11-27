@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular';
+import { BackGestureService } from './core/back-gesture.service';
 import { LanguageService } from './core/language.service';
 import { NavigationHistory } from './core/navigation-history.service';
 import { OfflineSyncService } from './core/offline-sync.service';
@@ -28,6 +29,8 @@ export class App {
     inject(UpdateService);
     // Conta as navegações desde o início, para a seta de voltar saber se há de onde voltar.
     inject(NavigationHistory);
+    // Voltar com uma janela aberta fecha a janela; o gesto do sistema não leva uma segunda animação por cima.
+    inject(BackGestureService);
     // Guarda no telemóvel os ficheiros da viagem que aí vem, para abrirem sem rede.
     inject(OfflineSyncService);
   }

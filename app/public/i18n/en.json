@@ -13,7 +13,8 @@
     "ideas": "Ideas",
     "add": "Add",
     "trips": "Trips",
-    "expenses": "Expenses"
+    "expenses": "Expenses",
+    "activity": "Updates"
   },
   "add": {
     "title": "What do you want to save?",
@@ -1101,6 +1102,60 @@
       "amount": "Enter a valid amount in euros (above zero).",
       "date": "Pick a day that is not in the future.",
       "save": "Couldn't save. Try again."
+    }
+  },
+  "activity": {
+    "title": "Updates",
+    "intro": "What the other person has been doing in the app. You only see what changed since you last looked.",
+    "empty": "No updates yet. When the other person does something in the app, it shows up here.",
+    "loadFailed": "Couldn't load the updates.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "new": "new",
+    "theOther": "The other person",
+    "aTrip": "the trip",
+    "bellUnread": "Updates: {{count}} unseen",
+    "bannerOne": "{{who}} did one thing since last time",
+    "bannerMany": "{{who}} did {{count}} things since last time",
+    "bannerSee": "See what changed",
+    "status": {
+      "planned": "planning",
+      "drawn": "drawn",
+      "prepared": "ready",
+      "ongoing": "under way",
+      "past": "done",
+      "closed": "closed"
+    },
+    "direction": {
+      "out": "the outbound",
+      "back": "the return"
+    },
+    "kind": {
+      "expense_one": "{{who}} logged {{amount}} on {{category}} ({{trip}})",
+      "expense_other": "{{who}} logged {{count}} expenses ({{amount}}) for {{trip}}",
+      "deposit": "{{who}} put {{amount}} in the onion",
+      "meeting_added": "{{who}} set up a meet-up: {{place}}, {{when}}",
+      "meeting_cancelled": "{{who}} cancelled the meet-up on {{when}}",
+      "trip_planned": "{{who}} started planning {{trip}}",
+      "trip_past": "{{who}} logged the trip to {{trip}}",
+      "trip_drawn": "{{who}} drew {{trip}}",
+      "trip_status": "{{who}} moved {{trip}} to “{{status}}”",
+      "trip_dates": "{{who}} confirmed the dates for {{trip}}: {{when}}",
+      "stay_added": "{{who}} added a stay to {{trip}}: {{name}}",
+      "stay_chosen": "{{who}} chose the stay “{{name}}” for {{trip}}",
+      "leg_added": "{{who}} added {{direction}} by {{mode}} to {{trip}}",
+      "leg_chosen": "{{who}} chose {{direction}} by {{mode}} for {{trip}}",
+      "plan_approved": "{{who}} approved the plan for {{trip}}",
+      "itinerary_accepted": "{{who}} accepted the itinerary for {{trip}}",
+      "itinerary_draft": "{{who}} pasted an itinerary for {{trip}}",
+      "doc_added_one": "{{who}} added a document to {{trip}}: {{name}}",
+      "doc_added_other": "{{who}} added {{count}} documents to {{trip}}",
+      "note_added_one": "{{who}} left a post-it on {{trip}}: “{{body}}”",
+      "note_added_other": "{{who}} left {{count}} post-its on {{trip}}",
+      "photo_added_one": "{{who}} added a photo to {{trip}}",
+      "photo_added_other": "{{who}} added {{count}} photos to {{trip}}",
+      "wish_added": "{{who}} added {{name}} to the want-to-go list",
+      "idea_added": "{{who}} left an idea: “{{body}}”"
     }
   }
 }

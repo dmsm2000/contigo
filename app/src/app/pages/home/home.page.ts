@@ -1,10 +1,11 @@
 import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, sunnyOutline } from 'ionicons/icons';
+import { add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, notificationsOutline, sunnyOutline } from 'ionicons/icons';
 import { daysUntil, formatWeekdays, formatWindow, leafParts, monthInitials, todayIso } from '../../core/availability.logic';
+import { ActivityService } from '../../core/activity.service';
 import { AvailabilityService } from '../../core/availability.service';
 import { ClockService } from '../../core/clock.service';
 import { DrawService } from '../../core/draw.service';
@@ -49,6 +50,8 @@ export class HomePage {
   protected readonly people = computed(() => this.profile.people());
   private readonly flow = inject(TripFlowService);
   protected readonly theme = inject(ThemeService);
+  protected readonly activity = inject(ActivityService);
+  private readonly transloco = inject(TranslocoService);
   protected readonly trips = inject(TripsService);
   protected readonly labels = inject(TripLabels);
   protected readonly wishlist = inject(WishlistService);
@@ -83,6 +86,11 @@ export class HomePage {
     const total = spentThisMonth + Math.max(0, available);
     return total > 0 ? Math.min(1, spentThisMonth / total) : 0;
   });
+  /** O nome do outro, para a frase das novidades. */
+  protected otherName(): string {
+    return this.profile.partner()?.name || this.transloco.translate('activity.theOther');
+  }
+
   protected readonly hasMore = computed(() => this.trips.done().length > STORIES_SHOWN);
   /** As memórias que se veem no Início; as outras abrem-se em "Ver tudo". */
   protected readonly memories = computed(() => this.trips.done().slice(0, MEMORIES_SHOWN));
@@ -188,7 +196,7 @@ export class HomePage {
     effect(() => {
       if (!this.heroLoading() && this.trips.loaded()) this.firstScreen.ready();
     });
-    addIcons({ add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, sunnyOutline });
+    addIcons({ add, chevronForwardOutline, heartOutline, imagesOutline, moonOutline, notificationsOutline, sunnyOutline });
     // O relógio do contador: de segundo a segundo só quando há horas a contar; senão, de minuto a minuto (para a data virar à meia-noite).
     let lastMinute = 0;
     const timer = setInterval(() => {

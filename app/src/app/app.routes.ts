@@ -20,6 +20,7 @@ export const routes: Routes = [
       { path: 'ideas', loadComponent: () => import('./pages/ideas/ideas.page').then((m) => m.IdeasPage) },
       { path: 'availability', loadComponent: () => import('./pages/dates/dates.page').then((m) => m.DatesPage) },
       { path: 'settings', loadComponent: () => import('./pages/settings/settings.page').then((m) => m.SettingsPage) },
+      { path: 'activity', loadComponent: () => import('./pages/activity/activity.page').then((m) => m.ActivityPage) },
       { path: 'us', loadComponent: () => import('./pages/us/us.page').then((m) => m.UsPage) },
       { path: '', pathMatch: 'full', redirectTo: 'home' },
     ],

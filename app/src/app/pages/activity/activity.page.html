@@ -1,0 +1,50 @@
+<ion-content>
+  <div class="ct-page">
+    <header class="top ct-rise" style="--i: 0">
+      <button class="ct-icon-btn back" type="button" appBack="/home" [attr.aria-label]="'nav.home' | transloco">
+        <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
+      </button>
+      <h1 class="ct-page-title">{{ 'activity.title' | transloco }}</h1>
+    </header>
+    <p class="intro ct-rise" style="--i: 1">{{ 'activity.intro' | transloco }}</p>
+
+    @if (!activity.loaded()) {
+      @if (activity.loadFailed()) {
+        <p class="empty" role="status">{{ 'activity.loadFailed' | transloco }}</p>
+      } @else {
+        <div class="skeleton" aria-hidden="true">
+          <span class="ct-skeleton row"></span>
+          <span class="ct-skeleton row"></span>
+          <span class="ct-skeleton row"></span>
+        </div>
+      }
+    } @else if (!days().length) {
+      <div class="ct-card empty-card ct-rise" style="--i: 2">
+        <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
+        <p>{{ 'activity.empty' | transloco }}</p>
+      </div>
+    } @else {
+      @for (day of days(); track day.day; let d = $index) {
+        <section class="day ct-rise" [style.--i]="2 + d">
+          <h2 class="day-title">{{ dayLabel(day.day) }}</h2>
+          <ul class="list">
+            @for (entry of day.entries; track entry.latest.id) {
+              <li>
+                <button class="item ct-card" type="button" [class.new]="isNew(entry)" [disabled]="!canOpen(entry)" (click)="open(entry)">
+                  <span class="icon" aria-hidden="true"><ion-icon [name]="icon(entry)"></ion-icon></span>
+                  <span class="body">
+                    <span class="text">{{ key(entry) | transloco: params(entry) }}</span>
+                    <small class="when">{{ time(entry) }}@if (isNew(entry)) { · {{ 'activity.new' | transloco }} }</small>
+                  </span>
+                  @if (canOpen(entry)) {
+                    <ion-icon class="chev" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+                  }
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    }
+  </div>
+</ion-content>
