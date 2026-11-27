@@ -30,8 +30,9 @@ export type OpenResult = 'opened' | 'offline' | 'failed';
 
 /** Um erro de envio com o motivo, para o ecrã dizer o que correu mal. */
 export class DocError extends Error {
-  constructor(readonly reason: Exclude<DocCheck, 'ok'> | 'upload') {
-    super(reason);
+  /** `detail`: o que a base de dados ou o armazenamento responderam (só para se perceber o que falhou). */
+  constructor(readonly reason: Exclude<DocCheck, 'ok'> | 'upload', readonly detail?: string) {
+    super(detail ? `${reason}: ${detail}` : reason);
     this.name = 'DocError';
   }
 }
@@ -154,7 +155,10 @@ export class TripDocsService {
     const path = docPath(tripId, id, mime);
     const storage = this.supabase.storage.from(BUCKET);
     const sent = await storage.upload(path, file, { contentType: mime, upsert: false });
-    if (sent.error) throw new DocError('upload');
+    if (sent.error) {
+      console.error('Envio do documento (armazenamento):', sent.error);
+      throw new DocError('upload', `armazenamento: ${sent.error.message}`);
+    }
 
     const { data, error } = await this.supabase
       .from('trip_documents')
@@ -162,8 +166,9 @@ export class TripDocsService {
       .select('*')
       .single<DocRow>();
     if (error || !data) {
+      console.error('Envio do documento (registo):', error);
       await storage.remove([path]);
-      throw new DocError('upload');
+      throw new DocError('upload', `registo: ${error?.message ?? 'sem resposta'}`);
     }
     const doc = toDoc(data);
     this.docs.update((docs) => [...docs, doc]);

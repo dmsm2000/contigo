@@ -99,15 +99,17 @@ export class TripDocsComponent {
       try {
         await this.docs.upload(this.trip().id, file);
       } catch (error) {
-        await this.toast(error instanceof DocError ? `docs.error.${error.reason}` : 'docs.error.upload');
+        await this.toast(error instanceof DocError ? `docs.error.${error.reason}` : 'docs.error.upload', error instanceof DocError ? error.detail : String(error));
       } finally {
         this.uploading.update((count) => count - 1);
       }
     }
   }
 
-  private async toast(key: string): Promise<void> {
-    const toast = await this.toasts.create({ message: this.transloco.translate(key), duration: 3200, position: 'bottom' });
+  private async toast(key: string, detail?: string): Promise<void> {
+    // O pormenor técnico vai junto só quando o erro é de envio, para se perceber o que falhou sem abrir a consola.
+    const message = this.transloco.translate(key) + (detail && key === 'docs.error.upload' ? ` (${detail})` : '');
+    const toast = await this.toasts.create({ message, duration: 6000, position: 'bottom' });
     await toast.present();
   }
 }
