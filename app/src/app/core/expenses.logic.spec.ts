@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { Deposit } from './deposits.logic';
 import {
   cebola,
   monthlyIncome,
@@ -28,6 +29,8 @@ const expense = (id: string, amount: number, extra: Partial<Expense> = {}): Expe
   updatedBy: null,
   ...extra,
 });
+
+const deposit = (id: string, amount: number, madeOn: string): Deposit => ({ id, amount, madeOn, note: null, userId: 'u1', createdAt: `${madeOn}T10:00:00Z` });
 
 describe('parseAmount', () => {
   it('aceita vírgula, ponto e o símbolo do euro', () => {
@@ -78,38 +81,50 @@ describe('toExpense', () => {
 });
 
 describe('cebola', () => {
-  it('sem gastos é zero e nada para trás: só há a dotação deste mês', () => {
-    expect(cebola([], 400, '2026-11-14')).toMatchObject({ amount: 0, since: null, months: 0, available: 400 });
+  it('sem gastos nem depósitos, só há a dotação deste mês', () => {
+    expect(cebola([], 400, '2026-11-14')).toMatchObject({ amount: 400, carried: 0, since: null, months: 0, available: 400 });
   });
-  it('no mês do primeiro gasto ainda não há cebola: sobra-se da dotação desse mês', () => {
+  it('no mês do primeiro gasto ainda não há nada de trás: gasta-se da dotação desse mês', () => {
     expect(cebola([expense('a', 150, { spentOn: '2026-11-02' })], 400, '2026-11-14')).toMatchObject({
-      amount: 0,
+      amount: 250,
+      carried: 0,
       months: 0,
       spentThisMonth: 150,
-      available: 250,
     });
   });
   it('o que sobra de cada mês fechado passa para a cebola, e este mês gasta-se dela', () => {
-    // Set: 400-150 = 250; Out: 400-50 = 350; Nov (em curso): gastou 100.
+    // Set: 400-150 = 250; Out: 400-50 = 350; Nov (em curso): entra 400 e gastou 100.
     const list = [
       expense('a', 150, { spentOn: '2026-09-20' }),
       expense('b', 50, { spentOn: '2026-10-05' }),
       expense('c', 100, { spentOn: '2026-11-03' }),
     ];
-    expect(cebola(list, 400, '2026-11-14')).toMatchObject({ since: '2026-09', months: 2, amount: 600, spentThisMonth: 100, available: 900 });
+    expect(cebola(list, 400, '2026-11-14')).toMatchObject({ since: '2026-09', months: 2, carried: 600, spentThisMonth: 100, amount: 900, available: 900 });
   });
   it('um mês sem gastos no meio conta a dotação inteira', () => {
     const list = [expense('a', 100, { spentOn: '2026-08-10' }), expense('b', 40, { spentOn: '2026-11-01' })];
-    // Ago 300; Set 400; Out 400 → 1100.
-    expect(cebola(list, 400, '2026-11-14').amount).toBe(1100);
+    // Ago 300; Set 400; Out 400 → 1100 de trás; Nov: +400 −40.
+    expect(cebola(list, 400, '2026-11-14')).toMatchObject({ carried: 1100, amount: 1460 });
   });
   it('um mês em que se gastou mais do que entrou faz a cebola descer', () => {
     const list = [expense('a', 500, { spentOn: '2026-10-02' })];
-    expect(cebola(list, 400, '2026-11-14')).toMatchObject({ amount: -100, available: 300 });
+    expect(cebola(list, 400, '2026-11-14')).toMatchObject({ carried: -100, amount: 300 });
   });
   it('muda de ano sem se perder', () => {
     const list = [expense('a', 100, { spentOn: '2026-12-10' })];
-    expect(cebola(list, 400, '2027-02-01')).toMatchObject({ months: 2, amount: 300 + 400 });
+    expect(cebola(list, 400, '2027-02-01')).toMatchObject({ months: 2, carried: 300 + 400, amount: 300 + 400 + 400 });
+  });
+  it('um depósito faz a cebola subir logo, no mês em que é feito', () => {
+    const deposits = [deposit('d', 200, '2026-11-10')];
+    expect(cebola([], 400, '2026-11-14', deposits)).toMatchObject({ amount: 600, depositsThisMonth: 200, since: '2026-11' });
+    expect(cebola([], 400, '2026-11-14').amount).toBe(400);
+  });
+  it('um depósito de um mês que já fechou fica na cebola que passa', () => {
+    const deposits = [deposit('d', 200, '2026-10-10')];
+    expect(cebola([], 400, '2026-11-14', deposits)).toMatchObject({ since: '2026-10', months: 1, carried: 600, amount: 1000 });
+  });
+  it('um depósito para depois de hoje só conta quando chegar', () => {
+    expect(cebola([], 400, '2026-11-14', [deposit('d', 200, '2026-11-20')]).amount).toBe(400);
   });
   it('monthsInclusive conta os dois meses e muda de ano', () => {
     expect(monthsInclusive('2026-11', '2026-11')).toBe(1);
@@ -121,7 +136,7 @@ describe('cebola', () => {
 describe('monthlyLedger', () => {
   const at = (id: string, amount: number, spentOn: string, userId = 'u1') => expense(id, amount, { spentOn, userId });
 
-  it('sem despesas não há meses', () => {
+  it('sem despesas nem depósitos não há meses', () => {
     expect(monthlyLedger([], 400, '2026-11-14')).toEqual([]);
   });
 
@@ -133,12 +148,17 @@ describe('monthlyLedger', () => {
     expect(rows[0]).toMatchObject({ spent: 50, carried: 200, balance: 550, current: true });
   });
 
-  it('um mês sem gastos também conta, e bate certo com a cebola', () => {
+  it('os depósitos entram no mês em que foram feitos', () => {
+    const rows = monthlyLedger([at('a', 100, '2026-10-10')], 400, '2026-11-14', [deposit('d', 200, '2026-11-02')]);
+    expect(rows[0]).toMatchObject({ month: '2026-11', income: 400, deposits: 200, carried: 300, balance: 900 });
+  });
+
+  it('o saldo do mês de hoje é a cebola', () => {
     const list = [at('a', 100, '2026-09-10'), at('b', 50, '2026-11-03')];
-    const rows = monthlyLedger(list, 400, '2026-11-14');
-    expect(rows[1]).toMatchObject({ month: '2026-10', spent: 0, carried: 300, balance: 700 });
-    // A cebola é o que passou dos meses fechados; o saldo do mês de hoje é a cebola mais a dotação menos o gasto.
-    expect(rows[0].balance).toBe(cebola(list, 400, '2026-11-14').available);
+    const deposits = [deposit('d', 75, '2026-10-20')];
+    const rows = monthlyLedger(list, 400, '2026-11-14', deposits);
+    expect(rows[1]).toMatchObject({ month: '2026-10', spent: 0, deposits: 75, carried: 300, balance: 775 });
+    expect(rows[0].balance).toBe(cebola(list, 400, '2026-11-14', deposits).amount);
   });
 });
 
@@ -175,7 +195,7 @@ describe('monthlyIncome', () => {
     expect(monthlyIncome([], ['a', 'b'], '2026-09', 400)).toBe(400);
   });
 
-  it('o cebola e o mês a mês usam o que entrou em cada mês', () => {
+  it('a cebola e o mês a mês usam o que entrou em cada mês', () => {
     const list = [expense('x', 100, { spentOn: '2026-09-10' })];
     const income = (month: string) => monthlyIncome(history, ['a', 'b'], month, 400);
     const rows = monthlyLedger(list, income, '2026-11-14');
@@ -185,8 +205,8 @@ describe('monthlyIncome', () => {
       ['2026-09', 400, 300],
     ]);
     const c = cebola(list, income, '2026-11-14');
-    expect(c.amount).toBe(750);
+    expect(c.carried).toBe(750);
     expect(c.monthly).toBe(450);
-    expect(c.available).toBe(rows[0].balance);
+    expect(c.amount).toBe(rows[0].balance);
   });
 });

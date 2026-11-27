@@ -10,28 +10,31 @@
       </button>
     </header>
 
-    <!-- A cebola: o que sobra das dotações depois do que se gastou. -->
+    <!-- A cebola: tudo o que têm para gastar agora (o que sobrou, mais o que entrou este mês, menos o que se gastou). -->
     <section class="onion ct-rise" style="--i: 1">
       <span class="onion-label"><img src="icons/icon.svg" alt="" width="22" height="22" />{{ 'expenses.cebola' | transloco }}</span>
       @if (expenses.loaded()) {
         <p class="ct-display onion-value" [class.low]="cebola().amount < 0">{{ cebolaText() }}</p>
-        @if (!expenses.items().length) {
-          <p class="onion-text">{{ 'expenses.cebolaEmpty' | transloco }}</p>
-        } @else {
-          <p class="onion-text">
-            @if (cebola().months) {
-              {{ (cebola().months === 1 ? 'expenses.cebolaTextOne' : 'expenses.cebolaText') | transloco: { months: cebola().months } }}
-            } @else {
-              {{ 'expenses.cebolaFirst' | transloco }}
-            }
-          </p>
-          <div class="onion-available">
-            <span>{{ 'expenses.available' | transloco }}</span>
-            <strong [class.low]="cebola().available < 0">{{ money(cebola().available) }}</strong>
-          </div>
-          <div class="onion-bar" [class.over]="cebola().available < 0" aria-hidden="true"><span [style.width.%]="spentShare() * 100"></span></div>
-          <p class="onion-small">{{ 'expenses.availableText' | transloco: { monthly: money(cebola().monthly), spent: money(cebola().spentThisMonth) } }}</p>
-        }
+        <p class="onion-text">{{ 'expenses.cebolaNow' | transloco }}</p>
+        <ul class="onion-sum">
+          @if (cebola().months) {
+            <li><span>{{ 'expenses.sumCarried' | transloco }}</span><strong [class.low]="cebola().carried < 0">{{ signed(cebola().carried) }}</strong></li>
+          }
+          <li><span>{{ 'expenses.sumMonthly' | transloco }}</span><strong>{{ signed(cebola().monthly) }}</strong></li>
+          @if (cebola().depositsThisMonth) {
+            <li><span>{{ 'expenses.sumDeposits' | transloco }}</span><strong>{{ signed(cebola().depositsThisMonth) }}</strong></li>
+          }
+          <li><span>{{ 'expenses.sumSpent' | transloco }}</span><strong>{{ signed(-cebola().spentThisMonth) }}</strong></li>
+        </ul>
+        <div class="onion-bar" [class.over]="cebola().available < 0" aria-hidden="true"><span [style.width.%]="spentShare() * 100"></span></div>
+        <div class="onion-actions">
+          <button class="onion-btn" type="button" (click)="deposit()"><ion-icon name="add" aria-hidden="true"></ion-icon>{{ 'expenses.deposit' | transloco }}</button>
+          <a class="onion-link" routerLink="/settings">{{ 'expenses.changeAllowance' | transloco }}</a>
+        </div>
+        <details class="onion-how">
+          <summary>{{ 'expenses.howTitle' | transloco }}</summary>
+          <p>{{ 'expenses.howText' | transloco }}</p>
+        </details>
       } @else {
         <div class="onion-skel" aria-hidden="true">
           <span class="ct-skeleton a"></span>
@@ -78,6 +81,26 @@
         </p>
       }
     </section>
+
+    @if (depositRows().length) {
+      <section class="block ct-rise" style="--i: 3">
+        <h2 class="ct-display section-title">{{ 'expenses.depositsTitle' | transloco }}</h2>
+        <ul class="rows">
+          @for (row of depositRows(); track row.id) {
+            <li class="expense ct-card">
+              <button class="expense-body" type="button" (click)="editDeposit(row.id)">
+                <strong>{{ row.note || ('expenses.depositDefault' | transloco) }}</strong>
+                <small>{{ row.who }} · {{ row.date }}</small>
+              </button>
+              <span class="amount amount--in">+{{ money(row.amount) }}</span>
+            </li>
+          }
+        </ul>
+        @if (depositsAll().length > depositRows().length) {
+          <button class="more" type="button" (click)="showAllDeposits.set(true)">{{ 'expenses.showAllDeposits' | transloco }}</button>
+        }
+      </section>
+    }
 
     @if (expenses.loaded()) {
       @if (expenses.items().length) {
@@ -126,8 +149,11 @@
                   }
                 </span>
                 <span class="month-line">
-                  {{ 'expenses.monthIn' | transloco: { amount: money(row.income) } }} ·
-                  {{ 'expenses.monthOut' | transloco: { amount: money(row.spent) } }}
+                  {{ 'expenses.monthIn' | transloco: { amount: money(row.income + row.deposits) } }}
+                  @if (row.deposits) {
+                    ({{ 'expenses.monthDeposits' | transloco: { amount: money(row.deposits) } }})
+                  }
+                  · {{ 'expenses.monthOut' | transloco: { amount: money(row.spent) } }}
                 </span>
                 <span class="month-balance" [class.low]="row.balance < 0">
                   {{ row.balance < 0 ? '−' : '+' }}{{ money(row.balance < 0 ? -row.balance : row.balance) }}

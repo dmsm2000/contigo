@@ -351,7 +351,9 @@
     "addMeeting": "Mark a meet-up",
     "leafClock": "in",
     "inHours": "in {{h}} h {{m}} min",
-    "inMinutes": "in {{m}} min"
+    "inMinutes": "in {{m}} min",
+    "onionSpent": "You spent {{amount}} this month",
+    "onionNow": "It's everything you have to spend right now."
   },
   "map": {
     "title": "Map",
@@ -608,7 +610,20 @@
     "monthLeft": "left",
     "monthNow": "to spend",
     "showAll": "Show all months",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "cebolaNow": "It's everything you have to spend right now.",
+    "sumCarried": "From earlier months",
+    "sumMonthly": "This month's allowances",
+    "sumDeposits": "This month's deposits",
+    "sumSpent": "Spent this month",
+    "deposit": "Add to the onion",
+    "changeAllowance": "Change my allowance",
+    "howTitle": "How the onion works",
+    "howText": "Each month everyone's allowance comes in. You can also put money in all at once, with “Add to the onion”. What isn't spent in a month stays in the onion and carries on to the next. The onion is everything you have to spend right now: what was left from earlier months, plus what came in this month, minus what you've spent. Changing an allowance applies from this month.",
+    "depositsTitle": "Deposits",
+    "depositDefault": "Deposit into the onion",
+    "monthDeposits": "{{amount}} in deposits",
+    "showAllDeposits": "Show all"
   },
   "audit": {
     "added": "Added by {{name}} · {{when}}",
@@ -1067,5 +1082,25 @@
     "transportUnderway": "On the way",
     "departsIn": "leaves in {{time}}",
     "arrivesIn": "arrives in {{time}}"
+  },
+  "deposit": {
+    "title": "Add to the onion",
+    "editTitle": "Change the deposit",
+    "intro": "Money you put in all at once, on top of the monthly allowance. It counts for the onion straight away.",
+    "amount": "How much (€)",
+    "day": "Which day",
+    "dayHint": "Counts for that day's month. It can't be in the future.",
+    "note": "Note",
+    "notePlaceholder": "E.g. bonus, gift money",
+    "save": "Save",
+    "delete": "Delete the deposit",
+    "deleteTitle": "Delete this deposit?",
+    "deleteText": "The money stops counting in the onion.",
+    "keep": "Keep",
+    "errors": {
+      "amount": "Enter a valid amount in euros (above zero).",
+      "date": "Pick a day that is not in the future.",
+      "save": "Couldn't save. Try again."
+    }
   }
 }

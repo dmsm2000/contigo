@@ -70,13 +70,13 @@ export class HomePage {
   protected readonly heroLoading = computed(
     () => !(this.draws.loaded() && (this.availability.loaded() || this.availability.loadFailed())),
   );
-  /** A cebola com sinal ("+140 €"); sem despesas, "+0 €". */
+  /** A cebola com sinal ("+140 €"): tudo o que têm para gastar agora. */
   protected readonly cebolaText = computed(() => {
     const { amount } = this.expenses.cebola();
     return `${amount < 0 ? '−' : '+'}${formatCost(Math.abs(amount), this.language())}`;
   });
-  /** O que se pode gastar este mês (dotação + cebola − o que já saiu), formatado. */
-  protected readonly availableText = computed(() => formatCost(Math.max(0, this.expenses.cebola().available), this.language()));
+  /** O que já se gastou este mês, formatado. */
+  protected readonly spentText = computed(() => formatCost(this.expenses.cebola().spentThisMonth, this.language()));
   /** A parte do que se pode gastar que já se gastou, de 0 a 1: enche a barra. */
   protected readonly spentShare = computed(() => {
     const { available, spentThisMonth } = this.expenses.cebola();

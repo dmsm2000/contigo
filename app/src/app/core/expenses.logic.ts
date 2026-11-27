@@ -1,4 +1,5 @@
 // Lógica pura das despesas e da cebola: sem Angular nem rede, para se testar facilmente.
+import type { Deposit } from './deposits.logic';
 
 export type ExpenseCategory = 'transport' | 'stay' | 'food' | 'activities' | 'other';
 
@@ -178,47 +179,65 @@ export function monthlyIncome(history: readonly AllowanceChange[], userIds: read
 }
 
 export interface Cebola {
-  /** A cebola: o que sobrou dos meses que já acabaram e passa para o mês de hoje. Pode ser negativa. */
+  /** A cebola: tudo o que têm para gastar agora. O que sobrou dos meses fechados, mais o que entrou este mês (dotações e depósitos), menos o que já se gastou. Pode ser negativa. */
   amount: number;
-  /** O mês em que começou a contar ("2026-09"), ou nulo se ainda não há gastos. */
+  /** O que sobrou dos meses que já acabaram e passou para este (pode ser negativo). */
+  carried: number;
+  /** O mês em que começou a contar ("2026-09"), ou nulo se ainda não há gastos nem depósitos. */
   since: string | null;
   /** Quantos meses já fechados entram na conta. */
   months: number;
   /** O que entra por mês (a soma das dotações dos dois). */
   monthly: number;
+  /** O que se depositou este mês, além da dotação. */
+  depositsThisMonth: number;
   /** O que já se gastou neste mês. */
   spentThisMonth: number;
-  /** O que se pode gastar ainda este mês: a dotação, mais a cebola, menos o que já se gastou. */
+  /** O mesmo que `amount`: o que se pode gastar ainda (a cebola é o que há para gastar). */
   available: number;
 }
 
-/**
- * A cebola: o dinheiro que sobra de cada mês e passa para os seguintes. Cada mês já fechado deixa a dotação dos dois
- * menos o que se gastou nele (e se se gastou a mais, deixa um buraco). O mês de hoje ainda não conta para a cebola:
- * gasta-se da dotação deste mês e da cebola que veio de trás. Conta a partir do mês do primeiro gasto (antes disso a
- * app não sabe o que se gastou, e não inventa).
- */
-export function cebola(expenses: readonly Expense[], income: Income, today: string): Cebola {
-  const thisMonth = today.slice(0, 7);
-  const monthly = incomeOf(income, thisMonth);
-  const spentThisMonth = totalOf(expenses.filter((expense) => expense.spentOn.startsWith(thisMonth)));
-  if (!expenses.length) return { amount: 0, since: null, months: 0, monthly, spentThisMonth, available: roundCents(monthly - spentThisMonth) };
+const monthOf = (day: string): string => day.slice(0, 7);
 
-  const since = expenses.map((expense) => expense.spentOn.slice(0, 7)).sort()[0];
-  const spentByMonth = new Map<string, number>();
-  for (const expense of expenses) {
-    const month = expense.spentOn.slice(0, 7);
-    spentByMonth.set(month, (spentByMonth.get(month) ?? 0) + expense.amount);
-  }
-  // Só os meses que já fecharam: do primeiro gasto até ao mês antes de hoje.
-  const closedMonths = Math.max(0, monthsInclusive(since, thisMonth) - 1);
-  let amount = 0;
-  for (let index = 0; index < closedMonths; index++) {
+/** Soma por mês ("2026-11") de uma lista de valores com dia. */
+function sumByMonth<T>(items: readonly T[], dayOf: (item: T) => string, amountOf: (item: T) => number): Map<string, number> {
+  const byMonth = new Map<string, number>();
+  for (const item of items) byMonth.set(monthOf(dayOf(item)), (byMonth.get(monthOf(dayOf(item))) ?? 0) + amountOf(item));
+  return byMonth;
+}
+
+/** O primeiro mês de que a app sabe alguma coisa (um gasto ou um depósito); antes disso não inventa. */
+function firstMonth(expenses: readonly Expense[], deposits: readonly { madeOn: string }[]): string | null {
+  const months = [...expenses.map((item) => monthOf(item.spentOn)), ...deposits.map((item) => monthOf(item.madeOn))].sort();
+  return months[0] ?? null;
+}
+
+/**
+ * A cebola: o dinheiro dos dois, a crescer. Cada mês entra a dotação dos dois e o que depositarem, gasta-se, e o que
+ * sobra (ou falta) passa ao mês seguinte. O que entra este mês conta logo: pôr dinheiro faz a cebola subir no mesmo
+ * instante. Conta a partir do mês do primeiro gasto ou depósito (antes disso a app não sabe o que se passou).
+ */
+export function cebola(expenses: readonly Expense[], income: Income, today: string, deposits: readonly Deposit[] = []): Cebola {
+  const thisMonth = monthOf(today);
+  const monthly = incomeOf(income, thisMonth);
+  // Um depósito marcado para depois de hoje só conta quando chegar o dia.
+  const made = deposits.filter((deposit) => deposit.madeOn <= today);
+  const spentByMonth = sumByMonth(expenses, (item) => item.spentOn, (item) => item.amount);
+  const depositedByMonth = sumByMonth(made, (item) => item.madeOn, (item) => item.amount);
+  const spentThisMonth = roundCents(spentByMonth.get(thisMonth) ?? 0);
+  const depositsThisMonth = roundCents(depositedByMonth.get(thisMonth) ?? 0);
+
+  const since = firstMonth(expenses, made);
+  // Só os meses que já fecharam: do primeiro ao mês antes de hoje.
+  const closedMonths = since ? Math.max(0, monthsInclusive(since, thisMonth) - 1) : 0;
+  let carried = 0;
+  for (let index = 0; since && index < closedMonths; index++) {
     const month = addMonth(since, index);
-    amount += incomeOf(income, month) - (spentByMonth.get(month) ?? 0);
+    carried += incomeOf(income, month) + (depositedByMonth.get(month) ?? 0) - (spentByMonth.get(month) ?? 0);
   }
-  amount = roundCents(amount);
-  return { amount, since, months: closedMonths, monthly, spentThisMonth, available: roundCents(monthly + amount - spentThisMonth) };
+  carried = roundCents(carried);
+  const amount = roundCents(carried + monthly + depositsThisMonth - spentThisMonth);
+  return { amount, carried, since, months: closedMonths, monthly, depositsThisMonth, spentThisMonth, available: amount };
 }
 
 /** "2026-11" + 2 = "2027-01". */
@@ -237,6 +256,8 @@ export interface LedgerMonth {
   month: string;
   /** O que entrou neste mês: as dotações dos dois. */
   income: number;
+  /** O que se depositou neste mês, além das dotações. */
+  deposits: number;
   /** O que se gastou neste mês. */
   spent: number;
   /** A cebola que vinha de trás quando o mês começou. */
@@ -248,18 +269,16 @@ export interface LedgerMonth {
 }
 
 /**
- * O dinheiro dos dois mês a mês, do primeiro gasto até hoje, com o mais recente primeiro. Cada mês recebe a dotação
- * dos dois, gasta-se dela e o que sobra (ou falta) passa ao mês seguinte: é a cebola a crescer.
+ * O dinheiro dos dois mês a mês, do primeiro gasto ou depósito até hoje, com o mais recente primeiro. Cada mês recebe
+ * a dotação dos dois e os depósitos, gasta-se, e o que sobra (ou falta) passa ao mês seguinte: é a cebola a crescer.
  */
-export function monthlyLedger(expenses: readonly Expense[], income: Income, today: string): LedgerMonth[] {
-  const thisMonth = today.slice(0, 7);
-  if (!expenses.length) return [];
-  const since = expenses.map((expense) => expense.spentOn.slice(0, 7)).sort()[0];
-  const spentByMonth = new Map<string, number>();
-  for (const expense of expenses) {
-    const month = expense.spentOn.slice(0, 7);
-    spentByMonth.set(month, (spentByMonth.get(month) ?? 0) + expense.amount);
-  }
+export function monthlyLedger(expenses: readonly Expense[], income: Income, today: string, deposits: readonly Deposit[] = []): LedgerMonth[] {
+  const thisMonth = monthOf(today);
+  const made = deposits.filter((deposit) => deposit.madeOn <= today);
+  const since = firstMonth(expenses, made);
+  if (!since) return [];
+  const spentByMonth = sumByMonth(expenses, (item) => item.spentOn, (item) => item.amount);
+  const depositedByMonth = sumByMonth(made, (item) => item.madeOn, (item) => item.amount);
   const rows: LedgerMonth[] = [];
   let carried = 0;
   const count = monthsInclusive(since, thisMonth);
@@ -267,8 +286,9 @@ export function monthlyLedger(expenses: readonly Expense[], income: Income, toda
     const month = addMonth(since, index);
     const spent = roundCents(spentByMonth.get(month) ?? 0);
     const entered = incomeOf(income, month);
-    const balance = roundCents(carried + entered - spent);
-    rows.push({ month, income: entered, spent, carried, balance, current: month === thisMonth });
+    const deposited = roundCents(depositedByMonth.get(month) ?? 0);
+    const balance = roundCents(carried + entered + deposited - spent);
+    rows.push({ month, income: entered, deposits: deposited, spent, carried, balance, current: month === thisMonth });
     carried = balance;
   }
   return rows.reverse();

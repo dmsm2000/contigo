@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { Expense } from '../../core/expenses.logic';
 import { Idea } from '../../core/ideas.logic';
 import { Suggestion } from '../../core/suggestions';
+import { DepositModal } from '../deposits/deposit.modal';
 import { MeetingModal } from '../meetings/meeting.modal';
 import { DrawModal } from '../draw/draw.modal';
 import { ExpenseModal } from '../expenses/expense.modal';
@@ -26,6 +27,11 @@ export class TripFlowService {
   /** Marcar um encontro (ou, com o id, mudar um que já existe). */
   async openMeeting(meetingId: string | null = null): Promise<void> {
     await this.present(() => this.modals.create({ component: MeetingModal, componentProps: { meetingId }, cssClass: 'ct-modal' }));
+  }
+
+  /** Pôr dinheiro na cebola (ou, com o id, mudar um depósito). */
+  async openDeposit(depositId: string | null = null): Promise<void> {
+    await this.present(() => this.modals.create({ component: DepositModal, componentProps: { depositId }, cssClass: 'ct-modal' }));
   }
 
   async openPastTrip(): Promise<void> {

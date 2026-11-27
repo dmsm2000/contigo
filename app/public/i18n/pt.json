@@ -351,7 +351,9 @@
     "addMeeting": "Marcar encontro",
     "leafClock": "faltam",
     "inHours": "daqui a {{h}} h {{m}} min",
-    "inMinutes": "daqui a {{m}} min"
+    "inMinutes": "daqui a {{m}} min",
+    "onionSpent": "Este mês gastaram {{amount}}",
+    "onionNow": "É tudo o que têm para gastar agora."
   },
   "map": {
     "title": "Mapa",
@@ -608,7 +610,20 @@
     "monthLeft": "ficou",
     "monthNow": "para gastar",
     "showAll": "Ver todos os meses",
-    "showLess": "Ver menos"
+    "showLess": "Ver menos",
+    "cebolaNow": "É tudo o que têm para gastar agora.",
+    "sumCarried": "Dos meses anteriores",
+    "sumMonthly": "Dotações deste mês",
+    "sumDeposits": "Depósitos deste mês",
+    "sumSpent": "Gasto este mês",
+    "deposit": "Pôr na cebola",
+    "changeAllowance": "Mudar a minha dotação",
+    "howTitle": "Como funciona a cebola",
+    "howText": "Todos os meses entra a dotação de cada um. Podem também pôr dinheiro de uma vez, em «Pôr na cebola». O que não se gasta num mês fica na cebola e passa ao seguinte. A cebola é tudo o que têm para gastar agora: o que sobrou dos meses anteriores, mais o que entrou este mês, menos o que já gastaram. Mudar a dotação vale a partir deste mês.",
+    "depositsTitle": "Depósitos",
+    "depositDefault": "Depósito na cebola",
+    "monthDeposits": "{{amount}} de depósitos",
+    "showAllDeposits": "Ver todos"
   },
   "audit": {
     "added": "Registado por {{name}} · {{when}}",
@@ -1067,5 +1082,25 @@
     "transportUnderway": "A caminho",
     "departsIn": "parte daqui a {{time}}",
     "arrivesIn": "chega daqui a {{time}}"
+  },
+  "deposit": {
+    "title": "Pôr na cebola",
+    "editTitle": "Mudar o depósito",
+    "intro": "Dinheiro que metes de uma vez, além da dotação mensal. Conta logo para a cebola.",
+    "amount": "Quanto (€)",
+    "day": "Que dia",
+    "dayHint": "Conta para o mês desse dia. Não pode ser no futuro.",
+    "note": "Nota",
+    "notePlaceholder": "Ex.: prémio, dinheiro das prendas",
+    "save": "Guardar",
+    "delete": "Apagar o depósito",
+    "deleteTitle": "Apagar este depósito?",
+    "deleteText": "O dinheiro deixa de contar na cebola.",
+    "keep": "Manter",
+    "errors": {
+      "amount": "Escreve um valor válido, em euros (maior que zero).",
+      "date": "Escolhe um dia que não seja no futuro.",
+      "save": "Não foi possível guardar. Tenta outra vez."
+    }
   }
 }

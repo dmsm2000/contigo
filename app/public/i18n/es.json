@@ -351,7 +351,9 @@
     "addMeeting": "Marcar encuentro",
     "leafClock": "faltan",
     "inHours": "dentro de {{h}} h {{m}} min",
-    "inMinutes": "dentro de {{m}} min"
+    "inMinutes": "dentro de {{m}} min",
+    "onionSpent": "Este mes habéis gastado {{amount}}",
+    "onionNow": "Es todo lo que tenéis para gastar ahora."
   },
   "map": {
     "title": "Mapa",
@@ -608,7 +610,20 @@
     "monthLeft": "quedó",
     "monthNow": "para gastar",
     "showAll": "Ver todos los meses",
-    "showLess": "Ver menos"
+    "showLess": "Ver menos",
+    "cebolaNow": "Es todo lo que tenéis para gastar ahora.",
+    "sumCarried": "De los meses anteriores",
+    "sumMonthly": "Asignaciones de este mes",
+    "sumDeposits": "Depósitos de este mes",
+    "sumSpent": "Gastado este mes",
+    "deposit": "Poner en la cebolla",
+    "changeAllowance": "Cambiar mi asignación",
+    "howTitle": "Cómo funciona la cebolla",
+    "howText": "Cada mes entra la asignación de cada uno. También podéis poner dinero de una vez, en «Poner en la cebolla». Lo que no se gasta en un mes se queda en la cebolla y pasa al siguiente. La cebolla es todo lo que tenéis para gastar ahora: lo que sobró de los meses anteriores, más lo que entró este mes, menos lo que ya habéis gastado. Cambiar la asignación vale desde este mes.",
+    "depositsTitle": "Depósitos",
+    "depositDefault": "Depósito en la cebolla",
+    "monthDeposits": "{{amount}} de depósitos",
+    "showAllDeposits": "Ver todos"
   },
   "audit": {
     "added": "Registrado por {{name}} · {{when}}",
@@ -1067,5 +1082,25 @@
     "transportUnderway": "De camino",
     "departsIn": "sale dentro de {{time}}",
     "arrivesIn": "llega dentro de {{time}}"
+  },
+  "deposit": {
+    "title": "Poner en la cebolla",
+    "editTitle": "Cambiar el depósito",
+    "intro": "Dinero que pones de una vez, además de la asignación mensual. Cuenta enseguida para la cebolla.",
+    "amount": "Cuánto (€)",
+    "day": "Qué día",
+    "dayHint": "Cuenta para el mes de ese día. No puede ser en el futuro.",
+    "note": "Nota",
+    "notePlaceholder": "Ej.: premio, dinero de regalos",
+    "save": "Guardar",
+    "delete": "Borrar el depósito",
+    "deleteTitle": "¿Borrar este depósito?",
+    "deleteText": "El dinero deja de contar en la cebolla.",
+    "keep": "Mantener",
+    "errors": {
+      "amount": "Escribe un valor válido, en euros (mayor que cero).",
+      "date": "Elige un día que no sea en el futuro.",
+      "save": "No se pudo guardar. Inténtalo otra vez."
+    }
   }
 }

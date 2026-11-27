@@ -154,16 +154,16 @@
       @if (expenses.loaded()) {
         <p class="ct-display onion-value" [class.low]="expenses.cebola().amount < 0">{{ cebolaText() }}</p>
         @if (expenses.items().length) {
-          <div class="onion-bar" [class.over]="expenses.cebola().available < 0" role="img" [attr.aria-label]="'home.onionAvailable' | transloco: { amount: availableText() }">
+          <div class="onion-bar" [class.over]="expenses.cebola().available < 0" role="img" [attr.aria-label]="'home.onionSpent' | transloco: { amount: spentText() }">
             <span [style.width.%]="spentShare() * 100"></span>
           </div>
           <p class="onion-foot">
-            <span>{{ 'home.onionAvailable' | transloco: { amount: availableText() } }}</span>
+            <span>{{ 'home.onionSpent' | transloco: { amount: spentText() } }}</span>
             <span class="onion-link">{{ 'home.onionSeeExpenses' | transloco }}<ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></span>
           </p>
         } @else {
           <p class="onion-foot">
-            <span>{{ 'home.onionText' | transloco }}</span>
+            <span>{{ 'home.onionNow' | transloco }}</span>
             <span class="onion-link">{{ 'home.onionSeeExpenses' | transloco }}<ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></span>
           </p>
         }

@@ -1,5 +1,6 @@
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import { DepositsService } from './deposits.service';
 import { AuthService } from './auth.service';
 import { ConnectivityService } from './connectivity.service';
 import {
@@ -51,6 +52,7 @@ export class ExpensesService {
   private readonly supabase = inject(SupabaseService).client;
   private readonly auth = inject(AuthService);
   private readonly profile = inject(ProfileService);
+  private readonly deposits = inject(DepositsService);
   private readonly connectivity = inject(ConnectivityService);
   private channel: RealtimeChannel | null = null;
 
@@ -69,7 +71,7 @@ export class ExpensesService {
   readonly newest = computed(() => newestFirst(this.items()));
   readonly byTrip = computed(() => totalsByTrip(this.items()));
   readonly byCategory = computed(() => totalsByCategory(this.items()));
-  readonly cebola = computed(() => cebola(this.items(), this.profile.incomeFor, todayIso()));
+  readonly cebola = computed(() => cebola(this.items(), this.profile.incomeFor, todayIso(), this.deposits.items()));
   /** Quantas despesas ainda não chegaram ao servidor. */
   readonly pendingCount = computed(() => this.pending().length);
 

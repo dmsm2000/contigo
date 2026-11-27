@@ -218,3 +218,12 @@ Sem IA dentro da app (não há chave de API): o detalhe da viagem tem a secção
 - Os ficheiros vão para o bucket privado `trip-documents` (`<viagem>/<documento>.<extensão>`); o nome verdadeiro e a nota ficam na tabela `trip_documents`. Abrem-se com um link temporário (10 min), numa janela aberta no toque (o iOS bloqueia janelas abertas depois de esperar).
 - Apagar a viagem apaga também os ficheiros do bucket (`TripDocsService.removeFilesOfTrip`).
 - SQL: `app/supabase/migrations/20261118100000_trip_documents.sql` e a versão repetível `app/supabase/manual/documentos.sql`.
+
+## A cebola e os depósitos
+
+A cebola é **tudo o que os dois têm para gastar agora**: o que sobrou dos meses fechados, mais o que entrou este mês
+(as dotações de cada um e os depósitos), menos o que já se gastou. Pôr dinheiro faz o número subir no mesmo instante.
+O ecrã Despesas mostra a conta à vista (de trás, dotações, depósitos, gasto) e tem "Como funciona a cebola". Os
+depósitos (`onion_deposits`) são dinheiro avulso, com dia e nota, que conta para o mês desse dia; um depósito marcado
+para depois de hoje só conta quando chegar. A lógica vive em `core/expenses.logic.ts` (`cebola`, `monthlyLedger`) e
+`core/deposits.logic.ts`.

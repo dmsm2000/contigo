@@ -472,3 +472,88 @@
   font: 600 14px var(--ion-font-family);
   cursor: pointer;
 }
+
+// A conta da cebola, à vista: de trás, o que entrou, os depósitos e o que se gastou.
+.onion-sum {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+    color: #ffe9f1;
+  }
+
+  strong {
+    font-weight: 700;
+    color: #ffffff;
+
+    &.low {
+      color: #ffd0d0;
+    }
+  }
+}
+
+.onion-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-top: 16px;
+}
+
+.onion-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #b3235f;
+  font: 700 15px var(--ion-font-family);
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+.onion-link {
+  color: #ffe9f1;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.onion-how {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #ffe9f1;
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: #ffd9e8;
+  }
+
+  p {
+    margin: 8px 0 0;
+  }
+}
+
+.amount--in {
+  color: var(--ct-ac);
+}

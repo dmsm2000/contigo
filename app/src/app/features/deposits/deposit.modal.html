@@ -1,0 +1,45 @@
+<ion-content>
+  <div class="sheet">
+    <header class="head">
+      <h1 class="ct-display title">{{ (depositId ? 'deposit.editTitle' : 'deposit.title') | transloco }}</h1>
+      <button class="ct-icon-btn" type="button" (click)="close()" [attr.aria-label]="'common.close' | transloco">
+        <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </header>
+    <p class="hint intro">{{ 'deposit.intro' | transloco }}</p>
+
+    <form id="deposit-form" (ngSubmit)="save()" novalidate>
+      <section class="block">
+        <label class="label" for="deposit-amount">{{ 'deposit.amount' | transloco }}</label>
+        <input #field id="deposit-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="200" [(ngModel)]="amount" (ngModelChange)="error.set(null)" />
+      </section>
+
+      <section class="block">
+        <label class="label" for="deposit-day">{{ 'deposit.day' | transloco }}</label>
+        <input id="deposit-day" name="day" type="date" [max]="today" [(ngModel)]="day" (ngModelChange)="error.set(null)" />
+        <p class="hint">{{ 'deposit.dayHint' | transloco }}</p>
+      </section>
+
+      <section class="block">
+        <label class="label" for="deposit-note">{{ 'deposit.note' | transloco }} <em>({{ 'trip.form.optional' | transloco }})</em></label>
+        <input id="deposit-note" name="note" type="text" [attr.maxlength]="noteMax" [placeholder]="'deposit.notePlaceholder' | transloco" [(ngModel)]="note" />
+      </section>
+
+      @if (error(); as key) {
+        <p class="error" role="alert">{{ key | transloco }}</p>
+      }
+
+      @if (depositId) {
+        <button class="remove" type="button" (click)="confirmDelete()">
+          <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>{{ 'deposit.delete' | transloco }}
+        </button>
+      }
+    </form>
+  </div>
+</ion-content>
+
+<ion-footer class="form-footer">
+  <button class="ct-btn save" type="submit" form="deposit-form" [disabled]="saving()">
+    {{ (saving() ? 'trip.form.saving' : 'deposit.save') | transloco }}
+  </button>
+</ion-footer>

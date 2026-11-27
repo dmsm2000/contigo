@@ -7,6 +7,7 @@ import { add, chevronBackOutline, chevronForwardOutline, receiptOutline, trashOu
 import { AuthService } from '../../core/auth.service';
 import { todayIso } from '../../core/availability.logic';
 import { Expense, monthlyLedger, spentByPerson, totalOf } from '../../core/expenses.logic';
+import { DepositsService } from '../../core/deposits.service';
 import { ExpensesService, OfflineError } from '../../core/expenses.service';
 import { LanguageService } from '../../core/language.service';
 import { ProfileService } from '../../core/profile.service';
@@ -32,6 +33,7 @@ export class ExpensesPage {
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(LanguageService).language;
   protected readonly expenses = inject(ExpensesService);
+  private readonly deposits = inject(DepositsService);
   protected readonly profile = inject(ProfileService);
   protected readonly trips = inject(TripsService);
   protected readonly labels = inject(TripLabels);
@@ -55,7 +57,7 @@ export class ExpensesPage {
 
   /** Mês a mês: o que entrou, o que se gastou e o que ficou. Mostram-se os 6 mais recentes até se pedir o resto. */
   protected readonly showAllMonths = signal(false);
-  protected readonly ledger = computed(() => monthlyLedger(this.expenses.items(), this.profile.incomeFor, todayIso()));
+  protected readonly ledger = computed(() => monthlyLedger(this.expenses.items(), this.profile.incomeFor, todayIso(), this.deposits.items()));
   protected readonly ledgerShown = computed(() => (this.showAllMonths() ? this.ledger() : this.ledger().slice(0, 6)));
   protected readonly total = computed(() => totalOf(this.expenses.items()));
   protected readonly myAllowance = computed(() => Number(this.profile.profile()?.monthly_allowance ?? 0));
@@ -65,6 +67,25 @@ export class ExpensesPage {
     const { available, spentThisMonth } = this.cebola();
     const budget = available + spentThisMonth;
     return budget > 0 ? Math.min(1, spentThisMonth / budget) : spentThisMonth > 0 ? 1 : 0;
+  });
+
+  /** Os depósitos, do mais recente para o mais antigo (os 5 últimos até se pedir o resto). */
+  protected readonly showAllDeposits = signal(false);
+  protected readonly depositsAll = this.deposits.newest;
+  protected readonly depositRows = computed(() => {
+    const me = this.auth.userId();
+    const locale = { pt: 'pt-PT', es: 'es-ES', en: 'en-GB' }[this.language()];
+    const list = this.showAllDeposits() ? this.depositsAll() : this.depositsAll().slice(0, 5);
+    return list.map((deposit) => {
+      const person = this.profile.people().find((candidate) => candidate.id === deposit.userId);
+      return {
+        id: deposit.id,
+        amount: deposit.amount,
+        note: deposit.note,
+        who: deposit.userId === me ? this.transloco.translate('wish.you') : person?.name || this.transloco.translate('wish.theOther'),
+        date: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(new Date(`${deposit.madeOn}T12:00:00`)),
+      };
+    });
   });
 
   /** O valor da cebola com sinal: "+140 €" ou "−30 €". */
@@ -109,6 +130,19 @@ export class ExpensesPage {
 
   protected add(): void {
     void this.flow.openExpense();
+  }
+
+  protected deposit(): void {
+    void this.flow.openDeposit();
+  }
+
+  protected editDeposit(id: string): void {
+    void this.flow.openDeposit(id);
+  }
+
+  /** "+400 €" ou "−40 €": o sinal sempre à vista, para a conta se ler de cima a baixo. */
+  protected signed(amount: number): string {
+    return `${amount < 0 ? '−' : '+'}${this.money(Math.abs(amount))}`;
   }
 
   protected openTrip(tripId: string): void {
