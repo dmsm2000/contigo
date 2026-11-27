@@ -31,7 +31,7 @@ export type OpenResult = 'opened' | 'offline' | 'failed';
 /** Um erro de envio com o motivo, para o ecrã dizer o que correu mal. */
 export class DocError extends Error {
   /** `detail`: o que a base de dados ou o armazenamento responderam (só para se perceber o que falhou). */
-  constructor(readonly reason: Exclude<DocCheck, 'ok'> | 'upload', readonly detail?: string) {
+  constructor(readonly reason: Exclude<DocCheck, 'ok'> | 'upload' | 'unreadable', readonly detail?: string) {
     super(detail ? `${reason}: ${detail}` : reason);
     this.name = 'DocError';
   }
@@ -154,7 +154,16 @@ export class TripDocsService {
     const id = crypto.randomUUID();
     const path = docPath(tripId, id, mime);
     const storage = this.supabase.storage.from(BUCKET);
-    const sent = await storage.upload(path, file, { contentType: mime, upsert: false });
+    // No iPhone, um ficheiro que está no iCloud, no Mail ou nas transferências pode ainda não estar no telemóvel e o
+    // Safari recusa lê-lo na hora de enviar. Lê-se já para a memória: se falhar, sabe-se logo o motivo.
+    let body: Blob;
+    try {
+      body = new Blob([await file.arrayBuffer()], { type: mime });
+    } catch (error) {
+      console.error('Não foi possível ler o ficheiro:', error);
+      throw new DocError('unreadable');
+    }
+    const sent = await storage.upload(path, body, { contentType: mime, upsert: false });
     if (sent.error) {
       console.error('Envio do documento (armazenamento):', sent.error);
       throw new DocError('upload', `armazenamento: ${sent.error.message}`);

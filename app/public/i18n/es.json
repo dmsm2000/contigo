@@ -933,7 +933,8 @@
       "tooBig": "El archivo es demasiado grande (el máximo son 10 MB).",
       "unsupported": "Solo se pueden añadir PDF e imágenes.",
       "empty": "El archivo está vacío.",
-      "upload": "No se pudo enviar el archivo. Inténtalo otra vez."
+      "upload": "No se pudo enviar el archivo. Inténtalo otra vez.",
+      "unreadable": "El móvil no dejó leer el archivo. Si está en iCloud, en Mail o en descargas, guárdalo primero en Archivos > En mi iPhone y vuelve a añadirlo."
     },
     "color": {
       "yellow": "Amarillo",

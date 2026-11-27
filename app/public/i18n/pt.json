@@ -933,7 +933,8 @@
       "tooBig": "O ficheiro é demasiado grande (o máximo são 10 MB).",
       "unsupported": "Só dá para juntar PDF e imagens.",
       "empty": "O ficheiro está vazio.",
-      "upload": "Não foi possível enviar o ficheiro. Tenta outra vez."
+      "upload": "Não foi possível enviar o ficheiro. Tenta outra vez.",
+      "unreadable": "O telemóvel não deixou ler o ficheiro. Se estiver no iCloud, no Mail ou nas transferências, guarda-o primeiro em Ficheiros > Neste iPhone e volta a juntá-lo."
     },
     "color": {
       "yellow": "Amarelo",

@@ -933,7 +933,8 @@
       "tooBig": "The file is too big (the limit is 10 MB).",
       "unsupported": "Only PDFs and images can be added.",
       "empty": "The file is empty.",
-      "upload": "Could not upload the file. Try again."
+      "upload": "Could not upload the file. Try again.",
+      "unreadable": "The phone wouldn't let the app read the file. If it's in iCloud, Mail or Downloads, save it to Files > On My iPhone first and add it again."
     },
     "color": {
       "yellow": "Yellow",
